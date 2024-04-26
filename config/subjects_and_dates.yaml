@@ -1,0 +1,7 @@
+#subjects_and_dates.yaml - just an example, please map your subjects here
+
+subjects:
+  1:
+    dates: ['somedate_day1', 'somedate_day1_1']
+    name: 'SubjectOneName'
+  
