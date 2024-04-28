@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 from tqdm import tqdm
 import glob
+from ../config import Configuration
 
 ''' Suffle: '''
 def unison_shuffled_copies(a, b):
