@@ -1,0 +1,66 @@
+1:
+  train_mix:
+  - 2
+  - 5
+  val_mix:
+  - 1
+  - 4
+  test_mix:
+  - 3
+  - 6
+  model_name: AYYZDS_mix_1
+2:
+  train_mix:
+  - 1
+  - 6
+  val_mix:
+  - 2
+  - 3
+  test_mix:
+  - 4
+  - 5
+  model_name: AYYZDS_mix_2
+3:
+  train_mix:
+  - 3
+  - 4
+  val_mix:
+  - 5
+  - 6
+  test_mix:
+  - 1
+  - 2
+  model_name: AYYZDS_mix_3
+4:
+  train_mix:
+  - 3
+  - 4
+  val_mix:
+  - 5
+  - 6
+  test_mix:
+  - 2
+  - 3
+  model_name: AYYZDS_mix_4
+5:
+  train_mix:
+  - 1
+  - 2
+  val_mix:
+  - 3
+  - 4
+  test_mix:
+  - 5
+  - 6
+  model_name: AYYZDS_mix_5
+6:
+  train_mix:
+  - 1
+  - 2
+  val_mix:
+  - 5
+  - 6
+  test_mix:
+  - 3
+  - 4
+  model_name: AYYZDS_mix_6
