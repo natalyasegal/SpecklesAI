@@ -2,7 +2,13 @@ import os
 import cv2
 import numpy as np
 from tqdm import tqdm
-from glob import glob
+import glob
+
+''' Suffle: '''
+def unison_shuffled_copies(a, b):
+    assert len(a) == len(b)
+    p = np.random.permutation(len(a))
+    return a[p, ::], b[p]
 
 class Preprocessing():
   def __init__(self, config, verbose = True):
@@ -80,10 +86,10 @@ class Preprocessing():
                       if os.path.isfile(vid_filename):
                           self.__split_video_to_frames(vid_filename, p[1])
 
-  def create_data_set(self, train_subjects, val_subjects, test_subjects):     
-      self.create_video_frames(TRAIN_DATES, train_subjects, 'train')
-      self.create_video_frames(VAL_DATES, val_subjects, 'validation')
-      self.create_video_frames(TEST_DATES, test_subjects, 'test')
+  def create_data_set(self):     
+      self.create_video_frames(self.config.train_dates, self.config.train_subjects, 'train')
+      self.create_video_frames(self.config.val_dates, self.config.val_subjects, 'validation')
+      self.create_video_frames(self.config.test_dates, self.config.test_subjects, 'test')
 
   ''' Frames to chunks of frames: '''
   def prep_frames_lists(self, dates, samples, out_subdir, ABSOLUTE_MAX_FRAMES_PER_CATEGORY = 5000000):
@@ -122,8 +128,33 @@ class Preprocessing():
       y_out = np.append(y_out, y[i], axis=0)
     return x_out, y_out
 
-''' Suffle: '''
-def unison_shuffled_copies(a, b):
-    assert len(a) == len(b)
-    p = np.random.permutation(len(a))
-    return a[p, ::], b[p]
+  def prepare_train_and_validation_data(self):
+    '''train set preprocessing'''
+    x_train_per_category = self.prep_frames_lists(self.config.train_dates, self.config.train_subjects, 'train')
+    x_train, y_train = self.limit_rearrange_and_flatten(x_train_per_category)
+    if config.verbose:
+      print(np.shape(x_train))
+      print(np.shape(y_train))
+    x_train, y_train = prep.limit_rearrange_and_flatten(x_train_per_category)
+    if config.verbose:
+      print(np.shape(x_train))
+      print(np.shape(y_train))
+
+    '''validation set preprocessing'''
+    x_val_per_category = self.prep_frames_lists(self.config.val_dates, self.config.val_subjects, 'validation')
+    x_val, y_val = self.limit_rearrange_and_flatten(x_val_per_category)
+    if config.verbose:
+      print(np.shape(x_val))
+
+    '''shaffle train and validation sets'''
+    x_train, y_train = unison_shuffled_copies(x_train, y_train)
+    x_val, y_val = unison_shuffled_copies(x_val, y_val)
+    return x_train, y_train, x_val, y_val
+
+  def prepare_test_data(self):
+    '''test set preprocessing'''
+    x_test_per_category  = self.prep_frames_lists(self.config.test_dates, self.config.test_subjects, 'test')
+    x_test, y_test = self.limit_rearrange_and_flatten(x_test_per_category)
+    if self.verbose:
+      print(np.shape(x_test))
+    return x_test, y_test
