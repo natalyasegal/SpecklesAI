@@ -1,6 +1,6 @@
 from config import Configuration
 from preprocessing import Preprocessing
-from models import train_model
+from models.model_speech_convlstm_tf import train_model
 
 def preprocess_and_train(args_batch_sz, args_n_epochs):
   config = Configuration_Gen(verbose = True)
