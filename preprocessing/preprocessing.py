@@ -17,17 +17,23 @@ class Preprocessing():
     self.verbose = verbose
 
   ''' Helper functions '''
+  def log(self, message):
+    if self.verbose:
+        print(message)
+
+  def create_directory(self, directory):
+    if not os.path.exists(directory):
+      os.makedirs(directory)
 
   '''Video to frames felper function'''
   def __split_video_to_frames(self, video_path, frames_path):
       vidcap = cv2.VideoCapture(video_path)
-      if self.verbose:
-        print(f'--- {frames_path}   {video_path}')
+      self.log(f'--- {frames_path}   {video_path}')
       video_name = video_path.split(sep=os.sep)[-1].split('.')[-2]
       success, image = vidcap.read()
       count = 1
       while success:
-          image = cv2.resize(image, (config.frame_size_x, config.frame_size_y))
+          image = cv2.resize(image, (self.config.frame_size_x, self.config.frame_size_y))
           image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
           new_path_and_filename = "{}/{}_frame_{}.jpg".format(frames_path, video_name, count)
           cv2.imwrite(new_path_and_filename, image)
@@ -41,7 +47,7 @@ class Preprocessing():
       for sub_dir in in_video_subdirs:
         in_paths.append('{}/{}/{}/{}'.format(self.config.raw_data_path, date, subj, sub_dir))
         out_paths.append('{}/{}/{}/w/{}'.format(self.config.data_path, out_subdir, subj, self.config.frames_subdirs_dict[sub_dir]))
-      print(out_paths)
+      self.log(out_paths)
       return in_paths, out_paths
 
   ''' Rearrange: '''
@@ -49,16 +55,15 @@ class Preprocessing():
       y = []
       for i in range(self.config.number_of_classes):
           y.append([])
-      if self.verbose:
-        print(f'max_chanks={self.config.MAX_CHUNKS_PER_CATEGORY}')
+      self.log(f'max_chanks={self.config.MAX_CHUNKS_PER_CATEGORY}')
       for i in range(self.config.number_of_classes): #short loop, as number of categories
           if len(x[i]) == 0:
             print(f'no items in position {i}')
             continue
-          print(np.shape(x[i]))
+          self.log(np.shape(x[i]))
           p = np.random.permutation(np.shape(x[i])[0])
-          print(np.shape(p))
-          print(type(x[i]))
+          self.log(np.shape(p))
+          self.log(type(x[i]))
           x[i] = np.array(x[i])
           x[i] = x[i][p, ::]
           real_max = min(np.shape(x[i])[0], self.config.MAX_CHUNKS_PER_CATEGORY)
@@ -72,8 +77,7 @@ class Preprocessing():
   '''
 
   def create_video_frames(self, dates, subjects_dirs, out_subdir):
-      if self.verbose:
-          print(f'=======\n{out_subdir}\n =======')
+      self.log(f'=======\n{out_subdir}\n =======')
 
       for date in dates:
           for subj in subjects_dirs:
@@ -82,7 +86,7 @@ class Preprocessing():
                   if not os.path.exists(d):
                       os.makedirs(d)
               for p in zip(in_paths, out_paths):
-                  print(p)
+                  self.log(p)
                   for vid_filename in tqdm(glob.glob('{}/*'.format(p[0]))):
                       if os.path.isfile(vid_filename):
                           self.__split_video_to_frames(vid_filename, p[1])
@@ -116,46 +120,43 @@ class Preprocessing():
                         x[index] = x_sub
                       else:
                         x[index] = np.append(x[index], x_sub, axis=0)
-      if self.verbose:
-        print(f'shape of the data {np.shape(x)}')
+      self.log(f'shape of the data {np.shape(x)}')
       return np.array(x)
-
-  def limit_rearrange_and_flatten(self, x):
-    x, y = self.__rearrange_input(x)
-    x_out = x[0]
-    y_out = y[0]
-    for i in range(1, len(self.config.binary_lables)): #short loop, as number of categories
-      x_out = np.append(x_out, x[i], axis=0)
-      y_out = np.append(y_out, y[i], axis=0)
-    return x_out, y_out
+  
+  def limit_rearrange_and_flatten(self, input_data):
+    # Rearrange the input data and get the corresponding labels
+    rearranged_data, labels = self.__rearrange_input(input_data)
+    
+    # Concatenate the rearranged data and labels along the first axis
+    output_data = np.concatenate(rearranged_data, axis=0)
+    output_labels = np.concatenate(labels, axis=0)
+    
+    # Return the concatenated and rearranged data along with their labels
+    return output_data, output_labels 
 
   def prepare_train_and_validation_data(self):
+    
     '''train set preprocessing'''
     x_train_per_category = self.prep_frames_lists(self.config.train_dates, self.config.train_subjects, 'train')
     x_train, y_train = self.limit_rearrange_and_flatten(x_train_per_category)
-    if config.verbose:
-      print(np.shape(x_train))
-      print(np.shape(y_train))
-    x_train, y_train = prep.limit_rearrange_and_flatten(x_train_per_category)
-    if config.verbose:
-      print(np.shape(x_train))
-      print(np.shape(y_train))
+    self.log(f'before rearranging x_train shape is {np.shape(x_train)}, y_train shape is {np.shape(y_train)}')
+    x_train, y_train = self.limit_rearrange_and_flatten(x_train_per_category)
+    self.log(f'x_train shape is {np.shape(x_train)}, y_train shape is {np.shape(y_train)}')
 
     '''validation set preprocessing'''
     x_val_per_category = self.prep_frames_lists(self.config.val_dates, self.config.val_subjects, 'validation')
     x_val, y_val = self.limit_rearrange_and_flatten(x_val_per_category)
-    if config.verbose:
-      print(np.shape(x_val))
-
-    '''shaffle train and validation sets'''
+    self.log(f'x_val shape is {np.shape(x_val)}, y_val shape is {np.shape(y_val)}')
+  
+    '''shaffle train and validation sets, data and lables are shaffled together'''
     x_train, y_train = unison_shuffled_copies(x_train, y_train)
     x_val, y_val = unison_shuffled_copies(x_val, y_val)
+
     return x_train, y_train, x_val, y_val
 
   def prepare_test_data(self):
     '''test set preprocessing'''
     x_test_per_category  = self.prep_frames_lists(self.config.test_dates, self.config.test_subjects, 'test')
     x_test, y_test = self.limit_rearrange_and_flatten(x_test_per_category)
-    if self.verbose:
-      print(np.shape(x_test))
+    self.log(f'x_test shape is {np.shape(x_test)}, y_test shape is {np.shape(y_test)}')
     return x_test, y_test
