@@ -55,6 +55,7 @@ class Configuration_Gen(Configuration):
     print(self.sample_splits)
     train_mix, val_mix, test_mix, model_name = self.sample_splits[self.split_num].values()
     print(f'{train_mix}, {val_mix}, {test_mix}, {model_name}')
+    self.model_name = model_name
     self.set_split_by_subjects(train_mix, val_mix, test_mix)
 
   def set_split(self, train_dates, train_subjects, val_dates, val_subjects, test_dates, test_subjects):
