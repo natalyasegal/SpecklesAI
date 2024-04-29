@@ -21,6 +21,7 @@ def load_yaml(file_path):
         data = yaml.safe_load(file)
     return data
 
+
 class Configuration():
   def __init__(self, verbose = True):
     self.verbose = verbose  
@@ -73,3 +74,4 @@ class Configuration_Gen(Configuration):
     test_dates, test_subjects = ls.get_dates_and_subjects(test_mix, Logical_Split.Sample_time.MORNING_AND_MID_DAY)
     print(f' train {train_dates} {train_subjects}\n val {val_dates} {val_subjects}\n test {test_dates} {test_subjects}')
     self.set_split(train_dates, train_subjects, val_dates , val_subjects, test_dates, test_subjects)
+        
