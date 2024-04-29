@@ -14,6 +14,22 @@ def load_dataset(file_name = 'train_set.npy'):
     x = np.load(f)
     y = np.load(f)
   return x, y
+  
+def visualize_speckles(x_train, save_path = 'speckles_sample.png', please_also_show = False):
+  # Construct a figure on which we will visualize the images.
+  fig, axes = plt.subplots(4, 5, figsize=(9, 8))
+
+  # Plot each of the sequential images for one random data example.
+  data_choice = np.random.choice(range(len(x_train)), size=1)[0]
+  for idx, ax in enumerate(axes.flat):
+      ax.imshow(np.squeeze(x_train[data_choice][idx]), cmap="gray")
+      ax.set_title(f"Frame {idx + 1}")
+      ax.axis("off")
+
+  # Save the figure.
+  print(f"Displaying sample frames {data_choice}.")
+  plt.savefig(save_path, bbox_inches='tight')
+  #plt.show() #uncomment if used in notebook
 
 def preprocess_and_train(args_batch_sz, args_n_epochs, create_images = True):
   config = Configuration_Gen(verbose = True)
