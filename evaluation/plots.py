@@ -23,17 +23,3 @@ def display_confusion_matrix(th):
       print(disp.confusion_matrix)
   plt.show()
 
-def visualize_data(x_train):
-  # Construct a figure on which we will visualize the images.
-  fig, axes = plt.subplots(4, 5, figsize=(9, 8))
-
-  # Plot each of the sequential images for one random data example.
-  data_choice = np.random.choice(range(len(x_train)), size=1)[0]
-  for idx, ax in enumerate(axes.flat):
-      ax.imshow(np.squeeze(x_train[data_choice][idx]), cmap="gray")
-      ax.set_title(f"Frame {idx + 1}")
-      ax.axis("off")
-
-  # Print information and display the figure.
-  print(f"Displaying frames for example {data_choice}.")
-  plt.show()
