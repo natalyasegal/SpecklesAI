@@ -21,20 +21,23 @@ def load_yaml(file_path):
         data = yaml.safe_load(file)
     return data
 
-
 class Configuration():
   def __init__(self, verbose = True):
     self.verbose = verbose  
     self.subjects_and_dates_config_file_name = 'config/subjects_and_dates.yaml'
     self.models_path='models'
+    self.create_images = True
     self.be_consistent = True # initializze seeds for consistent results
     self.seed_for_init = 1 #seed for initialization
-    self.raw_data_path = 'exp3'
-    self.data_path = 'data' #destination after preprocessing
+
     self.MAX_CHUNKS_PER_CATEGORY = 100000
     self.chunk_size = 40 #64 #destination temporal chunk size
     self.frame_size_x = 32 #64 #128 # destination frames images size after resizing x
     self.frame_size_y = 32 #64 # destination frames images size after resizing y
+    #self.max_chunks_num = 2500 #calculated 10sec*10videos*1000fps / 40 frames in chunk, used for aggregted evaluation
+    self.raw_data_path = 'exp3'
+    self.data_path = 'data' #destination after preprocessing
+    self.base_data_path_subdir = 'w'
     self.sub_music = 'Wernike/music'
     self.sub_english = 'Wernike/english'
     self.sub_swedish = 'Wernike/swedish'
@@ -74,4 +77,3 @@ class Configuration_Gen(Configuration):
     test_dates, test_subjects = ls.get_dates_and_subjects(test_mix, Logical_Split.Sample_time.MORNING_AND_MID_DAY)
     print(f' train {train_dates} {train_subjects}\n val {val_dates} {val_subjects}\n test {test_dates} {test_subjects}')
     self.set_split(train_dates, train_subjects, val_dates , val_subjects, test_dates, test_subjects)
-        
