@@ -1,4 +1,4 @@
-from SpecklesAI.config.config import Configuration
+from config.config import Configuration
 from preprocessing import Preprocessing
 from evaluation.eval import evaluate_per_chunk
 from models.model_speech_convlstm_tf import train_model
