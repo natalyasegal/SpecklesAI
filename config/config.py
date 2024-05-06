@@ -1,6 +1,10 @@
 from sklearn.preprocessing import LabelBinarizer
 from typing import Any, List
 import yaml	
+import sys
+import os
+# Append the directory containing split.py to the path
+sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 from split import Logical_Split	
 
 def binarize_lables(labels_orig: List[Any]) -> List[int]:
