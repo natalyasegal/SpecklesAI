@@ -1,6 +1,10 @@
 import yaml
 from typing import List, Tuple, Set
 from enum import Enum
+import sys
+import os
+# Append the directory containing split.py to the path
+sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 
 class Logical_Split():
   class Sample_time(Enum):
