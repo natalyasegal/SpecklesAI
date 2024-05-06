@@ -1,7 +1,7 @@
 from sklearn.preprocessing import LabelBinarizer
 from typing import Any, List
 import yaml	
-from SpecklesAI.config.split import Logical_Split	
+from split import Logical_Split	
 
 def binarize_lables(labels_orig: List[Any]) -> List[int]:
       """
