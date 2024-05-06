@@ -1,10 +1,13 @@
+import numpy as np
+import sys
+import os
+# Append the directory containing split.py to the path
+sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 from config.config import Configuration
 from preprocessing.preprocessing import Preprocessing
 from evaluation.eval import evaluate_per_chunk
 from models.model_speech_convlstm_tf import train_model
-import numpy as np
 from visualization.visualization import visualize_speckles
-
 
 def save_dataset_x(x, file_name):
   with open(file_name, 'wb') as f:
