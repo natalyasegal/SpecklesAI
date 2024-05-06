@@ -3,6 +3,10 @@ import cv2
 import numpy as np
 from tqdm import tqdm
 import glob
+import sys
+import os
+# Append the directory containing split.py to the path
+sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 from ../config import Configuration
 
 ''' Suffle: '''
