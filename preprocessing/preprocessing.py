@@ -40,6 +40,9 @@ class Preprocessing():
         self.__create_directory(directory)
    
   def __are_all_directories_empty(self, directory_paths):
+    '''
+    non existant path will be considered empty
+    '''
     for dir_path in directory_paths:
         # Check if the directory exists and is indeed a directory
         if os.path.isdir(dir_path):
@@ -47,11 +50,34 @@ class Preprocessing():
             if os.listdir(dir_path):
                 # If list is not empty, directory is not empty
                 return False
-        else:
-            # If the path is not a directory or does not exist, return False
-            print(f"Warning: {dir_path} is not a directory or does not exist.")
-            return False
     return True
+
+  def __contains_video_files(self, directory_paths):
+    """
+    Check if any provided directories contain video files.
+
+    Args:
+    directory_paths (list of str): A list containing directory paths to check.
+
+    Returns:
+    bool: True if at least one directory contains video files and is not empty, False otherwise.
+
+    Note:
+    Supports common video formats such as .avi, .mp4, .mkv, .flv, .mov, .wmv, .mpeg, and .mpg. It also warns if a path
+    is not a directory or does not exist.
+    """
+    video_extensions = {'.avi', '.mp4', '.mkv', '.flv', '.mov', '.wmv', '.mpeg', '.mpg'}
+    for dir_path in directory_paths:
+        if os.path.isdir(dir_path):
+            files = os.listdir(dir_path)
+            if files:  # Check if directory is not empty
+                for file in files:
+                    if os.path.splitext(file)[1].lower() in video_extensions:
+                        return True  # At least one video file found
+        else:
+            print(f"Warning: {dir_path} is not a directory or does not exist.")
+    return False
+
     
   '''Video to frames helper function'''
   def __split_video_to_frames(self, video_path, frames_path):
@@ -130,7 +156,7 @@ class Preprocessing():
               in_paths, out_paths = self.__get_in_out_paths(date, subj, out_subdir)
               if self.__are_all_directories_empty(in_paths):
                   print(f'Empty in path for {out_subdir} set for subjects {subj} and date {date}')
-              else:
+              else if self.__contains_video_files(in_paths):
                   at_least_one_non_empty_input = True
                   self.__create_paths(out_paths)
                   for in_path, out_path in zip(in_paths, out_paths):
@@ -138,6 +164,8 @@ class Preprocessing():
                       for vid_filename in tqdm(glob.glob('{}/*'.format(in_path))):
                           if os.path.isfile(vid_filename):
                               self.__split_video_to_frames(vid_filename, out_path)
+              else:
+                  print(f'No video files found in {in_paths}')
       return at_least_one_non_empty_input
 
   def create_data_set(self):     
