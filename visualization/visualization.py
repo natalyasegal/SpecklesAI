@@ -1,4 +1,5 @@
 from matplotlib import pyplot as plt
+import numpy as np
 
 def visualize_speckles(x_train, save_path = 'speckles_sample.png', please_also_show = False):
   # Construct a figure on which we will visualize the images.
