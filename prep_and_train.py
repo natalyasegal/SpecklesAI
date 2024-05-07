@@ -6,7 +6,7 @@ sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 from config.config import Configuration, Configuration_Gen
 from preprocessing.preprocessing import Preprocessing
 from evaluation.eval import evaluate_per_chunk
-from models.model_speech_convlstm_tf import train_model, play_consistent
+from models.model_speech_convlstm_tf import train_model, load_model, play_consistent
 from visualization.visualization import visualize_speckles
 
 def save_dataset_x(x, file_name):
@@ -54,7 +54,7 @@ def preprocess_and_train(args_batch_sz, args_n_epochs):
                                             x_train, y_train, 
                                             x_val, y_val,                                        
                                             batch_sz = args_batch_sz, n_epochs = args_n_epochs)
-  model = tf.keras.models.load_model(config.models_path)
+  model = load_model(config) 
   res_df = evaluate_per_chunk(config, model, x_test, y_test)
   return model, model_history, x_test_per_category, x_test, y_test, x_train, y_train, x_val, y_val, config, res_df
 
