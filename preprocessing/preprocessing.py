@@ -155,7 +155,7 @@ class Preprocessing():
           for subj in subjects_dirs:
               in_paths, out_paths = self.__get_in_out_paths(date, subj, out_subdir)
               if self.__are_all_directories_empty(in_paths):
-                  print(f'Empty in path for {out_subdir} set for subjects {subj} and date {date}')
+                  print(f'Empty in path for all paths in: {in_paths} set for subjects {subj} and date {date}')
               elif self.__contains_video_files(in_paths):
                   at_least_one_non_empty_input = True
                   self.__create_paths(out_paths)
