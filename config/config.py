@@ -28,7 +28,7 @@ def load_yaml(file_path):
 class Configuration():
   def __init__(self, verbose = True):
     self.verbose = verbose  
-    self.subjects_and_dates_config_file_name = './config/config_files/subjects_and_dates.yaml'
+    self.subjects_and_dates_config_file_name = 'SpecklesAI/config/config_files/subjects_and_dates.yaml'
     self.models_path='models'
     self.create_images = True
     self.be_consistent = True # initializze seeds for consistent results
@@ -57,7 +57,7 @@ class Configuration():
 class Configuration_Gen(Configuration):
   def __init__(self, verbose = True):
     super().__init__(verbose)
-    self.sample_splits_file_name = './config/config_files/sample_gen_split.yaml'
+    self.sample_splits_file_name = 'SpecklesAI/config/config_files/sample_gen_split.yaml'
     self.split_num = 6
     self.sample_splits = load_yaml(self.sample_splits_file_name)
     print(self.sample_splits)
