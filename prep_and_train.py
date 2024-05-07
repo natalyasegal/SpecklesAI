@@ -5,7 +5,7 @@ import os
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 from config.config import Configuration, Configuration_Gen
 from preprocessing.preprocessing import Preprocessing
-from evaluation.eval import evaluate_per_chunk
+from evaluation.eval import evaluate_per_chunk, eval_accumulated
 from models.model_speech_convlstm_tf import train_model, load_model, play_consistent
 from visualization.visualization import visualize_speckles
 
@@ -58,11 +58,29 @@ def preprocess_and_train(args_batch_sz, args_n_epochs):
   res_df = evaluate_per_chunk(config, model, x_test, y_test)
   return model, model_history, x_test_per_category, x_test, y_test, x_train, y_train, x_val, y_val, config, res_df
 
-#TODO: create main:
 
-model, model_history, x_test_per_category, x_test, y_test, x_train, y_train, x_val, y_val, config, res_df = preprocess_and_train(
-    args_batch_sz=1000, args_n_epochs=25)
-ref_df_a = eval_accumulated(config, model, x_test_per_category, num_of_chunks_to_aggregate = 25)
+def main(args):
+  model, model_history, x_test_per_category, x_test, y_test, x_train, y_train, x_val, y_val, config, res_df = preprocess_and_train(
+      args_batch_sz=args.batch_size, args_n_epochs=args.epochs)
+  ref_df_a = eval_accumulated(config, model, x_test_per_category, num_of_chunks_to_aggregate = args.num_of_chunks_to_aggregate)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser('')
+    parser.add_argument('--batch_size',
+                        help='number of images in a mini-batch.',
+                        type=int,
+                        default=1000)
+    parser.add_argument('--epochs',
+                        help='maximum number of iterations.',
+                        type=int,
+                        default=25)
+    parser.add_argument('--num_of_chunks_to_aggregate',
+                        help='num_of_chunks_to_aggregate',
+                        type=int,
+                        default=25)
+    args = parser.parse_args()
+    main(args)
 
 
 
