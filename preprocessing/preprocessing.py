@@ -19,7 +19,10 @@ class Preprocessing():
   def __init__(self, config, verbose = True):
     self.config = config
     self.verbose = verbose
-
+    self.__have_train_set_parsed = False 
+    self.__have_val_set_parsed = False
+    self.__have_test_set_parsed = False
+      
   ''' Helper functions '''
   def log(self, message):
     if self.verbose:
@@ -35,7 +38,22 @@ class Preprocessing():
     else:
       for directory in out_paths:
         self.__create_directory(directory)
-   
+   import os
+
+  def __are_all_directories_empty(directory_paths):
+    for dir_path in directory_paths:
+        # Check if the directory exists and is indeed a directory
+        if os.path.isdir(dir_path):
+            # os.listdir returns a list of entries in the directory
+            if os.listdir(dir_path):
+                # If list is not empty, directory is not empty
+                return False
+        else:
+            # If the path is not a directory or does not exist, return False
+            print(f"Warning: {dir_path} is not a directory or does not exist.")
+            return False
+    return True
+    
   '''Video to frames helper function'''
   def __split_video_to_frames(self, video_path, frames_path):
       vidcap = cv2.VideoCapture(video_path)
@@ -102,24 +120,32 @@ class Preprocessing():
         within each date directory.
       - out_subdir (str): The name of the output subdirectory where processed frames will be stored.
 
+        returns at_least_one_non_empty_input
       Example usage:
         prep.create_video_frames(['20240101', '20240102'], ['subject1', 'subject2'], 'processed_frames')
       '''
       self.log(f"=======\nProcessing: {out_subdir}\n=======")
+      at_least_one_non_empty_input = False
       for date in dates:
           for subj in subjects_dirs:
               in_paths, out_paths = self.__get_in_out_paths(date, subj, out_subdir)
-              self.__create_paths(out_paths)
-              for in_path, out_path in zip(in_paths, out_paths):
-                  self.log(f"Input: {in_path}, Output: {out_path}")
-                  for vid_filename in tqdm(glob.glob('{}/*'.format(in_path))):
-                      if os.path.isfile(vid_filename):
-                          self.__split_video_to_frames(vid_filename, out_path)
+              if __are_all_directories_empty(directory_paths):
+                  print(f'Empty in path for {out_subdir} set for subjects {subj} and date {date}')
+              else:
+                  at_least_one_non_empty_input = True
+                  self.__create_paths(out_paths)
+                  for in_path, out_path in zip(in_paths, out_paths):
+                      self.log(f"Input: {in_path}, Output: {out_path}")
+                      for vid_filename in tqdm(glob.glob('{}/*'.format(in_path))):
+                          if os.path.isfile(vid_filename):
+                              self.__split_video_to_frames(vid_filename, out_path)
+        return at_least_one_non_empty_input
 
   def create_data_set(self):     
-      self.create_video_frames(self.config.train_dates, self.config.train_subjects, 'train')
-      self.create_video_frames(self.config.val_dates, self.config.val_subjects, 'validation')
-      self.create_video_frames(self.config.test_dates, self.config.test_subjects, 'test')
+      self.__have_train_set_parsed = self.create_video_frames(self.config.train_dates, self.config.train_subjects, 'train') 
+      self.__have_val_set_parsed = self.create_video_frames(self.config.val_dates, self.config.val_subjects, 'validation')
+      self.__have_test_set_parsed = self.create_video_frames(self.config.test_dates, self.config.test_subjects, 'test')
+      print(f'train {self.__have_train_set_parsed}, validation {self.__have_val_set_parsed}, test {self.__have_test_set_parsed} ')
 
   ''' Frames to chunks of frames: '''
   def prep_frames_lists(self, dates, subjects, out_subdir, ABSOLUTE_MAX_FRAMES_PER_CATEGORY = 5000000):
@@ -159,11 +185,13 @@ class Preprocessing():
   def prepare_train_and_validation_data(self):
     need_to_shuffle_within_category = True
     '''train set preprocessing'''
+    assert(self.__have_train_set_parsed)
     x_train_per_category = self.prep_frames_lists(self.config.train_dates, self.config.train_subjects, 'train')
     x_train, y_train = self.limit_rearrange_and_flatten(x_train_per_category, need_to_shuffle_within_category)
     self.log(f'x_train shape is {np.shape(x_train)}, y_train shape is {np.shape(y_train)}')
 
     '''validation set preprocessing'''
+    assert(self.__have_val_set_parsed)
     x_val_per_category = self.prep_frames_lists(self.config.val_dates, self.config.val_subjects, 'validation')
     x_val, y_val = self.limit_rearrange_and_flatten(x_val_per_category, need_to_shuffle_within_category)
     self.log(f'x_val shape is {np.shape(x_val)}, y_val shape is {np.shape(y_val)}')
@@ -175,6 +203,7 @@ class Preprocessing():
 
   def prepare_test_data(self):
     '''test set preprocessing'''
+    assert(self.__have_test_set_parsed)
     x_test_per_category  = self.prep_frames_lists(self.config.test_dates, self.config.test_subjects, 'test')
     x_test, y_test = self.limit_rearrange_and_flatten(x_test_per_category, need_to_shuffle_within_category = False)
     self.log(f'x_test shape is {np.shape(x_test)}, y_test shape is {np.shape(y_test)}')
