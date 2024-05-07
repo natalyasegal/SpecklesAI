@@ -1,0 +1,2 @@
+plot_metric>=0.0.6
+pyyaml==6.0.1
