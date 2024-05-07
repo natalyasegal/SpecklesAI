@@ -39,7 +39,7 @@ class Preprocessing():
       for directory in out_paths:
         self.__create_directory(directory)
    
-  def __are_all_directories_empty(directory_paths):
+  def __are_all_directories_empty(self, directory_paths):
     for dir_path in directory_paths:
         # Check if the directory exists and is indeed a directory
         if os.path.isdir(dir_path):
