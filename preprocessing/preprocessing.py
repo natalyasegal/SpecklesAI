@@ -128,7 +128,7 @@ class Preprocessing():
       for date in dates:
           for subj in subjects_dirs:
               in_paths, out_paths = self.__get_in_out_paths(date, subj, out_subdir)
-              if __are_all_directories_empty(directory_paths):
+              if self.__are_all_directories_empty(directory_paths):
                   print(f'Empty in path for {out_subdir} set for subjects {subj} and date {date}')
               else:
                   at_least_one_non_empty_input = True
