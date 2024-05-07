@@ -67,4 +67,6 @@ def train_model(config, sz_conv, sz_dense, x_train, y_train, x_val, y_val, batch
     )
 
     return model, model_history
-    
+
+def load_model(config): 
+    return tf.keras.models.load_model(config.models_path)
