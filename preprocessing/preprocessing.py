@@ -138,7 +138,7 @@ class Preprocessing():
                       for vid_filename in tqdm(glob.glob('{}/*'.format(in_path))):
                           if os.path.isfile(vid_filename):
                               self.__split_video_to_frames(vid_filename, out_path)
-        return at_least_one_non_empty_input
+      return at_least_one_non_empty_input
 
   def create_data_set(self):     
       self.__have_train_set_parsed = self.create_video_frames(self.config.train_dates, self.config.train_subjects, 'train') 
