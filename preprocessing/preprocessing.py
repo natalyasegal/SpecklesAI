@@ -156,7 +156,7 @@ class Preprocessing():
               in_paths, out_paths = self.__get_in_out_paths(date, subj, out_subdir)
               if self.__are_all_directories_empty(in_paths):
                   print(f'Empty in path for {out_subdir} set for subjects {subj} and date {date}')
-              else if self.__contains_video_files(in_paths):
+              elif self.__contains_video_files(in_paths):
                   at_least_one_non_empty_input = True
                   self.__create_paths(out_paths)
                   for in_path, out_path in zip(in_paths, out_paths):
@@ -165,7 +165,7 @@ class Preprocessing():
                           if os.path.isfile(vid_filename):
                               self.__split_video_to_frames(vid_filename, out_path)
               else:
-                  print(f'No video files found in {in_paths}')
+                  print(f'No video files found in {in_paths}, please copy your data or change the path in config.py file')
       return at_least_one_non_empty_input
 
   def create_data_set(self):     
