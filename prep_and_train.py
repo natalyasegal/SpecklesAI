@@ -98,7 +98,7 @@ if __name__ == '__main__':
                         help='validation parsed data arranges in chanks, chank size is designated in config.py',
                         type=str,
                         default='validation_set.npy')
-     parser.add_argument('--test_set_per_category_file',
+    parser.add_argument('--test_set_per_category_file',
                         help='test parsed data arranges in chanks, given by category, chank size is designated in config.py',
                         type=str,
                         default='test_per_category.npy')  
