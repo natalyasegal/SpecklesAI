@@ -26,6 +26,10 @@ def load_dataset(file_name):
   return x, y
 
 def get_or_create_dataset(config, need_to_create = True, need_to_save = False):
+  '''
+  Creates or loads train, validation and test datasets
+  Datasets are created from videos files by creating arrays od 3d tensors (X x Y x Temporal chunk)
+  '''
   if need_to_create:
     prep = Preprocessing(config, verbose = config.verbose)
     prep.create_data_set() #videos to frames for train, validation and test sets
@@ -34,35 +38,32 @@ def get_or_create_dataset(config, need_to_create = True, need_to_save = False):
     if need_to_save:
       save_dataset(x_train, y_train, file_name = 'train_set.npy')
       save_dataset(x_val, y_val, file_name = 'validation_set.npy')
-      save_dataset(x_test, y_test, file_name = 'test_set.npy')
       save_dataset_x(x_test_per_category, file_name = 'test_per_category.npy')
   else:
     x_train, y_train = load_dataset(file_name = 'train_set.npy')
     x_val, y_val = load_dataset(file_name = 'validation_set.npy')
-    x_test, y_test = load_dataset(file_name = 'test_set.npy')
     x_test_per_category = load_dataset(file_name = 'test_per_category.npy')
+    x_test, y_test = prep.limit_rearrange_and_flatten(x_test_per_category, need_to_shuffle_within_category = False)
   if config.create_images:
     visualize_speckles(x_train, save_path = 'speckles_sample.png', please_also_show = False)
   return x_train, y_train, x_val, y_val, x_test, y_test, x_test_per_category
 
-def preprocess_and_train(args_batch_sz, args_n_epochs):
+def preprocess_and_train(args):
   config = Configuration_Gen(verbose = True)
   if config.be_consistent:
     play_consistent(seed_for_init = config.seed_for_init)
-  x_train, y_train, x_val, y_val, x_test, y_test, x_test_per_category = get_or_create_dataset(
-      config, need_to_create = True, need_to_save = False) 
+  x_train, y_train, x_val, y_val, x_test, y_test, x_test_per_category = get_or_create_dataset(config, need_to_create = True, need_to_save = False) 
   model_ex3_10, model_history = train_model(config, 9, 8, 
                                             x_train, y_train, 
                                             x_val, y_val,                                        
-                                            batch_sz = args_batch_sz, n_epochs = args_n_epochs)
+                                            batch_sz = args.batch_size, n_epochs = args.epochs)
   model = load_model(config) 
   res_df = evaluate_per_chunk(config, model, x_test, y_test)
   return model, model_history, x_test_per_category, x_test, y_test, x_train, y_train, x_val, y_val, config, res_df
 
 
 def main(args):
-  model, model_history, x_test_per_category, x_test, y_test, x_train, y_train, x_val, y_val, config, res_df = preprocess_and_train(
-      args_batch_sz=args.batch_size, args_n_epochs=args.epochs)
+  model, model_history, x_test_per_category, x_test, y_test, x_train, y_train, x_val, y_val, config, res_df = preprocess_and_train(args)
   ref_df_a = eval_accumulated(config, model, x_test_per_category, num_of_chunks_to_aggregate = args.num_of_chunks_to_aggregate)
 
 
