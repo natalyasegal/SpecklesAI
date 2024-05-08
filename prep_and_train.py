@@ -51,7 +51,7 @@ def get_or_create_dataset(config, args, need_to_save):
 def preprocess_and_train(args):
   config = Configuration_Gen(verbose = True)
   if config.be_consistent:
-    play_consistent(seed_for_init = config.seed_for_init)
+    play_consistent(seed_for_init = config.seed_for_init, random_seed = args.random_seed)
   x_train, y_train, x_val, y_val, x_test, y_test, x_test_per_category = get_or_create_dataset(config, need_to_save = True) 
   model_ex3_10, model_history = train_model(config, 9, 8, 
                                             x_train, y_train, 
@@ -81,6 +81,10 @@ if __name__ == '__main__':
                         help='num_of_chunks_to_aggregate',
                         type=int,
                         default=25)
+    parser.add_argument('--random_seed',
+                        help='seed for python random, used in shafling, doesn't affect division into train, validation and test',
+                        type=int,
+                        default=2)
 
     parser.add_argument('--read_stored_dataset', 
                         action='store_true',
