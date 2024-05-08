@@ -25,24 +25,24 @@ def load_dataset(file_name):
     y = np.load(f)
   return x, y
 
-def get_or_create_dataset(config, need_to_create = True, need_to_save = False):
+def get_or_create_dataset(config, args, need_to_save):
   '''
   Creates or loads train, validation and test datasets
   Datasets are created from videos files by creating arrays od 3d tensors (X x Y x Temporal chunk)
   '''
-  if need_to_create:
+  if not args.read_stored_dataset:
     prep = Preprocessing(config, verbose = config.verbose)
     prep.create_data_set() #videos to frames for train, validation and test sets
     x_train, y_train, x_val, y_val = prep.prepare_train_and_validation_data()
     x_test, y_test, x_test_per_category = prep.prepare_test_data()
     if need_to_save:
-      save_dataset(x_train, y_train, file_name = 'train_set.npy')
-      save_dataset(x_val, y_val, file_name = 'validation_set.npy')
-      save_dataset_x(x_test_per_category, file_name = 'test_per_category.npy')
+      save_dataset(x_train, y_train, file_name = args.train_set_file)
+      save_dataset(x_val, y_val, file_name = args.validationl_set_file)
+      save_dataset_x(x_test_per_category, file_name = args.test_set_per_category_file)
   else:
-    x_train, y_train = load_dataset(file_name = 'train_set.npy')
-    x_val, y_val = load_dataset(file_name = 'validation_set.npy')
-    x_test_per_category = load_dataset(file_name = 'test_per_category.npy')
+    x_train, y_train = load_dataset(file_name = args.train_set_file)
+    x_val, y_val = load_dataset(file_name = args.validationl_set_file)
+    x_test_per_category = load_dataset(file_name = args.test_set_per_category_file)
     x_test, y_test = prep.limit_rearrange_and_flatten(x_test_per_category, need_to_shuffle_within_category = False)
   if config.create_images:
     visualize_speckles(x_train, save_path = 'speckles_sample.png', please_also_show = False)
@@ -52,7 +52,7 @@ def preprocess_and_train(args):
   config = Configuration_Gen(verbose = True)
   if config.be_consistent:
     play_consistent(seed_for_init = config.seed_for_init)
-  x_train, y_train, x_val, y_val, x_test, y_test, x_test_per_category = get_or_create_dataset(config, need_to_create = True, need_to_save = False) 
+  x_train, y_train, x_val, y_val, x_test, y_test, x_test_per_category = get_or_create_dataset(config, need_to_save = True) 
   model_ex3_10, model_history = train_model(config, 9, 8, 
                                             x_train, y_train, 
                                             x_val, y_val,                                        
@@ -81,6 +81,24 @@ if __name__ == '__main__':
                         help='num_of_chunks_to_aggregate',
                         type=int,
                         default=25)
+
+    parser.add_argument('--read_stored_dataset', 
+                        action='store_true',
+                        help='If specified, read parsed frame chunks for dataset; otherwise, create them.')
+
+    parser.add_argument('--train_set_file',
+                        help='train parsed data arranges in chanks, chank size is designated in config.py',
+                        type=str,
+                        default='train_set.npy')
+    parser.add_argument('--validationl_set_file',
+                        help='validation parsed data arranges in chanks, chank size is designated in config.py',
+                        type=str,
+                        default='validation_set.npy')
+     parser.add_argument('--test_set_per_category_file',
+                        help='test parsed data arranges in chanks, given by category, chank size is designated in config.py',
+                        type=str,
+                        default='test_per_category.npy')  
+   
     args = parser.parse_args()
     main(args)
 
