@@ -7,9 +7,24 @@ from tensorflow.keras.callbacks import ModelCheckpoint
 
 '''The model works with video chunks of recorded speckle pappern'''
 
-def play_consistent(seed_for_init = 1):
+def play_consistent(seed_for_init = 1, random_seed = 2):
     np.random.seed(seed_for_init)  # Set seed for NumPy operations to ensure reproducibility
+    random.seed(random_seed)
+    
+    ''' specific for Tensorflow: '''
     tf.random.set_seed(seed_for_init)  # Set seed for TensorFlow operations to ensure reproducibility
+    
+def init_framework():
+    gpus = tf.config.experimental.list_physical_devices('GPU')
+    if gpus:
+        total_memory = tf.config.experimental.get_device_details(gpus[0])['memory']
+        limit = int(total_memory * 0.99) # 99% of GPU memory
+        try:
+            tf.config.experimental.set_virtual_device_configuration(gpus[0],
+                [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=limit)]
+            )
+        except RuntimeError as e:
+            print(e)
 
 def define_model(config, sz_conv, sz_dense):
     """Defines a ConvLSTM2D model for classification tasks."""
