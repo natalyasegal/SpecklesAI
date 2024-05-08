@@ -82,7 +82,7 @@ if __name__ == '__main__':
                         type=int,
                         default=25)
     parser.add_argument('--random_seed',
-                        help='seed for python random, used in shafling, doesn't affect division into train, validation and test',
+                        help='seed for python random, used in shafling, does not affect division into train, validation and test',
                         type=int,
                         default=2)
 
