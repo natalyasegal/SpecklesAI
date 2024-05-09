@@ -209,8 +209,7 @@ class Preprocessing():
     # Return the concatenated and rearranged data along with their labels
     return output_data, output_labels 
 
-  def prepare_train_and_validation_data(self):
-    need_to_shuffle_within_category = True
+  def prepare_train_and_validation_data(self, need_to_shuffle_within_category):
     '''train set preprocessing'''
     assert(self.__have_train_set_parsed)
     x_train_per_category = self.prep_frames_lists(self.config.train_dates, self.config.train_subjects, 'train')
