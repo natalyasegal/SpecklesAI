@@ -26,6 +26,7 @@ def load_dataset(file_name):
       y = np.load(f)
   except EOFError:
     print(f"Failed to load data from {f}, file may be corrupted or empty.")
+    assert(False)
   return x, y
 
 def test_saving_and_loading_datasets():
