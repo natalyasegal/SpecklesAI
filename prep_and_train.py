@@ -11,15 +11,18 @@ from models.model_speech_convlstm_tf import train_model, load_model, play_consis
 from visualization.visualization import visualize_speckles
 
 def save_dataset_x(x, file_name):
+  print(f'Saving {file_name}')
   with open(file_name, 'wb') as f:
       np.save(f, x)
 
 def save_dataset(x, y, file_name):
+  print(f'Saving {file_name}')
   with open(file_name, 'wb') as f:
       np.save(f, x)
       np.save(f, y)
 
 def load_dataset(file_name):
+  print(f'Loading {file_name}')
   try:
     with open(file_name, 'rb') as f:
       x = np.load(f)
@@ -28,6 +31,16 @@ def load_dataset(file_name):
     print(f"Failed to load data from {f}, file may be corrupted or empty.")
     assert(False)
   return x, y
+
+def load_x_dataset(file_name):
+  print(f'Loading {file_name}')
+  try:
+    with open(file_name, 'rb') as f:
+      x = np.load(f)
+  except EOFError:
+    print(f"Failed to load data from {f}, file may be corrupted or empty.")
+    assert(False)
+  return x
 
 def test_saving_and_loading_datasets():
   save_dataset(np.array([1, 2, 3]), np.array([11, 12, 13]), file_name = args.train_set_file)
@@ -56,7 +69,7 @@ def get_or_create_dataset(config, args, need_to_save):
   else:
     x_train, y_train = load_dataset(file_name = args.train_set_file)
     x_val, y_val = load_dataset(file_name = args.validationl_set_file)
-    x_test_per_category = load_dataset(file_name = args.test_set_per_category_file)
+    x_test_per_category = load_x_dataset(file_name = args.test_set_per_category_file)
     x_test, y_test = prep.limit_rearrange_and_flatten(x_test_per_category, need_to_shuffle_within_category = False)
   if config.create_images:
     visualize_speckles(x_train, save_path = 'speckles_sample.png', please_also_show = False)
