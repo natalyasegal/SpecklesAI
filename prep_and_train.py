@@ -25,6 +25,16 @@ def load_dataset(file_name):
     y = np.load(f)
   return x, y
 
+def test_saving_and_loading_datasets():
+  save_dataset(np.array([1, 2, 3]), np.array([11, 12, 13]), file_name = args.train_set_file)
+  x_train, y_train = load_dataset(file_name = args.train_set_file)
+  assert((x_train - np.array([1, 2, 3])).sum() == 0)
+  assert((y_train - np.array([11, 12, 13])).sum() == 0)
+  print(x_train)
+  print('----')
+  print(y_train)
+  print('Pased the test_saving_and_loading_datasets test')
+  
 def get_or_create_dataset(config, args, need_to_save):
   '''
   Creates or loads train, validation and test datasets
