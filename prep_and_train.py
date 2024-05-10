@@ -20,9 +20,12 @@ def save_dataset(x, y, file_name):
       np.save(f, y)
 
 def load_dataset(file_name):
-  with open(file_name, 'rb') as f:
-    x = np.load(f)
-    y = np.load(f)
+  try:
+    with open(file_name, 'rb') as f:
+      x = np.load(f)
+      y = np.load(f)
+  except EOFError:
+    print(f"Failed to load data from {f}, file may be corrupted or empty.")
   return x, y
 
 def test_saving_and_loading_datasets():
