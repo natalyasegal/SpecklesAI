@@ -24,11 +24,11 @@ def get_or_create_dataset(config, args, need_to_save):
     x_test, y_test, x_test_per_category = prep.prepare_test_data()
     if need_to_save:
       save_dataset(x_train, y_train, file_name = args.train_set_file)
-      save_dataset(x_val, y_val, file_name = args.validationl_set_file)
+      save_dataset(x_val, y_val, file_name = args.validation_set_file)
       save_dataset_x(x_test_per_category, file_name = args.test_set_per_category_file)
   else:
     x_train, y_train = load_dataset(file_name = args.train_set_file)
-    x_val, y_val = load_dataset(file_name = args.validationl_set_file)
+    x_val, y_val = load_dataset(file_name = args.validation_set_file)
     x_test_per_category = load_dataset_x(file_name = args.test_set_per_category_file)
     x_test, y_test = prep.limit_rearrange_and_flatten(x_test_per_category, need_to_shuffle_within_category = False)
   if config.create_images:
@@ -88,7 +88,7 @@ if __name__ == '__main__':
                         help='train parsed data arranges in chanks, chank size is designated in config.py',
                         type=str,
                         default='train_set.npy')
-    parser.add_argument('--validationl_set_file',
+    parser.add_argument('--validation_set_file',
                         help='validation parsed data arranges in chanks, chank size is designated in config.py',
                         type=str,
                         default='validation_set.npy')
