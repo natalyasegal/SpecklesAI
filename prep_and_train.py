@@ -1,5 +1,4 @@
 import argparse
-import numpy as np
 import sys
 import os
 # Append the directory containing split.py to the path
@@ -20,7 +19,7 @@ def get_or_create_dataset(config, args, need_to_save):
   prep = Preprocessing(config, verbose = config.verbose)
   if not args.read_stored_dataset:
     prep.create_data_set() #videos to frames for train, validation and test sets
-    x_train, y_train, x_val, y_val = prep.prepare_train_and_validation_data(need_to_shuffle_within_category = args.shuffle_test_val_within_categories)
+    x_train, y_train, x_val, y_val = prep.prepare_train_and_validation_data(need_to_shuffle_within_category = args.shuffle_train_val_within_categories)
     x_test, y_test, x_test_per_category = prep.prepare_test_data()
     if need_to_save:
       save_dataset(x_train, y_train, file_name = args.train_set_file)
@@ -81,9 +80,9 @@ if __name__ == '__main__':
     parser.add_argument('--read_stored_dataset', 
                         action='store_true',
                         help='If specified, read parsed frame chunks for dataset; otherwise, create them.')
-    parser.add_argument('--shuffle_test_val_within_categories', 
+    parser.add_argument('--shuffle_train_val_within_categories', 
                         action='store_true',
-                        help='If specified, suffles samples in train and validation sets within categories, it does not affect the train/val/trst split.')
+                        help='If specified, suffles samples in train and validation sets within categories, it does not affect the train/val/test split here.')
     parser.add_argument('--train_set_file',
                         help='train parsed data arranges in chanks, chank size is designated in config.py',
                         type=str,
