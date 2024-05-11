@@ -168,6 +168,10 @@ class Preprocessing():
                   print(f'No video files found in {in_paths}, please copy your data or change the path in config.py file')
       return at_least_one_non_empty_input
 
+  def create_test_data_set(self):     
+      self.__have_test_set_parsed = self.create_video_frames(self.config.test_dates, self.config.test_subjects, 'test')
+      print(f'test {self.__have_test_set_parsed} ')
+
   def create_data_set(self):     
       self.__have_train_set_parsed = self.create_video_frames(self.config.train_dates, self.config.train_subjects, 'train') 
       self.__have_val_set_parsed = self.create_video_frames(self.config.val_dates, self.config.val_subjects, 'validation')
