@@ -70,7 +70,7 @@ def evaluate_model(config, predictions, true_labels, th, filename = 'per_chunk')
 
   # Save to CSV
   results_df.to_csv(f'{config.model_name}_{filename}.csv', index=False)
-  print(f'Results saved to {config.model_name}.csv')
+  print(f'Results saved to {config.model_name}_{filename}.csv')
   return results_df
 
 def evaluate_per_chunk(config, model, x_test, y_test, show = True):
@@ -135,4 +135,6 @@ def eval_accumulated(config, model, x_test_per_category, num_of_chunks_to_aggreg
   y_pred_reduced = np.array(y_pred_reduced)
   generate_confusion_matrix_image(y_pred_reduced, y_true, threshold, show=False, save_path = 'confusion_matrix_agg.png')
   plot_nice_roc_curve(y_true, y_pred_reduced, show=True, save_path = 'roc_curve_agg.png')
+  print('Accumulated metrics:')
+  print(results_df_a)
   return results_df_a
