@@ -15,12 +15,12 @@ from utils.utils import save_dataset_x, save_dataset, load_dataset_x, load_datas
 
 def get_or_create_test_dataset(config, args, need_to_save):
   '''
-  Creates or loads train, validation and test datasets
-  Datasets are created from videos files by creating arrays od 3d tensors (X x Y x Temporal chunk)
+  Creates or loads test dataset
+  Dataset is created from videos files by creating arrays od 3d tensors (X x Y x Temporal chunk)
   '''
   prep = Preprocessing(config, verbose = config.verbose)
   if not args.read_stored_dataset:
-    prep.create_data_set() #videos to frames for train, validation and test sets
+    prep.create_test_data_set() #videos to frames for train, validation and test sets
     x_test, y_test, x_test_per_category = prep.prepare_test_data()
     if need_to_save:
       save_dataset_x(x_test_per_category, file_name = args.test_set_per_category_file)
@@ -31,7 +31,8 @@ def get_or_create_test_dataset(config, args, need_to_save):
     visualize_speckles(x_test, save_path = 'speckles_sample.png', please_also_show = False)
   return x_test, y_test, x_test_per_category
 
-def preprocess_and_load_model(args):
+
+def main(args):
   config = Configuration_Gen(verbose = True)
   config.split_num = args.split_num
   if config.be_consistent:
@@ -39,11 +40,6 @@ def preprocess_and_load_model(args):
   x_test, y_test, x_test_per_category = get_or_create_test_dataset(config, args, need_to_save = True) 
   model = load_model(config) 
   res_df = evaluate_per_chunk(config, model, x_test, y_test)
-  return model, x_test_per_category, x_test, y_test, config, res_df
-
-
-def main(args):
-  model, x_test_per_category, x_test, y_test, config, res_df = preprocess_and_load_model(args)
   ref_df_a = eval_accumulated(config, model, x_test_per_category, num_of_chunks_to_aggregate = args.num_of_chunks_to_aggregate)
 
 
