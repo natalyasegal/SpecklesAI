@@ -1,5 +1,4 @@
 import argparse
-import numpy as np
 import sys
 import os
 # Append the directory containing split.py to the path
@@ -7,9 +6,9 @@ sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 from config.config import Configuration, Configuration_Gen
 from preprocessing.preprocessing import Preprocessing
 from evaluation.eval import evaluate_per_chunk, eval_accumulated
-from models.model_speech_convlstm_tf import train_model, load_model, play_consistent
+from models.model_speech_convlstm_tf import load_model, play_consistent
 from visualization.visualization import visualize_speckles
-from utils.utils import save_dataset_x, save_dataset, load_dataset_x, load_dataset
+from utils.utils import save_dataset_x, load_dataset_x
 
 ''' Place the trained model in predefined directory and run on test set to inference and evaluate'''
 
