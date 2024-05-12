@@ -13,15 +13,15 @@ def main(args):
   if config.be_consistent:
     play_consistent(seed_for_init = config.seed_for_init, random_seed = args.random_seed)
   prep = Preprocessing(config, verbose = config.verbose)
-  for i in config.splits:
-    config.split_num = i
+  for i in range(len(config.sample_splits)):
+    config.split_num = i+1
     prep.create_data_set() #videos to frames for train, validation and test sets
     x_train, y_train, x_val, y_val = prep.prepare_train_and_validation_data(need_to_shuffle_within_category = args.shuffle_train_val_within_categories)
     x_test, y_test, x_test_per_category = prep.prepare_test_data()
     
-    save_dataset(x_train, y_train, file_name = args.train_set_file)
-    save_dataset(x_val, y_val, file_name = args.validation_set_file)
-    save_dataset_x(x_test_per_category, file_name = args.test_set_per_category_file) 
+    save_dataset(x_train, y_train, file_name = f'{args.train_set_file}_{str(config.split_num)}')
+    save_dataset(x_val, y_val, file_name = f'{args.validation_set_file}_{str(config.split_num)}')
+    save_dataset_x(x_test_per_category, file_name = f'{args.test_set_per_category_file}_{str(config.split_num)}') 
 
 
 if __name__ == '__main__':
