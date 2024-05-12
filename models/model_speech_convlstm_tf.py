@@ -1,5 +1,6 @@
 import numpy as np
 import random
+import os
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import BatchNormalization, ConvLSTM2D, Dropout, Flatten, Dense
@@ -13,6 +14,10 @@ def set_seed(seed_for_init = 1, random_seed = 2):
     random.seed(random_seed)
     
     ''' specific for Tensorflow: '''
+
+    # Ensure deterministic operations
+    os.environ['TF_DETERMINISTIC_OPS'] = '1'
+    
     tf.random.set_seed(seed_for_init)  # Set seed for TensorFlow operations to ensure reproducibility
     
 def init_framework():
