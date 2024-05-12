@@ -35,7 +35,7 @@ def main(args):
   config = Configuration_Gen(verbose = True)
   config.split_num = args.split_num
   if config.be_consistent:
-    play_consistent(seed_for_init = config.seed_for_init, random_seed = args.random_seed)
+    set_seed(seed_for_init = config.seed_for_init, random_seed = args.random_seed)
   x_test, y_test, x_test_per_category = get_or_create_test_dataset(config, args, need_to_save = True) 
   model = load_model(config) 
   res_df = evaluate_per_chunk(config, model, x_test, y_test)
