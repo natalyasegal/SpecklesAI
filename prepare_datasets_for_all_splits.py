@@ -2,6 +2,7 @@ import argparse
 import sys
 import os
 import numpy as np
+import random
 # Append the directory containing split.py to the path
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 from config.config import Configuration, Configuration_Gen
