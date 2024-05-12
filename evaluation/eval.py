@@ -52,9 +52,10 @@ def evaluate_model(config, predictions, true_labels, th, filename = 'per_chunk')
     f1 = f1_score(true_labels, predictions > th, average='macro')
     kappa = cohen_kappa_score(true_labels, predictions> th)
 
+    model_name = f'{config.base_model_name}_split_{config.split_num}'
     # Create DataFrame
     data = {
-              'Model Name': [config.model_name],
+              'Model Name': [model_name],
               'AUC': [auc],
               'Accuracy': [accuracy],
               'F1 Score': [f1],
@@ -63,7 +64,7 @@ def evaluate_model(config, predictions, true_labels, th, filename = 'per_chunk')
     }
   else:
     data = {
-              'Model Name': [config.model_name],
+              'Model Name': [model_name],
               'AUC': [auc]
     }
   results_df = pd.DataFrame(data)
