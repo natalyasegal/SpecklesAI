@@ -7,6 +7,10 @@ from config.config import Configuration, Configuration_Gen
 from preprocessing.preprocessing import Preprocessing
 from utils.utils import save_dataset_x, save_dataset, load_dataset_x, load_dataset
 
+''' 
+Videos -> np arrayss of chunks of frames
+This part does not require GPU, run it if you prefer to decouple preprocessing from the GPU intensive training
+'''
 
 def main(args):
   config = Configuration_Gen(verbose = True)  
