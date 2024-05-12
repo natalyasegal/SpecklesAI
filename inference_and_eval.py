@@ -32,8 +32,7 @@ def get_or_create_test_dataset(config, args, need_to_save):
 
 
 def main(args):
-  config = Configuration_Gen(verbose = True)
-  config.split_num = args.split_num
+  config = Configuration_Gen(args.split_num, verbose = True)
   if config.be_consistent:
     set_seed(seed_for_init = config.seed_for_init, random_seed = args.random_seed)
   x_test, y_test, x_test_per_category = get_or_create_test_dataset(config, args, need_to_save = True) 
