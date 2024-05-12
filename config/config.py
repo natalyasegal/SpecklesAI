@@ -55,10 +55,10 @@ class Configuration():
       print(f' number_of_classes = {self.number_of_classes}\n binary_lables={self.binary_lables}')
 
 class Configuration_Gen(Configuration):
-  def __init__(self, verbose = True):
+  def __init__(self, split_num, verbose = True):
     super().__init__(verbose)
     self.sample_splits_file_name = 'SpecklesAI/config/config_files/sample_gen_split.yaml'
-    self.split_num = 6
+    self.split_num = split_num
     self.sample_splits = load_yaml(self.sample_splits_file_name)
     print(self.sample_splits)
     train_mix, val_mix, test_mix, model_name = self.sample_splits[self.split_num].values()
