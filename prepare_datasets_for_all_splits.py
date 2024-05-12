@@ -1,6 +1,7 @@
 import argparse
 import sys
 import os
+import numpy as np
 # Append the directory containing split.py to the path
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 from config.config import Configuration, Configuration_Gen
@@ -15,7 +16,8 @@ This part does not require GPU, run it if you prefer to decouple preprocessing f
 def main(args):
   config = Configuration_Gen(verbose = True)  
   if config.be_consistent:
-    set_seed(seed_for_init = config.seed_for_init, random_seed = args.random_seed)
+    np.random.seed( config.seed_for_init)  # Set seed for NumPy operations to ensure reproducibility
+    random.seed(args.random_seed)
   prep = Preprocessing(config, verbose = config.verbose)
   for i in range(len(config.sample_splits)):
     config.split_num = i+1
