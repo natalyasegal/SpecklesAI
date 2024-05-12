@@ -34,11 +34,11 @@ def get_or_create_dataset(config, args, need_to_save):
     visualize_speckles(x_train, save_path = 'speckles_sample.png', please_also_show = False)
   return x_train, y_train, x_val, y_val, x_test, y_test, x_test_per_category
 
-def preprocess_and_train(args):
+def main(args):
   config = Configuration_Gen(verbose = True)
   config.split_num = args.split_num
   if config.be_consistent:
-    play_consistent(seed_for_init = config.seed_for_init, random_seed = args.random_seed)
+    set_seed(seed_for_init = config.seed_for_init, random_seed = args.random_seed)
   x_train, y_train, x_val, y_val, x_test, y_test, x_test_per_category = get_or_create_dataset(config, args, need_to_save = True) 
   model_ex3_10, model_history = train_model(config, 9, 8, 
                                             x_train, y_train, 
@@ -46,11 +46,6 @@ def preprocess_and_train(args):
                                             batch_sz = args.batch_size, n_epochs = args.epochs)
   model = load_model(config) 
   res_df = evaluate_per_chunk(config, model, x_test, y_test)
-  return model, model_history, x_test_per_category, x_test, y_test, x_train, y_train, x_val, y_val, config, res_df
-
-
-def main(args):
-  model, model_history, x_test_per_category, x_test, y_test, x_train, y_train, x_val, y_val, config, res_df = preprocess_and_train(args)
   ref_df_a = eval_accumulated(config, model, x_test_per_category, num_of_chunks_to_aggregate = args.num_of_chunks_to_aggregate)
 
 
