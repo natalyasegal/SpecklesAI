@@ -52,7 +52,7 @@ def train_model(config, sz_conv, sz_dense, x_train, y_train, x_val, y_val, batch
     val_dataset = TensorDataset(torch.tensor(x_val).float(), torch.tensor(y_val).long())
     val_loader = DataLoader(val_dataset, batch_size=batch_sz, shuffle=False)
 
-    model = ConvLSTMModel(config.number_of_classes, config.frame_size_x, config.frame_size_y, sz_conv, sz_dense)
+    model = ConvLSTMModel(config, sz_conv, sz_dense)
     criterion = nn.CrossEntropyLoss() if config.number_of_classes > 2 else nn.BCELoss()
     optimizer = optim.Adam(model.parameters())
 
