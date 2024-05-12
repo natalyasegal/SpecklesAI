@@ -19,9 +19,10 @@ def main(args):
   if config.be_consistent:
     np.random.seed( config.seed_for_init)  # Set seed for NumPy operations to ensure reproducibility
     random.seed(args.random_seed)
-  prep = Preprocessing(config, verbose = config.verbose)
+
   for i in range(len(config.sample_splits)):
     config.split_num = i+1
+    prep = Preprocessing(config, verbose = config.verbose)
     prep.create_data_set() #videos to frames for train, validation and test sets
     x_train, y_train, x_val, y_val = prep.prepare_train_and_validation_data(need_to_shuffle_within_category = args.shuffle_train_val_within_categories)
     x_test, y_test, x_test_per_category = prep.prepare_test_data()
