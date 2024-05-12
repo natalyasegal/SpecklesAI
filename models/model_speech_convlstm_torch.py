@@ -89,3 +89,7 @@ def train_model(config, sz_conv, sz_dense, x_train, y_train, x_val, y_val, batch
 
     model.load_state_dict(torch.load('best_model.pth'))  # Load the best model
     return model
+
+def load_model(config): 
+    return tf.keras.models.load_model(config.models_path)
+    
