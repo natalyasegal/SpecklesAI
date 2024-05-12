@@ -60,9 +60,12 @@ class Configuration_Gen(Configuration):
     self.sample_splits_file_name = 'SpecklesAI/config/config_files/sample_gen_split.yaml'
     self.split_num = split_num
     self.sample_splits = load_yaml(self.sample_splits_file_name)
-    print(self.sample_splits)
+    if self.verbose:
+          print("Splits list:")
+          print(self.sample_splits)
     train_mix, val_mix, test_mix, model_name = self.sample_splits[self.split_num].values()
-    print(f'{train_mix}, {val_mix}, {test_mix}, {model_name}')
+    if self.verbose:       
+          print(f'The chosen split number is {self.split_num}, train mix is {train_mix}, validation: {val_mix}, test: {test_mix}, {model_name}')
     self.model_name = model_name
     self.set_split_by_subjects(train_mix, val_mix, test_mix)
 
