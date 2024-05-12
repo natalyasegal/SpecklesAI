@@ -15,7 +15,7 @@ This part does not require GPU, run it if you prefer to decouple preprocessing f
 def main(args):
   config = Configuration_Gen(verbose = True)  
   if config.be_consistent:
-    play_consistent(seed_for_init = config.seed_for_init, random_seed = args.random_seed)
+    set_seed(seed_for_init = config.seed_for_init, random_seed = args.random_seed)
   prep = Preprocessing(config, verbose = config.verbose)
   for i in range(len(config.sample_splits)):
     config.split_num = i+1
