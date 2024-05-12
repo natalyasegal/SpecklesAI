@@ -23,9 +23,9 @@ def main(args):
     x_train, y_train, x_val, y_val = prep.prepare_train_and_validation_data(need_to_shuffle_within_category = args.shuffle_train_val_within_categories)
     x_test, y_test, x_test_per_category = prep.prepare_test_data()
     
-    save_dataset(x_train, y_train, file_name = f'{args.train_set_file}_{str(config.split_num)}')
-    save_dataset(x_val, y_val, file_name = f'{args.validation_set_file}_{str(config.split_num)}')
-    save_dataset_x(x_test_per_category, file_name = f'{args.test_set_per_category_file}_{str(config.split_num)}') 
+    save_dataset(x_train, y_train, file_name = f'{args.train_set_file}_{str(config.split_num)}.npy')
+    save_dataset(x_val, y_val, file_name = f'{args.validation_set_file}_{str(config.split_num)}.npy')
+    save_dataset_x(x_test_per_category, file_name = f'{args.test_set_per_category_file}_{str(config.split_num)}.npy') 
 
 
 if __name__ == '__main__':
@@ -41,15 +41,15 @@ if __name__ == '__main__':
     parser.add_argument('--train_set_file',
                         help='train parsed data arranges in chanks, chank size is designated in config.py',
                         type=str,
-                        default='train_set.npy')
+                        default='train_set_')
     parser.add_argument('--validation_set_file',
                         help='validation parsed data arranges in chanks, chank size is designated in config.py',
                         type=str,
-                        default='validation_set.npy')
+                        default='validation_set_')
     parser.add_argument('--test_set_per_category_file',
                         help='test parsed data arranges in chanks, given by category, chank size is designated in config.py',
                         type=str,
-                        default='test_per_category.npy')  
+                        default='test_per_category_')  
    
     args = parser.parse_args()
     main(args)
