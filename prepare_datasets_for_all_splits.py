@@ -15,13 +15,13 @@ This part does not require GPU, run it if you prefer to decouple preprocessing f
 '''
 
 def main(args):
-  config = Configuration_Gen(verbose = True)  
-  if config.be_consistent:
-    np.random.seed( config.seed_for_init)  # Set seed for NumPy operations to ensure reproducibility
-    random.seed(args.random_seed)
-
-  for i in range(len(config.sample_splits)):
-    config.split_num = i+1
+  config = Configuration_Gen(1, verbose = True)  #just to parse the splits file
+  number_of_splits = len(config.sample_splits)
+  for i in range(number_of_splits):
+    config = Configuration_Gen(i+1, verbose = True)  
+    if config.be_consistent:
+      np.random.seed( config.seed_for_init)  # Set seed for NumPy operations to ensure reproducibility
+      random.seed(args.random_seed)
     prep = Preprocessing(config, verbose = config.verbose)
     prep.create_data_set() #videos to frames for train, validation and test sets
     x_train, y_train, x_val, y_val = prep.prepare_train_and_validation_data(need_to_shuffle_within_category = args.shuffle_train_val_within_categories)
