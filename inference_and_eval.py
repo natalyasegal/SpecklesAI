@@ -6,7 +6,7 @@ sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 from config.config import Configuration, Configuration_Gen
 from preprocessing.preprocessing import Preprocessing
 from evaluation.eval import evaluate_per_chunk, eval_accumulated
-from models.model_speech_convlstm_tf import load_model, play_consistent
+from models.model_speech_convlstm_tf import load_model, set_seed
 from visualization.visualization import visualize_speckles
 from utils.utils import save_dataset_x, load_dataset_x
 
