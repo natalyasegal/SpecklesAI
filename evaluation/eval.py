@@ -49,7 +49,7 @@ def evaluate_model(config, predictions, true_labels, th, filename = 'per_chunk')
   auc = roc_auc_score(true_labels, predictions, multi_class='ovo', average='macro')
   if th is not None:
     accuracy = accuracy_score(true_labels, predictions > th)
-    f1 = f1_score(true_labels, predictions > th, average='macro')
+    f1 = f1_score(true_labels, predictions > th) #use a default binary averaging option
     kappa = cohen_kappa_score(true_labels, predictions> th)
 
     model_name = f'{config.model_name}_split_{config.split_num}'
