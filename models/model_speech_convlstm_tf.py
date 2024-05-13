@@ -11,7 +11,7 @@ from tensorflow.keras.callbacks import ModelCheckpoint
 
 '''The model works with video chunks of recorded speckle pappern'''
 
-def set_seed(seed_for_init = 1, random_seed):
+def set_seed(seed_for_init = 1, random_seed = 9):
     np.random.seed(seed_for_init)  # Set seed for NumPy operations to ensure reproducibility
     random.seed(random_seed)
     
