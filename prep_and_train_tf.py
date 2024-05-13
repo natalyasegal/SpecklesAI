@@ -40,7 +40,7 @@ if __name__ == '__main__':
     parser.add_argument('--random_seed',
                         help='seed for python random, used in shafling, does not affect division into train, validation and test',
                         type=int,
-                        default=2)
+                        default=9)
     parser.add_argument('--split_num',
                         help='If provided, overwrites the parameter in config.py with the same name, given the split number, the actual split will be read from a configuation file, you provide',
                         type=int,
