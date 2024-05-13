@@ -60,7 +60,7 @@ def define_model(config, sz_conv, sz_dense):
 
     return model
 
-def save_accuracy_plot(history, save_path = 'accuracy.png', show = False):
+def save_accuracy_plot(config, history, save_path = 'accuracy.png', show = False):
     plt.plot(history.history['accuracy'])
     plt.plot(history.history['val_accuracy'])
     plt.title('model accuracy')
@@ -77,7 +77,7 @@ def save_accuracy_plot(history, save_path = 'accuracy.png', show = False):
     acc_df.to_csv(f'{config.model_name}_accuracy.csv', index=False)
     print(f'Results saved to {config.model_name}_accuracy.csv')
 
-def save_loss_plot(history, save_path = 'accuracy.png', show = False):
+def save_loss_plot(config, history, save_path = 'accuracy.png', show = False):
     plt.plot(history.history['loss'])
     plt.plot(history.history['val_loss'])
     plt.title('model loss')
@@ -112,8 +112,8 @@ def train_model(config, sz_conv, sz_dense, x_train, y_train, x_val, y_val, batch
         callbacks=[model_checkpoint_callback]
     )
     
-    save_accuracy_plot(model_history, save_path = 'accuracy.png', show = False)
-    save_loss_plot(history, save_path = 'accuracy.png', show = False)
+    save_accuracy_plot(config, model_history, save_path = 'accuracy.png', show = False)
+    save_loss_plot(config, model_history, save_path = 'accuracy.png', show = False)
     
     return model, model_history
 
