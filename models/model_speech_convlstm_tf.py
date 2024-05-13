@@ -1,15 +1,17 @@
 import numpy as np
 import random
 import os
+from matplotlib import pyplot as plt
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import BatchNormalization, ConvLSTM2D, Dropout, Flatten, Dense
 from tensorflow.keras.constraints import max_norm
 from tensorflow.keras.callbacks import ModelCheckpoint
 
+
 '''The model works with video chunks of recorded speckle pappern'''
 
-def set_seed(seed_for_init = 1, random_seed = 2):
+def set_seed(seed_for_init = 1, random_seed):
     np.random.seed(seed_for_init)  # Set seed for NumPy operations to ensure reproducibility
     random.seed(random_seed)
     
@@ -19,18 +21,7 @@ def set_seed(seed_for_init = 1, random_seed = 2):
     os.environ['TF_DETERMINISTIC_OPS'] = '1'
     
     tf.random.set_seed(seed_for_init)  # Set seed for TensorFlow operations to ensure reproducibility
-    
-def init_framework():
-    gpus = tf.config.experimental.list_physical_devices('GPU')
-    if gpus:
-        total_memory = tf.config.experimental.get_device_details(gpus[0])['memory']
-        limit = int(total_memory * 0.99) # 99% of GPU memory
-        try:
-            tf.config.experimental.set_virtual_device_configuration(gpus[0],
-                [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=limit)]
-            )
-        except RuntimeError as e:
-            print(e)
+
 
 def define_model(config, sz_conv, sz_dense):
     """Defines a ConvLSTM2D model for classification tasks."""
@@ -68,6 +59,23 @@ def define_model(config, sz_conv, sz_dense):
 
     return model
 
+def save_accuracy_plot(history, save_path = 'accuracy.png', show = False):
+    plt.plot(history.history['accuracy'])
+    plt.plot(history.history['val_accuracy'])
+    plt.title('model accuracy')
+    plt.ylabel('accuracy')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'val'], loc='upper left')
+    plt.savefig(save_path, bbox_inches='tight')
+    if show:
+        plt.show()
+    data = { 'accuracy': history.history['accuracy'],
+              'val_accuracy': history.history['val_accuracy']
+           }
+    acc_df = pd.DataFrame(data)
+    acc_df.to_csv(f'{config.model_name}_accuracy.csv', index=False)
+    print(f'Results saved to {config.model_name}_accuracy.csv')
+  
 def train_model(config, sz_conv, sz_dense, x_train, y_train, x_val, y_val, batch_sz, n_epochs):
     """Trains the model and saves the best model based on validation accuracy."""
     model_checkpoint_callback = ModelCheckpoint(
@@ -86,7 +94,8 @@ def train_model(config, sz_conv, sz_dense, x_train, y_train, x_val, y_val, batch
         epochs=n_epochs,
         callbacks=[model_checkpoint_callback]
     )
-
+    
+    save_accuracy_plot(model_history, save_path = 'accuracy.png', show = False)
     return model, model_history
 
 def load_model(config): 
