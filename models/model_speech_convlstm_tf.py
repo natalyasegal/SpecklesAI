@@ -75,6 +75,22 @@ def save_accuracy_plot(history, save_path = 'accuracy.png', show = False):
     acc_df = pd.DataFrame(data)
     acc_df.to_csv(f'{config.model_name}_accuracy.csv', index=False)
     print(f'Results saved to {config.model_name}_accuracy.csv')
+
+def save_loss_plot(history, save_path = 'accuracy.png', show = False):
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.title('model loss')
+    plt.ylabel('loss')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'val'], loc='upper left')
+    if show:
+        plt.show()
+    data = { 'loss': history.history['loss'],
+              'val_loss': history.history['val_loss']
+           }
+    loss_df = pd.DataFrame(data)
+    loss_df.to_csv(f'{config.model_name}_loss.csv', index=False)
+    print(f'Results saved to {config.model_name}_loss.csv')
   
 def train_model(config, sz_conv, sz_dense, x_train, y_train, x_val, y_val, batch_sz, n_epochs):
     """Trains the model and saves the best model based on validation accuracy."""
@@ -96,6 +112,8 @@ def train_model(config, sz_conv, sz_dense, x_train, y_train, x_val, y_val, batch
     )
     
     save_accuracy_plot(model_history, save_path = 'accuracy.png', show = False)
+    save_loss_plot(history, save_path = 'accuracy.png', show = False)
+    
     return model, model_history
 
 def load_model(config): 
