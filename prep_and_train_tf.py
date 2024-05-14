@@ -14,7 +14,7 @@ def main(args):
   if config.be_consistent:
     set_seed(seed_for_init = config.seed_for_init, random_seed = args.random_seed)
   x_train, y_train, x_val, y_val, x_test, y_test, x_test_per_category = get_or_create_dataset(config, args, need_to_save = True) 
-  model_ex3_10, model_history = train_model(config, 9, 8, 
+  model_ex3_10, model_history = train_model(config, args.sz_conv, args.sz_dense, 
                                             x_train, y_train, 
                                             x_val, y_val,                                        
                                             batch_sz = args.batch_size, n_epochs = args.epochs)
@@ -45,6 +45,15 @@ if __name__ == '__main__':
                         help='If provided, overwrites the parameter in config.py with the same name, given the split number, the actual split will be read from a configuation file, you provide',
                         type=int,
                         default=6)
+
+    parser.add_argument('--sz_conv',
+                        help='If provided, overwrites the size of the convLSTM output',
+                        type=int,
+                        default=9)
+    parser.add_argument('--sz_dense',
+                        help='If provided, overwrites the size of the dense layer output',
+                        type=int,
+                        default=8)
 
     parser.add_argument('--read_stored_dataset', 
                         action='store_true',
