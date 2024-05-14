@@ -1,4 +1,6 @@
 Code for a scientific paper: "Remote Detection of Human Brain Reaction to Speech by AI Speckle Pattern Analysis"
+
+
 In order to recreate per subjects results:
 1. Clone the repository
 3. Run: !python -u SpecklesAI/prepare_datasets_for_all_subjects_for_per_subjects_experiment.py --random_seed 9  --train_set_file train_set__per_subj_ --validation_set_file validation_set__per_subj_ --test_set_per_category_file test_per_category__per_subj_
