@@ -1,5 +1,12 @@
 Code for a scientific paper: "Remote Detection of Human Brain Reaction to Speech by AI Speckle Pattern Analysis"
 
+1. Clone the repository
+2. Create your configuration file and copy it in place of the SpecklesAI/config/config_files
+/subjects_and_dates.yaml, to recreate the results in paper, ask the authours for our configuration file
+3. Create train, validation and test datasets, see example 2 for instructions on how to create those datasets for all the 6 gen splits from the paper.
+4. Train and evaluate the model. See example 3 on how to train and evaluate on the already prepared datasets
+   
+
 Example 1:
 
 python -u SpecklesAI/prep_and_train.py --batch_size 1000 --epochs 10 --num_of_chunks_to_aggregate 25
