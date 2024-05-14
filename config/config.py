@@ -98,9 +98,9 @@ class Configuration_PerSubjExperiment(Configuration):
     subj_cofig = load_yaml(self.sample_splits_file_name)
     self.val_limit = subj_cofig[split_num].val_limit #this recreates the division into train and validation sets per subject in the paper, feel free to use any other reasonable split in your experiments
     #2000 or 500 takes 500 to validation either from the beginning or from the end, for 1st subj it is 250 because of the difference in fps, subj 1 with 500fps and subj 2-6 with 1000 fps
-    self.set_split_by_subjects(self.split_num)
+    self.set_split_for_per_subj_experiment(self.split_num)
 
-  def set_split_by_subjects(self, subj_num):
+  def set_split_for_per_subj_experiment(self, subj_num):
     ls = Logical_Split(self.subjects_and_dates_config_file_name, verbose = self.verbose)
     train_dates, train_subjects = ls.get_dates_and_subjects([subj_num], Logical_Split.Sample_time.ONLY_MORNING)
     val_dates = [] #will be set later
