@@ -92,6 +92,7 @@ class Configuration_PerSubjExperiment(Configuration):
     if self.verbose:       
           print(f'The chosen split number (=subj number) is {self.split_num}')
     self.model_name = 'Subj_experiment_model'
+    self.limit_for_val = 250
     self.set_split_by_subjects(self.split_num)
 
   def set_split_by_subjects(self, subj_num):
