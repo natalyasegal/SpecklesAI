@@ -84,6 +84,7 @@ def save_loss_plot(config, history, save_path = 'loss.png', show = False):
     plt.ylabel('loss')
     plt.xlabel('epoch')
     plt.legend(['train', 'val'], loc='upper left')
+    plt.savefig(save_path, bbox_inches='tight')
     if show:
         plt.show()
     data = { 'loss': history.history['loss'],
