@@ -18,7 +18,7 @@ Prepares datasets for per subject experiments
 def prepare_train_and_validation_data_per_subj_experiment(prep, need_to_shuffle_within_category):
     '''train and validation set preprocessing'''
     #assert(prep.__have_train_set_parsed)
-    x_train_per_category = prep.prep_frames_lists(self.config.train_dates, self.config.train_subjects, 'train')
+    x_train_per_category = prep.prep_frames_lists(prep.config.train_dates, prep.config.train_subjects, 'train')
    
     """ Use part of the morning sesuence of chunks for validation """
     prep.log(f'prep.config.limit_for_val = {prep.config.val_limit}')
