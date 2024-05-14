@@ -22,8 +22,8 @@ def prepare_train_and_validation_data_per_subj_experiment(prep, need_to_shuffle_
    
     """ Use part of the morning sesuence of chunks for validation """
     prep.log(f'prep.config.limit_for_val = {prep.config.val_limit}')
-    x_val_per_category = x_train_per_category[:,0:prep.config.val_limit, ::]
-    x_train_per_category = x_train_per_category[:,prep.config.val_limit:, ::]
+    x_val_per_category = x_train_per_category[ :, 0:prep.config.val_limit ]
+    x_train_per_category = x_train_per_category[ :, prep.config.val_limit: ]
   
     x_train, y_train = prep.limit_rearrange_and_flatten(x_train_per_category, need_to_shuffle_within_category)
     prep.log(f'x_train shape is {np.shape(x_train)}, y_train shape is {np.shape(y_train)}')
