@@ -96,7 +96,7 @@ class Configuration_PerSubjExperiment(Configuration):
           print(f'The chosen split number (=subj number) is {self.split_num}')
     self.model_name = 'Subj_experiment_model'
     subj_cofig = load_yaml(self.subj_cofig_file_name)
-    self.val_limit = subj_cofig[split_num].val_limit #this recreates the division into train and validation sets per subject in the paper, feel free to use any other reasonable split in your experiments
+    self.val_limit = subj_cofig[split_num].values() #this recreates the division into train and validation sets per subject in the paper, feel free to use any other reasonable split in your experiments
     #2000 or 500 takes 500 to validation either from the beginning or from the end, for 1st subj it is 250 because of the difference in fps, subj 1 with 500fps and subj 2-6 with 1000 fps
     self.set_split_for_per_subj_experiment(self.split_num)
 
