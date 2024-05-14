@@ -92,7 +92,7 @@ class Configuration_PerSubjExperiment(Configuration):
     if self.verbose:       
           print(f'The chosen split number (=subj number) is {self.split_num}')
     self.model_name = 'Subj_experiment_model'
-    self.limit_for_val = 250
+    self.limit_for_val = 2000 if split_num > 1 else 250 #basause of the difference in fps, subj 1 with 500fps and subj 2-6 with 1000 fps
     self.set_split_by_subjects(self.split_num)
 
   def set_split_by_subjects(self, subj_num):
