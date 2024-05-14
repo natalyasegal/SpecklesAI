@@ -85,14 +85,19 @@ class Configuration_Gen(Configuration):
     print(f' train {train_dates} {train_subjects}\n val {val_dates} {val_subjects}\n test {test_dates} {test_subjects}')
     self.set_split(train_dates, train_subjects, val_dates , val_subjects, test_dates, test_subjects)
 
+
 class Configuration_PerSubjExperiment(Configuration):
+      
   def __init__(self, split_num, verbose = True):
     super().__init__(verbose)
+    self.subj_cofig_file_name = 'SpecklesAI/config/config_files/per_subj_experiment_val_split.yaml'
     self.split_num = split_num #in this experiment same as subject number
     if self.verbose:       
           print(f'The chosen split number (=subj number) is {self.split_num}')
     self.model_name = 'Subj_experiment_model'
-    self.limit_for_val = 2000 if split_num > 1 else 250 #basause of the difference in fps, subj 1 with 500fps and subj 2-6 with 1000 fps
+    subj_cofig = load_yaml(self.sample_splits_file_name)
+    self.val_limit = subj_cofig[split_num].val_limit #this recreates the division into train and validation sets per subject in the paper, feel free to use any other reasonable split in your experiments
+    #2000 or 500 takes 500 to validation either from the beginning or from the end, for 1st subj it is 250 because of the difference in fps, subj 1 with 500fps and subj 2-6 with 1000 fps
     self.set_split_by_subjects(self.split_num)
 
   def set_split_by_subjects(self, subj_num):
