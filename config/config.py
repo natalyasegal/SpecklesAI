@@ -53,7 +53,15 @@ class Configuration():
     self.binary_lables = binarize_lables(self.lables_categories)
     if self.verbose:
       print(f' number_of_classes = {self.number_of_classes}\n binary_lables={self.binary_lables}')
-
+  
+  def set_split(self, train_dates, train_subjects, val_dates, val_subjects, test_dates, test_subjects):
+    self.train_dates = train_dates
+    self.train_subjects = train_subjects
+    self.val_dates = val_dates
+    self.val_subjects = val_subjects
+    self.test_dates = test_dates
+    self.test_subjects = test_subjects
+        
 class Configuration_Gen(Configuration):
   def __init__(self, split_num, verbose = True):
     super().__init__(verbose)
@@ -69,14 +77,6 @@ class Configuration_Gen(Configuration):
     self.model_name = model_name
     self.set_split_by_subjects(train_mix, val_mix, test_mix)
 
-  def set_split(self, train_dates, train_subjects, val_dates, val_subjects, test_dates, test_subjects):
-    self.train_dates = train_dates
-    self.train_subjects = train_subjects
-    self.val_dates = val_dates
-    self.val_subjects = val_subjects
-    self.test_dates = test_dates
-    self.test_subjects = test_subjects
-
   def set_split_by_subjects(self, train_mix, val_mix, test_mix):
     ls = Logical_Split(self.subjects_and_dates_config_file_name, verbose = self.verbose)
     train_dates, train_subjects = ls.get_dates_and_subjects(train_mix, Logical_Split.Sample_time.MORNING_AND_MID_DAY)
@@ -84,3 +84,22 @@ class Configuration_Gen(Configuration):
     test_dates, test_subjects = ls.get_dates_and_subjects(test_mix, Logical_Split.Sample_time.MORNING_AND_MID_DAY)
     print(f' train {train_dates} {train_subjects}\n val {val_dates} {val_subjects}\n test {test_dates} {test_subjects}')
     self.set_split(train_dates, train_subjects, val_dates , val_subjects, test_dates, test_subjects)
+
+class Configuration_PerSubjExperiment(Configuration):
+  def __init__(self, split_num, verbose = True):
+    super().__init__(verbose)
+    self.split_num = split_num #in this experiment same as subject number
+    if self.verbose:       
+          print(f'The chosen split number (=subj number) is {self.split_num}')
+    self.model_name = 'Subj_experiment_model'
+    self.set_split_by_subjects(self.split_num)
+
+  def set_split_by_subjects(self, subj_num):
+    ls = Logical_Split(self.subjects_and_dates_config_file_name, verbose = self.verbose)
+    train_dates, train_subjects = ls.get_dates_and_subjects([subj_num], Logical_Split.Sample_time.ONLY_MORNING)
+    val_dates = [] #will be set later
+    val_subjects = [subj_num] 
+    test_dates, test_subjects = ls.get_dates_and_subjects([subj_num], Logical_Split.Sample_time.ONLY_MID_DAY)
+    print(f' train {train_dates} {train_subjects}\n val {val_dates} {val_subjects}\n test {test_dates} {test_subjects}')
+    self.set_split(train_dates, train_subjects, val_dates , val_subjects, test_dates, test_subjects)
+
