@@ -57,7 +57,7 @@ def create_sanity_test_set(args):
     random_seed = 9 
     subj_num = 6
     config = Configuration_PerSubjExperiment(subj_num, verbose = True)  
-    config.set_split([], [], [] , [], ['08012024_day1_1_forehead'], config.test_subjects)
+    config.set_split([], [], [] , [], ['08012024_day1_forehead', '08012024_day1_1_forehead'], config.test_subjects)
     print(f' test {config.test_dates} {config.test_subjects}')
 
     if config.be_consistent:
