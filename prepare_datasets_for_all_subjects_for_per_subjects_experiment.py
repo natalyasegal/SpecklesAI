@@ -57,7 +57,7 @@ def create_sanity_test_set(args):
     random_seed = 9 
     subj_num = 6
     config = Configuration_PerSubjExperiment(subj_num, verbose = True)  
-    config.set_split([], [], [] , [], args.test_set, config.test_subjects)
+    config.set_split([], [], [] , [], args.test_set_dirs, config.test_subjects)
     print(f' test {config.test_dates} {config.test_subjects}')
 
     if config.be_consistent:
@@ -103,9 +103,10 @@ if __name__ == '__main__':
                         type=str,
                         default='test_per_category_') 
 
-    parser.add_argument('--test_set',
+    parser.add_argument('--test_set_dirs',
                         help='a list of directories containing video files for the test set',
-                        type=list,
+                        nargs='+',
+                        type=str,
                         default=['08012024_day1_forehead', '08012024_day1_1_forehead']) 
     
    
