@@ -107,7 +107,7 @@ if __name__ == '__main__':
                         help='a list of directories containing video files for the test set',
                         type=list,
                         default=['08012024_day1_forehead', '08012024_day1_1_forehead']) 
-    test_set
+    
    
     args = parser.parse_args()
     main(args)
