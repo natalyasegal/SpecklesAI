@@ -56,12 +56,9 @@ def create_per_subj_datasets(args):
 def create_sanity_test_set(args):
     random_seed = 9 
     subj_num = 6
-    test_dates = ['08012024_day1_1_forehead']
-    test_subjects = [subj_num]
-    print(f' test {test_dates} {test_subjects}')
-
     config = Configuration_PerSubjExperiment(subj_num, verbose = True)  
-    config.set_split([], [], [] , [], test_dates, test_subjects)
+    config.set_split([], [], [] , [], ['08012024_day1_1_forehead'], config.test_subjects)
+    print(f' test {config.test_dates} {config.test_subjects}')
 
     if config.be_consistent:
       np.random.seed(config.seed_for_init)  # Set seed for NumPy operations to ensure reproducibility
