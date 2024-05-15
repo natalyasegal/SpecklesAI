@@ -36,7 +36,7 @@ def prepare_train_and_validation_data_per_subj_experiment(prep, need_to_shuffle_
     x_val, y_val = unison_shuffled_copies(x_val, y_val)
     return x_train, y_train, x_val, y_val
   
-def main(args):
+def create_per_subj_datasets(args):
   number_of_subj = 6
   for i in range(number_of_subj):
     config = Configuration_PerSubjExperiment(i+1, verbose = True)  
@@ -53,6 +53,31 @@ def main(args):
     save_dataset_x(x_test_per_category, file_name = f'{args.test_set_per_category_file}_{str(config.split_num)}.npy') 
 
 
+def create_sanity_test_set(args):
+    random_seed = 9 
+    subj_num = 6
+    test_dates = ['08012024_day1_1_forehead']
+    test_subjects = [subj_num]
+    print(f' test {test_dates} {test_subjects}')
+
+    config = Configuration_PerSubjExperiment(subj_num, verbose = True)  
+    config.set_split([], [], [] , [], test_dates, test_subjects)
+
+    if config.be_consistent:
+      np.random.seed(config.seed_for_init)  # Set seed for NumPy operations to ensure reproducibility
+      random.seed(random_seed)
+    prep = Preprocessing(config, verbose = config.verbose)
+    prep.create_data_set() #videos to frames for train, validation and test sets
+    x_test, y_test, x_test_per_category = prep.prepare_test_data()
+    save_dataset_x(x_test_per_category, file_name = f'{args.test_set_per_category_file}_{str(config.split_num)}.npy') 
+
+def main(args):
+    if args.create_only_sanity_test_set:
+        create_sanity_test_set(args)
+    else:
+        create_per_subj_datasets(args)
+        
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser('')
 
@@ -63,6 +88,11 @@ if __name__ == '__main__':
     parser.add_argument('--shuffle_train_val_within_categories', 
                         action='store_true',
                         help='If specified, suffles samples in train and validation sets within categories, it does not affect the train/val/test split here.')
+
+    parser.add_argument('--create_only_sanity_test_set', 
+                        action='store_true',
+                        help='If specified, create only a tests set for forehead sanity test for subj 6.')
+
     parser.add_argument('--train_set_file',
                         help='train parsed data arranges in chanks, chank size is designated in config.py',
                         type=str,
