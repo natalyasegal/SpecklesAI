@@ -57,7 +57,7 @@ def create_sanity_test_set(args):
     random_seed = 9 
     subj_num = 6
     config = Configuration_PerSubjExperiment(subj_num, verbose = True)  
-    config.set_split([], [], [] , [], ['08012024_day1_forehead', '08012024_day1_1_forehead'], config.test_subjects)
+    config.set_split([], [], [] , [], args.test_set, config.test_subjects)
     print(f' test {config.test_dates} {config.test_subjects}')
 
     if config.be_consistent:
@@ -101,7 +101,13 @@ if __name__ == '__main__':
     parser.add_argument('--test_set_per_category_file',
                         help='test parsed data arranges in chanks, given by category, chank size is designated in config.py',
                         type=str,
-                        default='test_per_category_')  
+                        default='test_per_category_') 
+
+    parser.add_argument('--test_set',
+                        help='a list of directories containing video files for the test set',
+                        type=list,
+                        default=['08012024_day1_forehead', '08012024_day1_1_forehead']) 
+    test_set
    
     args = parser.parse_args()
     main(args)
