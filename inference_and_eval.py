@@ -3,7 +3,7 @@ import sys
 import os
 # Append the directory containing split.py to the path
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
-from config.config import Configuration, Configuration_Gen
+from config.config import Configuration, Configuration_Gen, Configuration_PerSubjExperiment     
 from preprocessing.preprocessing import Preprocessing
 from evaluation.eval import evaluate_per_chunk, eval_accumulated
 from models.model_speech_convlstm_tf import load_model, set_seed
@@ -32,7 +32,11 @@ def get_or_create_test_dataset(config, args, need_to_save):
 
 
 def main(args):
-  config = Configuration_Gen(args.split_num, verbose = True)
+  if args.use_per_subj_config:
+    config = Configuration_PerSubjExperiment(args.split_num, verbose = True) 
+  else:
+    config = Configuration_Gen(args.split_num, verbose = True)
+    
   if config.be_consistent:
     set_seed(seed_for_init = config.seed_for_init, random_seed = args.random_seed)
   x_test, y_test, x_test_per_category = get_or_create_test_dataset(config, args, need_to_save = True) 
@@ -62,7 +66,12 @@ if __name__ == '__main__':
     parser.add_argument('--test_set_per_category_file',
                         help='test parsed data arranges in chanks, given by category, chank size is designated in config.py',
                         type=str,
-                        default='test_per_category.npy')  
+                        default='test_per_category.npy')
+
+    parser.add_argument('--use_per_subj_config', 
+                        action='store_true',
+                        help='If specified, uses per_subj experiment config option, this affects mostly printouts. Use pre-created datasets with this option.')
+
    
     args = parser.parse_args()
     main(args)
