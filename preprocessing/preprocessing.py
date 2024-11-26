@@ -5,6 +5,7 @@ from tqdm import tqdm
 import glob
 import sys
 import os
+import multiprocessing
 from multiprocessing import Pool
 # Append the directory containing split.py to the path
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
@@ -15,6 +16,16 @@ def unison_shuffled_copies(a, b):
     assert len(a) == len(b)
     p = np.random.permutation(len(a))
     return a[p, ::], b[p]
+
+
+def process_frame_bulk(args):
+    """Process a bulk of frames in one process."""
+    video_path, frames_path, frame_size_x, frame_size_y, frames_bulk = args
+    for frame_id, image in frames_bulk:
+        image = cv2.resize(image, (frame_size_x, frame_size_y))
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        filename = f"{frames_path}/{Path(video_path).stem}_frame_{frame_id}.jpg"
+        cv2.imwrite(filename, image)
 
 class Preprocessing():
   def __init__(self, config, verbose = True):
@@ -81,26 +92,39 @@ class Preprocessing():
 
   '''Video to frames helper function'''
   def __split_video_to_frames(self, video_path, frames_path):
-    # Add multiprocessing here for faster frame processing
-    def process_frame(args):
-        video_path, frame_id, image = args
-        image = cv2.resize(image, (self.config.frame_size_x, self.config.frame_size_y))
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        filename = f"{frames_path}/{Path(video_path).stem}_frame_{frame_id}.jpg"
-        cv2.imwrite(filename, image)
+        vidcap = cv2.VideoCapture(video_path)
+        if not vidcap.isOpened():
+            print(f"Error: Unable to open video {video_path}")
+            return
 
-    vidcap = cv2.VideoCapture(video_path)
-    frames = []
-    frame_id = 0
-    while vidcap.isOpened():
-        success, image = vidcap.read()
-        if not success:
-            break
-        frames.append((video_path, frame_id, image))
-        frame_id += 1
+        # Read all frames into a list
+        frames = []
+        frame_id = 0
+        while True:
+            success, image = vidcap.read()
+            if not success:
+                break
+            frames.append((frame_id, image))
+            frame_id += 1
 
-    with Pool() as pool:
-        pool.map(process_frame, frames)
+        vidcap.release()
+
+        # Split frames into chunks for multiprocessing
+        num_processes = min(10, multiprocessing.cpu_count())  # Limit to 10 processes or CPU count
+        chunk_size = len(frames) // num_processes + (len(frames) % num_processes > 0)
+        frame_chunks = [frames[i:i + chunk_size] for i in range(0, len(frames), chunk_size)]
+
+        # Create arguments for each process
+        args = [
+            (video_path, frames_path, self.config.frame_size_x, self.config.frame_size_y, chunk)
+            for chunk in frame_chunks
+        ]
+
+        # Use multiprocessing Pool with spawn method
+        multiprocessing.set_start_method('spawn', force=True)
+        with multiprocessing.Pool(processes=num_processes) as pool:
+            pool.map(process_frame_bulk, args)
+            
 
   def __split_video_to_frames_1(self, video_path, frames_path):
       vidcap = cv2.VideoCapture(video_path)
