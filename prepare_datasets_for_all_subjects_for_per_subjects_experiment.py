@@ -38,6 +38,7 @@ def prepare_train_and_validation_data_per_subj_experiment(prep, need_to_shuffle_
   
 def create_per_subj_datasets(args):
   number_of_subj = Configuration().get_number_of_subjects()
+  print(f'The nuber of subjects is {number_of_subj}')
   for i in range(number_of_subj):
     config = Configuration_PerSubjExperiment(i+1, verbose = True)  
     if config.be_consistent:
