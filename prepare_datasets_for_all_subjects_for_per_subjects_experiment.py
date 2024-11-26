@@ -5,7 +5,7 @@ import numpy as np
 import random
 # Append the directory containing split.py to the path
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
-from config.config import Configuration_PerSubjExperiment
+from config.config import Configuration_PerSubjExperiment. Configuration
 from preprocessing.preprocessing import Preprocessing, unison_shuffled_copies
 from utils.utils import save_dataset_x, save_dataset, load_dataset_x, load_dataset
 
@@ -37,7 +37,7 @@ def prepare_train_and_validation_data_per_subj_experiment(prep, need_to_shuffle_
     return x_train, y_train, x_val, y_val
   
 def create_per_subj_datasets(args):
-  number_of_subj = 6
+  number_of_subj = Configuration().get_number_of_subjects()
   for i in range(number_of_subj):
     config = Configuration_PerSubjExperiment(i+1, verbose = True)  
     if config.be_consistent:
