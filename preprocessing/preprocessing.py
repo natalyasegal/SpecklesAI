@@ -200,7 +200,7 @@ class Preprocessing():
                       else:
                         x[index] = np.append(x[index], x_sub, axis=0)
       x = np.array(x)
-      self.log(f'shape of the data {np.shape(x)}')
+      self.log(f'shape of the data {x.shape}')
       return x
   
   def limit_rearrange_and_flatten(self, input_data, need_to_shuffle_within_category):
