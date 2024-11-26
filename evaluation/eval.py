@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from sklearn.metrics import roc_auc_score, accuracy_score, f1_score, cohen_kappa_score, roc_curve, confusion_matrix, ConfusionMatrixDisplay
-from plot_metric.functions import BinaryClassification
+#from plot_metric.functions import BinaryClassification
 from matplotlib import pyplot as plt
   
 ''' images and plots'''
@@ -20,13 +20,23 @@ def generate_confusion_matrix_image(y_test_predicted, y_test, threshold, show, s
 
 def plot_nice_roc_curve(y_test, y_test_predicted, show, save_path = 'roc_curve.png'):
   # Visualisation with plot_metric
-  bc = BinaryClassification(y_test.flatten(), y_test_predicted.flatten(), labels=["Class 1", "Class 2"])
-  plt.figure(figsize=(5,5))
-  bc.plot_roc_curve()
+  #bc = BinaryClassification(y_test.flatten(), y_test_predicted.flatten(), labels=["Class 1", "Class 2"])
+  #plt.figure(figsize=(5,5))
+  #bc.plot_roc_curve()
+
+  fpr, tpr, thresholds = roc_curve(y_test, y_test_predicted)
+  plt.figure(figsize=(10, 6))
+  plt.plot(fpr, tpr, color='blue', label=f'AUC-ROC (area = {auc_roc:.2f})')
+  plt.plot([0, 1], [0, 1], color='red', linestyle='--')
+  plt.xlabel('False Positive Rate')
+  plt.ylabel('True Positive Rate')
+  plt.title('Receiver Operating Characteristic (ROC) Curve')
+  plt.legend(loc="lower right")
+  plt.grid()
+
   plt.savefig(save_path, bbox_inches='tight')
   if show:
     plt.show()
-
 
 ''' metrics '''
 def find_optimal_threshold(target, predicted):
