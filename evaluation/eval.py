@@ -23,7 +23,8 @@ def plot_nice_roc_curve(y_test, y_test_predicted, show, save_path = 'roc_curve.p
   #bc = BinaryClassification(y_test.flatten(), y_test_predicted.flatten(), labels=["Class 1", "Class 2"])
   #plt.figure(figsize=(5,5))
   #bc.plot_roc_curve()
-
+  
+  auc_roc = roc_auc_score(y_test, y_test_predicted)
   fpr, tpr, thresholds = roc_curve(y_test, y_test_predicted)
   plt.figure(figsize=(10, 6))
   plt.plot(fpr, tpr, color='blue', label=f'AUC-ROC (area = {auc_roc:.2f})')
