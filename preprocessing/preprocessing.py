@@ -199,8 +199,9 @@ class Preprocessing():
                         x[index] = x_sub
                       else:
                         x[index] = np.append(x[index], x_sub, axis=0)
+      x = np.array(x)
       self.log(f'shape of the data {np.shape(x)}')
-      return np.array(x)
+      return x
   
   def limit_rearrange_and_flatten(self, input_data, need_to_shuffle_within_category):
     # Rearrange the input data and get the corresponding labels
