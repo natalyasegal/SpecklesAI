@@ -5,7 +5,7 @@ import numpy as np
 import random
 # Append the directory containing split.py to the path
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
-from config.config import Configuration_PerSubjExperiment. Configuration
+from config.config import Configuration_PerSubjExperiment, Configuration
 from preprocessing.preprocessing import Preprocessing, unison_shuffled_copies
 from utils.utils import save_dataset_x, save_dataset, load_dataset_x, load_dataset
 
