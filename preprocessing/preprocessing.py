@@ -9,7 +9,7 @@ import multiprocessing
 from multiprocessing import Pool
 # Append the directory containing split.py to the path
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
-from config.config import Configuration
+#from config.config import Configuration
 
 ''' Suffle: '''
 def unison_shuffled_copies(a, b):
