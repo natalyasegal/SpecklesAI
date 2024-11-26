@@ -53,7 +53,16 @@ class Configuration():
     self.binary_lables = binarize_lables(self.lables_categories)
     if self.verbose:
       print(f' number_of_classes = {self.number_of_classes}\n binary_lables={self.binary_lables}')
+  import yaml
   
+  def get_number_of_subjects(self):
+    with open(self.subjects_and_dates_config_file_name, 'r') as file:
+        data = yaml.safe_load(file)
+        subject_config = data.get('subjects', {})
+    
+    # Return the number of subjects
+    return len(subject_config)
+      
   def set_split(self, train_dates, train_subjects, val_dates, val_subjects, test_dates, test_subjects):
     self.train_dates = train_dates
     self.train_subjects = train_subjects
@@ -66,16 +75,21 @@ class Configuration_Gen(Configuration):
   def __init__(self, split_num, verbose = True):
     super().__init__(verbose)
     self.sample_splits_file_name = 'SpecklesAI/config/config_files/sample_gen_split.yaml'
-    self.split_num = split_num
     self.sample_splits = load_yaml(self.sample_splits_file_name)
+    self.number_of_splits = len(self.sample_splits)
     if self.verbose:
           print("Splits list:")
           print(self.sample_splits)
+    assert(split_num <= self.number_of_splits)
+    self.split_num = split_num
     train_mix, val_mix, test_mix, model_name = self.sample_splits[self.split_num].values()
     if self.verbose:       
           print(f'The chosen split number is {self.split_num}, train mix is {train_mix}, validation: {val_mix}, test: {test_mix}, {model_name}')
     self.model_name = model_name
     self.set_split_by_subjects(train_mix, val_mix, test_mix)
+
+  def get_number_of_splits(self):
+    return self.number_of_splits
 
   def set_split_by_subjects(self, train_mix, val_mix, test_mix):
     ls = Logical_Split(self.subjects_and_dates_config_file_name, verbose = self.verbose)
