@@ -5,6 +5,7 @@ from tqdm import tqdm
 import glob
 import sys
 import os
+from multiprocessing import Pool
 # Append the directory containing split.py to the path
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 from config.config import Configuration
@@ -78,9 +79,30 @@ class Preprocessing():
             print(f"Warning: {dir_path} is not a directory or does not exist.")
     return False
 
-    
   '''Video to frames helper function'''
   def __split_video_to_frames(self, video_path, frames_path):
+    # Add multiprocessing here for faster frame processing
+    def process_frame(args):
+        video_path, frame_id, image = args
+        image = cv2.resize(image, (self.config.frame_size_x, self.config.frame_size_y))
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        filename = f"{frames_path}/{Path(video_path).stem}_frame_{frame_id}.jpg"
+        cv2.imwrite(filename, image)
+
+    vidcap = cv2.VideoCapture(video_path)
+    frames = []
+    frame_id = 0
+    while vidcap.isOpened():
+        success, image = vidcap.read()
+        if not success:
+            break
+        frames.append((video_path, frame_id, image))
+        frame_id += 1
+
+    with Pool() as pool:
+        pool.map(process_frame, frames)
+
+  def __split_video_to_frames_1(self, video_path, frames_path):
       vidcap = cv2.VideoCapture(video_path)
       self.log(f'--- {frames_path}   {video_path}')
       video_name = video_path.split(sep=os.sep)[-1].split('.')[-2]
