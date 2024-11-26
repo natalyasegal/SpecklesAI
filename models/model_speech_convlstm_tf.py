@@ -98,6 +98,13 @@ def save_loss_plot(config, history, save_path = 'loss.png', show = False):
   
 def train_model(config, sz_conv, sz_dense, x_train, y_train, x_val, y_val, batch_sz, n_epochs):
     """Trains the model and saves the best model based on validation accuracy."""
+    
+    # Ensure the model save path exists
+    os.makedirs(config.models_path, exist_ok=True)
+
+    # Define the model save path with the .keras extension
+    config.models_path = os.path.join(config.models_path, 'best_model.keras')
+    
     model_checkpoint_callback = ModelCheckpoint(
         filepath=config.models_path,
         save_weights_only=False,
