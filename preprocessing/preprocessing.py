@@ -125,8 +125,11 @@ class Preprocessing():
         with multiprocessing.Pool(processes=num_processes) as pool:
             pool.map(process_frame_bulk, args)
             
-
-  def __split_video_to_frames_1(self, video_path, frames_path):
+        # Close the pool and wait for all processes to finish
+        pool.close()
+        pool.join()
+      
+  def __split_video_to_frames_1(self, video_path, frames_path): # single process version
       vidcap = cv2.VideoCapture(video_path)
       self.log(f'--- {frames_path}   {video_path}')
       video_name = video_path.split(sep=os.sep)[-1].split('.')[-2]
