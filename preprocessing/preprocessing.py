@@ -91,7 +91,7 @@ class Preprocessing():
     return False
 
   '''Video to frames helper function'''
-  def __split_video_to_frames(self, video_path, frames_path):
+  def __split_video_to_frames_mp(self, video_path, frames_path):
         vidcap = cv2.VideoCapture(video_path)
         if not vidcap.isOpened():
             print(f"Error: Unable to open video {video_path}")
@@ -129,7 +129,7 @@ class Preprocessing():
         pool.close()
         pool.join()
       
-  def __split_video_to_frames_1(self, video_path, frames_path): # single process version
+  def __split_video_to_frames(self, video_path, frames_path): # single process version
       vidcap = cv2.VideoCapture(video_path)
       self.log(f'--- {frames_path}   {video_path}')
       video_name = video_path.split(sep=os.sep)[-1].split('.')[-2]
