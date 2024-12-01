@@ -35,11 +35,33 @@ def prepare_train_and_validation_data_per_subj_experiment(prep, need_to_shuffle_
     x_train, y_train = unison_shuffled_copies(x_train, y_train)
     x_val, y_val = unison_shuffled_copies(x_val, y_val)
     return x_train, y_train, x_val, y_val
-  
+    
+def create_per_subj_datasets_for_one_subject(args, subject_num):
+  config = Configuration_PerSubjExperiment(subject_num, verbose = True)  
+  if config.be_consistent:
+    np.random.seed(config.seed_for_init)  # Set seed for NumPy operations to ensure reproducibility
+    random.seed(args.random_seed)
+  prep = Preprocessing(config, verbose = config.verbose)
+  prep.create_data_set() #videos to frames for train, validation and test sets
+  x_train, y_train, x_val, y_val = prepare_train_and_validation_data_per_subj_experiment(prep, need_to_shuffle_within_category = args.shuffle_train_val_within_categories)
+  x_test, y_test, x_test_per_category = prep.prepare_test_data()
+    
+  save_dataset(x_train, y_train, file_name = f'{args.train_set_file}_{str(config.split_num)}.npy')
+  save_dataset(x_val, y_val, file_name = f'{args.validation_set_file}_{str(config.split_num)}.npy')
+  save_dataset_x(x_test_per_category, file_name = f'{args.test_set_per_category_file}_{str(config.split_num)}.npy') 
+
+def create_per_subj_datasets_for_one_subject_wrapper(args):
+  number_of_subj = Configuration().get_number_of_subjects()
+  print(f'The nuber of subjects is {number_of_subj}')
+  assert(args.subject_num <= number_of_subj)
+  create_per_subj_datasets_for_one_subject(args, args.subject_num)
+
 def create_per_subj_datasets(args):
   number_of_subj = Configuration().get_number_of_subjects()
   print(f'The nuber of subjects is {number_of_subj}')
   for i in range(number_of_subj):
+    create_per_subj_datasets_for_one_subject(args, i+1)
+    '''  
     config = Configuration_PerSubjExperiment(i+1, verbose = True)  
     if config.be_consistent:
       np.random.seed(config.seed_for_init)  # Set seed for NumPy operations to ensure reproducibility
@@ -51,7 +73,8 @@ def create_per_subj_datasets(args):
     
     save_dataset(x_train, y_train, file_name = f'{args.train_set_file}_{str(config.split_num)}.npy')
     save_dataset(x_val, y_val, file_name = f'{args.validation_set_file}_{str(config.split_num)}.npy')
-    save_dataset_x(x_test_per_category, file_name = f'{args.test_set_per_category_file}_{str(config.split_num)}.npy') 
+    save_dataset_x(x_test_per_category, file_name = f'{args.test_set_per_category_file}_{str(config.split_num)}.npy')
+    '''
 
 
 def create_sanity_test_set(args):
@@ -73,7 +96,10 @@ def main(args):
     if args.create_only_sanity_test_set:
         create_sanity_test_set(args)
     else:
-        create_per_subj_datasets(args)
+        if args.subject_num > -1: #set to something other then default
+            create_per_subj_datasets_for_one_subject_wrapper(args)
+        else:
+            create_per_subj_datasets(args)
         
 
 if __name__ == '__main__':
@@ -83,6 +109,10 @@ if __name__ == '__main__':
                         help='seed for python random, used in shafling, does not affect division into train, validation and test',
                         type=int,
                         default=2)
+    parser.add_argument('--subject_num',
+                        help='one sybject to create the sets for, used for initial testing, defaults to non-exutent value -1',
+                        type=int,
+                        default=-1)
     parser.add_argument('--shuffle_train_val_within_categories', 
                         action='store_true',
                         help='If specified, suffles samples in train and validation sets within categories, it does not affect the train/val/test split here.')
