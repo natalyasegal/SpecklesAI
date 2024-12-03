@@ -248,6 +248,7 @@ class Preprocessing():
                         x[index] = x_sub
                       else:
                         x[index] = np.append(x[index], x_sub, axis=0)
+                 print(f'index = {index} len = {len(x[index])}')
       x = np.array(x)
       self.log(f'shape of the data {x.shape}')
       return x
