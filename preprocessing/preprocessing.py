@@ -249,7 +249,9 @@ class Preprocessing():
                       else:
                         x[index] = np.append(x[index], x_sub, axis=0)
                   print(f'index = {index} len = {len(x[index])}')
-      x = np.array(x)
+      min_length = min(len(inner) for inner in x) # Find the minimum length of the inner lists
+      truncated_lists = [inner[:min_length] for inner in x] # Truncate each inner list to the minimum length
+      x = np.array(truncated_lists)
       self.log(f'shape of the data {x.shape}')
       return x
   
