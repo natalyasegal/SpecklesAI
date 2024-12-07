@@ -9,8 +9,8 @@ from config.config import Configuration, Configuration_Gen
 from preprocessing.preprocessing import Preprocessing
 from utils.utils import save_dataset_x, save_dataset, load_dataset_x, load_dataset
      
-def handle_one_split(split_num):
-    config = Configuration_Gen(split_num, verbose = True)  
+def handle_one_split(split_num, config_file_name):
+    config = Configuration_Gen(split_num, config_file_name, verbose = True)  
     if config.be_consistent:
       np.random.seed( config.seed_for_init)  # Set seed for NumPy operations to ensure reproducibility
       random.seed(args.random_seed)
@@ -28,14 +28,14 @@ Videos -> np arrayss of chunks of frames
 This part does not require GPU, run it if you prefer to decouple preprocessing from the GPU intensive training
 '''
 def main(args):
-  config = Configuration_Gen(1, verbose = True)  #just to parse the splits file
+  config = Configuration_Gen(1, args.config_file, verbose = True)  #just to parse the splits file
   number_of_splits = len(config.sample_splits)
   if args.split_num > -1: #set to something other then default
     if args.split_num <= number_of_splits:
-      handle_one_split(args.split_num)
+      handle_one_split(args.split_num, args.config_file)
   else:
     for i in range(number_of_splits):
-      handle_one_split(i+1)
+      handle_one_split(i+1, args.config_file)
       
 if __name__ == '__main__':
     parser = argparse.ArgumentParser('')
@@ -51,6 +51,10 @@ if __name__ == '__main__':
     parser.add_argument('--shuffle_train_val_within_categories', 
                         action='store_true',
                         help='If specified, suffles samples in train and validation sets within categories, it does not affect the train/val/test split here.')
+     parser.add_argument('--config_file',
+                        help='configuration file name',
+                        type=str,
+                        default='SpecklesAI/config/config_files/sample_gen_split.yaml')    
     parser.add_argument('--train_set_file',
                         help='train parsed data arranges in chanks, chank size is designated in config.py',
                         type=str,
