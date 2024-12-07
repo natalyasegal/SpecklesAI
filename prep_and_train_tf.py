@@ -13,7 +13,7 @@ def main(args):
   if args.use_per_subj_config:
     config = Configuration_PerSubjExperiment(args.split_num, verbose = True) 
   else:
-    config = Configuration_Gen(args.split_num, verbose = True)
+    config = Configuration_Gen(args.split_num, args.config_file, verbose = True)
   if config.be_consistent:
     set_seed(seed_for_init = config.seed_for_init, random_seed = args.random_seed)
   x_train, y_train, x_val, y_val, x_test, y_test, x_test_per_category = get_or_create_dataset(config, args, need_to_save = True) 
@@ -57,7 +57,10 @@ if __name__ == '__main__':
                         help='If provided, overwrites the size of the dense layer output',
                         type=int,
                         default=8)
- 
+    parser.add_argument('--config_file',
+                        help='configuration file name',
+                        type=str,
+                        default='SpecklesAI/config/config_files/sample_gen_split.yaml')  
     parser.add_argument('--use_per_subj_config', 
                         action='store_true',
                         help='If specified, uses per_subj experiment config option, this affects mostly printouts. Use pre-created datasets with this option.')
