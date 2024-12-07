@@ -51,7 +51,7 @@ if __name__ == '__main__':
     parser.add_argument('--shuffle_train_val_within_categories', 
                         action='store_true',
                         help='If specified, suffles samples in train and validation sets within categories, it does not affect the train/val/test split here.')
-     parser.add_argument('--config_file',
+    parser.add_argument('--config_file',
                         help='configuration file name',
                         type=str,
                         default='SpecklesAI/config/config_files/sample_gen_split.yaml')    
