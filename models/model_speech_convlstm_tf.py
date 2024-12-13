@@ -167,7 +167,14 @@ def load_model(config):
 
                 inputs = Input(shape=input_shape, dtype=tf.uint8, name="batch_normalization_input")
                 layer = TFSMLayer(model_path, call_endpoint="serving_default")(inputs)
-                return Model(inputs=inputs, outputs=layer)
+                model = Model(inputs=inputs, outputs=layer)
+                print(model.summary())
+
+                # Print the model's input and output shapes
+                print("Model Input Shape:", model.input_shape)
+                print("Model Output Shape:", model.output_shape)
+                
+                return model
 
         # Unsupported file format
         else:
