@@ -41,6 +41,11 @@ def main(args):
     set_seed(seed_for_init = config.seed_for_init, random_seed = args.random_seed)
   x_test, y_test, x_test_per_category = get_or_create_test_dataset(config, args, need_to_save = True) 
   model = load_model(config) 
+     
+  print("x_test shape:", x_test.shape)
+  print("y_test shape:", y_test.shape)
+  print("y_test_predicted shape:", x_test_per_category.shape)
+  
   res_df = evaluate_per_chunk(config, model, x_test, y_test)
   ref_df_a = eval_accumulated(config, model, x_test_per_category, num_of_chunks_to_aggregate = args.num_of_chunks_to_aggregate)
 
