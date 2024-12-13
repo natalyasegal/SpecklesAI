@@ -8,7 +8,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import BatchNormalization, ConvLSTM2D, Dropout, Flatten, Dense
 from tensorflow.keras.constraints import max_norm
 from tensorflow.keras.callbacks import ModelCheckpoint
-
+from keras.layers import TFSMLayer
 
 '''The model works with video chunks of recorded speckle pappern'''
 
@@ -127,5 +127,29 @@ def train_model(config, sz_conv, sz_dense, x_train, y_train, x_val, y_val, batch
     
     return model, model_history
 
-def load_model(config): 
+def load_model_o(config): 
     return tf.keras.models.load_model(config.models_path)
+
+def load_model(config):
+    model_path = config.models_path
+
+    # Check if the path exists
+    if not os.path.exists(model_path):
+        raise FileNotFoundError(f"Model path does not exist: {model_path}")
+
+    # Handle different file formats and types
+    if model_path.endswith(".keras") or model_path.endswith(".h5"):
+        # Load `.keras` or `.h5` files
+        return tf.keras.models.load_model(model_path)
+    elif os.path.isdir(model_path):
+        # Assume it's a TensorFlow SavedModel directory
+        try:
+            return tf.keras.models.load_model(model_path)  # Attempt loading with Keras
+        except ValueError:
+            # Fallback to TFSMLayer for inference
+            return TFSMLayer(model_path, call_endpoint="serving_default")
+    else:
+        raise ValueError(
+            f"Unsupported model format: {model_path}. "
+            "Supported formats are `.keras`, `.h5`, or a SavedModel directory."
+        )
