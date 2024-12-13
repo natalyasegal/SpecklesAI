@@ -40,7 +40,7 @@ def plot_nice_roc_curve(y_test, y_test_predicted, show, save_path = 'roc_curve.p
     plt.show()
 
 ''' metrics '''
-def find_optimal_threshold(target, predicted):
+def find_optimal_threshold_o(target, predicted):
     """ Find the optimal probability cutoff point for a classification model related to event rate
     Parameters:
     target : Matrix with dependent or target data, where rows are observations
@@ -54,6 +54,49 @@ def find_optimal_threshold(target, predicted):
     roc = pd.DataFrame({'tf' : pd.Series(tpr-(1-fpr), index=i), 'threshold' : pd.Series(threshold, index=i)})
     roc_t = roc.iloc[(roc.tf-0).abs().argsort()[:1]]
     return list(roc_t['threshold']) 
+
+def find_optimal_threshold(target, predicted):
+    """
+    Find the optimal probability cutoff point for a classification model related to event rate.
+    
+    Parameters:
+    target : np.ndarray or list : True binary labels (0s and 1s), where rows are observations.
+    predicted : np.ndarray or list : Predicted probabilities for the positive class, where rows are observations.
+    
+    Returns:
+    float: Optimal cutoff value for the probability threshold.
+    """
+    # Ensure inputs are numpy arrays
+    target = np.asarray(target)
+    predicted = np.asarray(predicted)
+    
+    # Flatten arrays if needed
+    target = target.ravel()
+    predicted = predicted.ravel()
+    
+    # Validate inputs
+    if len(target) != len(predicted):
+        raise ValueError(
+            f"Inconsistent lengths: target has {len(target)} samples, "
+            f"but predicted has {len(predicted)} samples."
+        )
+    if target.ndim != 1 or predicted.ndim != 1:
+        raise ValueError(
+            f"Inputs must be 1-dimensional. Got target.ndim={target.ndim}, predicted.ndim={predicted.ndim}."
+        )
+    if not set(np.unique(target)).issubset({0, 1}):
+        raise ValueError("Target must contain binary labels (0 and 1).")
+    
+    # Compute ROC curve
+    fpr, tpr, thresholds = roc_curve(target, predicted)
+    
+    # Calculate the optimal threshold
+    # Use Youden's J statistic: J = sensitivity + specificity - 1
+    # sensitivity = tpr, specificity = 1 - fpr
+    youden_index = tpr - fpr
+    optimal_idx = np.argmax(youden_index)
+    optimal_threshold = thresholds[optimal_idx]
+    return optimal_threshold
 
 def evaluate_model(config, predictions, true_labels, th, filename = 'per_chunk'):
   # Calculate metrics
