@@ -44,7 +44,7 @@ def main(args):
      
   print("x_test shape:", x_test.shape)
   print("y_test shape:", y_test.shape)
-  print("y_test_predicted shape:", x_test_per_category.shape)
+  print("x_test_per_category shape:", x_test_per_category.shape)
   
   res_df = evaluate_per_chunk(config, model, x_test, y_test)
   ref_df_a = eval_accumulated(config, model, x_test_per_category, num_of_chunks_to_aggregate = args.num_of_chunks_to_aggregate)
