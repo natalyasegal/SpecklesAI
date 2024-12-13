@@ -132,7 +132,7 @@ def evaluate_per_chunk(config, model, x_test, y_test, show = True):
   y_test_predicted = model.predict(x_test)
   print("y_test shape:", y_test.shape)
   
-  y_test_predicted = np.array(y_test_predicted).ravel()
+  y_test_predicted = np.array(y_test_predicted).reshape(-1, 1)
   print("y_test_predicted shape:", y_test_predicted.shape) 
   
   # Find optimal probability threshold
