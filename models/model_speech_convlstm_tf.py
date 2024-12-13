@@ -8,8 +8,8 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import BatchNormalization, ConvLSTM2D, Dropout, Flatten, Dense
 from tensorflow.keras.constraints import max_norm
 from tensorflow.keras.callbacks import ModelCheckpoint
-from keras.layers import TFSMLayer
-from keras.models import Model, Input
+from keras.layers import TFSMLayer, Input
+from keras.models import Model
 
 '''The model works with video chunks of recorded speckle pappern'''
 
