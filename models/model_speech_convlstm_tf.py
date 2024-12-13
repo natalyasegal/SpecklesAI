@@ -9,6 +9,7 @@ from tensorflow.keras.layers import BatchNormalization, ConvLSTM2D, Dropout, Fla
 from tensorflow.keras.constraints import max_norm
 from tensorflow.keras.callbacks import ModelCheckpoint
 from keras.layers import TFSMLayer
+from keras.models import Model, Input
 
 '''The model works with video chunks of recorded speckle pappern'''
 
@@ -144,10 +145,14 @@ def load_model(config):
     elif os.path.isdir(model_path):
         # Assume it's a TensorFlow SavedModel directory
         try:
-            return tf.keras.models.load_model(model_path)  # Attempt loading with Keras
+            # Attempt to load with `load_model`
+            return tf.keras.models.load_model(model_path)
         except ValueError:
-            # Fallback to TFSMLayer for inference
-            return TFSMLayer(model_path, call_endpoint="serving_default")
+            # Fallback to TFSMLayer
+            input_shape = (None, None, None)  # Replace with the appropriate input shape
+            inputs = Input(shape=input_shape)
+            layer = TFSMLayer(model_path, call_endpoint="serving_default")(inputs)
+            return Model(inputs=inputs, outputs=layer)
     else:
         raise ValueError(
             f"Unsupported model format: {model_path}. "
