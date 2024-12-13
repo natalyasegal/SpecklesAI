@@ -10,7 +10,8 @@ from preprocessing.preprocessing import Preprocessing
 from utils.utils import save_dataset_x, save_dataset, load_dataset_x, load_dataset
      
 def handle_one_split(split_num, config_file_name):
-    config = Configuration_Gen(split_num, config_file_name, verbose = True)  
+    config = Configuration_Gen(split_num, config_file_name, verbose = True)
+    print(f'handle_one_split: split_num = {handle_one_split} and config_file_name is {config_file_name}.')
     if config.be_consistent:
       np.random.seed( config.seed_for_init)  # Set seed for NumPy operations to ensure reproducibility
       random.seed(args.random_seed)
