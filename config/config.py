@@ -72,7 +72,7 @@ class Configuration():
     self.test_subjects = test_subjects
         
 class Configuration_Gen(Configuration):
-  def __init__(self, split_num, config_file_name, verbose = True):
+  def __init__(self, split_num, config_file_name = 'SpecklesAI/config/config_files/sample_gen_split.yaml', verbose = True):
     super().__init__(verbose)
     self.sample_splits_file_name = 'SpecklesAI/config/config_files/sample_gen_split.yaml'
     if len(config_file_name) > 0:
