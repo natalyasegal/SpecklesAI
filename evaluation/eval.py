@@ -130,7 +130,9 @@ def evaluate_model(config, predictions, true_labels, th, filename = 'per_chunk')
 
 def evaluate_per_chunk(config, model, x_test, y_test, show = True):
   y_test_predicted = model.predict(x_test)
-
+  print("y_test shape:", y_test.shape)
+  print("y_test_predicted shape:", y_test_predicted.shape) 
+  
   # Find optimal probability threshold
   threshold = find_optimal_threshold(y_test, y_test_predicted)
   print(f'The chosen(using AUC-ROC curve) optimal threshold is {threshold}')
