@@ -132,6 +132,7 @@ def load_model_o(config):
     return tf.keras.models.load_model(config.models_path)
 
 def load_model(config):
+    print("model path is ", config.models_path)
     model_path = config.models_path
 
     # Check if the model path exists
