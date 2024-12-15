@@ -131,6 +131,16 @@ def train_model(config, sz_conv, sz_dense, x_train, y_train, x_val, y_val, batch
 def load_model_o(config): 
     return tf.keras.models.load_model(config.models_path)
 
+
+# Define a new Keras model class - needed to seemlessly support an old directory based format
+class WrappedModel(tf.keras.Model):
+    def __init__(self, loaded_model):
+        super(WrappedModel, self).__init__()
+        self.loaded_model = loaded_model
+
+    def call(self, inputs):
+        return self.loaded_model(inputs)
+        
 def load_model(config):
     print("model path is ", config.models_path)
     model_path = config.models_path
@@ -138,54 +148,26 @@ def load_model(config):
     # Check if the model path exists
     if not os.path.exists(model_path):
         raise FileNotFoundError(f"Model path does not exist: {model_path}")
-
     try:
         # Case 1: .keras or .h5 model formats
         if model_path.endswith(".keras") or model_path.endswith(".h5"):
             if config.verbose:
                 print(f"Loading model from {model_path} as a Keras file.")
-            return tf.keras.models.load_model(model_path)
-
+            model = tf.keras.models.load_model(model_path)
+            print("Model Input Shape:", model.input_shape)
+            print("Model Output Shape:", model.output_shape)
+            return model
         # Case 2: TensorFlow SavedModel
         elif os.path.isdir(model_path):
             if config.verbose:
                 print(f"Loading model from SavedModel directory: {model_path}")
-            try:
-                # Attempt to load using tf.keras.models.load_model
-                return tf.keras.models.load_model(model_path)
-            except ValueError:
-                # Fall back to TFSMLayer for inference-only models
-                if config.verbose:
-                    print("Falling back to TFSMLayer for inference-only SavedModel.")
-
-                # Get dimensions from the config
-                input_shape = (
-                    config.chunk_size, 
-                    config.frame_size_x, 
-                    config.frame_size_y, 
-                    1
-                )  # Assuming single channel (grayscale)
-
-                inputs = Input(shape=input_shape, dtype=tf.uint8, name="batch_normalization_input")
-                layer = TFSMLayer(model_path, call_endpoint="serving_default")(inputs)
-                model = Model(inputs=inputs, outputs=layer)
-                print(model.summary())
-
-                # Print the model's input and output shapes
-                print("Model Input Shape:", model.input_shape)
-                print("Model Output Shape:", model.output_shape)
-                
-                return model
-
-        # Unsupported file format
-        else:
-            raise ValueError(
-                f"Unsupported model format: {model_path}. "
-                "Supported formats are `.keras`, `.h5`, or a SavedModel directory."
-            )
+            loaded_model = tf.saved_model.load(model_path)
+            print(list(loaded_model.signatures.keys()))  
+            print(type(loaded_model))
+            dir(loaded_model)
+            model = WrappedModel(loaded_model)
+            return model
     except Exception as e:
         if config.verbose:
             print(f"Error loading model from {model_path}: {e}")
         raise
-
-
