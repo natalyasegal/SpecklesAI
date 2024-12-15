@@ -158,6 +158,15 @@ def load_model(config):
             print("Model Output Shape:", model.output_shape)
             return model
         # Case 2: TensorFlow SavedModel
+        elif os.path.exists(model_path + "/best_model.keras"):
+            new_form_model_path = model_path + "/best_model.keras"
+            if config.verbose:
+                print(f"Loading model from {new_form_model_path} as a Keras file.")
+            model = tf.keras.models.load_model(new_form_model_path)
+            print("Model Input Shape:", model.input_shape)
+            print("Model Output Shape:", model.output_shape)
+            return model
+        # Case 3: TensorFlow SavedModel
         elif os.path.isdir(model_path):
             if config.verbose:
                 print(f"Loading model from SavedModel directory: {model_path}")
