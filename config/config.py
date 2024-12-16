@@ -53,7 +53,6 @@ class Configuration():
     self.binary_lables = binarize_lables(self.lables_categories)
     if self.verbose:
       print(f' number_of_classes = {self.number_of_classes}\n binary_lables={self.binary_lables}')
-  import yaml
   
   def get_number_of_subjects(self):
     with open(self.subjects_and_dates_config_file_name, 'r') as file:
