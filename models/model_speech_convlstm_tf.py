@@ -141,18 +141,15 @@ class WrappedModel(tf.keras.Model):
     def call(self, inputs):
         return self.loaded_model(inputs)
         
-def load_model(config):
-    print("model path is ", config.models_path)
-    model_path = config.models_path
-
+def load_model_from_path(model_path, verbose):
+    print("model path is ", model_path)
     # Check if the model path exists
     if not os.path.exists(model_path):
         raise FileNotFoundError(f"Model path does not exist: {model_path}")
     try:
         # Case 1: .keras or .h5 model formats
         if model_path.endswith(".keras") or model_path.endswith(".h5"):
-            if config.verbose:
-                print(f"Loading model from {model_path} as a Keras file.")
+            print(f"Loading model from {model_path} as a Keras file.")
             model = tf.keras.models.load_model(model_path)
             print("Model Input Shape:", model.input_shape)
             print("Model Output Shape:", model.output_shape)
@@ -160,16 +157,14 @@ def load_model(config):
         # Case 2: TensorFlow SavedModel
         elif os.path.exists(model_path + "/best_model.keras"):
             new_form_model_path = model_path + "/best_model.keras"
-            if config.verbose:
-                print(f"Loading model from {new_form_model_path} as a Keras file.")
+            print(f"Loading model from {new_form_model_path} as a Keras file.")
             model = tf.keras.models.load_model(new_form_model_path)
             print("Model Input Shape:", model.input_shape)
             print("Model Output Shape:", model.output_shape)
             return model
         # Case 3: TensorFlow SavedModel
         elif os.path.isdir(model_path):
-            if config.verbose:
-                print(f"Loading model from SavedModel directory: {model_path}")
+            print(f"Loading model from SavedModel directory: {model_path}")
             loaded_model = tf.saved_model.load(model_path)
             print(list(loaded_model.signatures.keys()))  
             print(type(loaded_model))
@@ -177,6 +172,9 @@ def load_model(config):
             model = WrappedModel(loaded_model)
             return model
     except Exception as e:
-        if config.verbose:
             print(f"Error loading model from {model_path}: {e}")
-        raise
+            assert(True)        
+
+def load_model(config):
+    model_path = config.models_path
+    return load_model_from_path(model_path, config.verbose)
