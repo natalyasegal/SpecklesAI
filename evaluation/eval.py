@@ -143,6 +143,54 @@ def evaluate_per_chunk(config, model, x_test, y_test, show = True):
   plot_nice_roc_curve(y_test, y_test_predicted, show, save_path = 'roc_curve.png')
   print(results_df)
   return results_df
+  
+def evaluate_per_chunk_e(config, models, x_test, y_test, show = True):
+  assert(len(models) > 0)
+  y_test_predicted_list = [np.array(model.predict(x_test)) for model in models]
+  num_models = len(y_test_predicted_list)
+  print(f"Evaluating {num_models} models...")
+
+  # Initialize binary predictions for ensemble
+  bin_predictions = np.zeros_like(y_test, dtype=float)
+  print(f"y_test shape: {y_test.shape}")
+
+  # Find optimal threshold and aggregate predictions
+  for i, predictions in enumerate(y_test_predicted_list):
+        th = find_optimal_threshold(y_test, predictions)
+        if show:
+            print(f"Model {i + 1}: Optimal threshold (using AUC-ROC curve) = {th:.4f}")
+        bin_predictions += (predictions > th)
+
+  # Average the predictions across all models
+  bin_predictions /= num_models  # Ensemble averaging
+
+  # Calculate evaluation metrics
+  auc = roc_auc_score(y_test, bin_predictions, multi_class='ovo', average='macro')
+  accuracy = accuracy_score(y_test, (bin_predictions > 0.5))
+  f1 = f1_score(y_test, (bin_predictions > 0.5), average='binary')
+  kappa = cohen_kappa_score(y_test, (bin_predictions > 0.5))
+
+  model_name = f'{"ensemble"}'
+  # Create DataFrame
+  data = {
+              'Model Name': [model_name],
+              'AUC': [auc],
+              'Accuracy': [accuracy],
+              'F1 Score': [f1],
+              'Cohen Kappa': [kappa],
+              'Threshold': [th]
+    }
+  results_df = pd.DataFrame(data)
+
+  # Save to CSV
+  csv_name = f'{model_name}_of_{num_models}_models.csv'
+  results_df.to_csv(csv_name, index=False)
+  print(f'Results saved to {csv_name}')
+  
+  generate_confusion_matrix_image(bin_predictions, y_test, 0.5, show, save_path = 'confusion_matrix.png')
+  plot_nice_roc_curve(y_test, bin_predictions, show, save_path = 'roc_curve.png')
+  print(results_df)
+  return results_df, bin_predictions, num_models
 
 def flatten_accumulated(x, binary_labels):
     """
@@ -177,18 +225,16 @@ def calc_accumulated_predictions(config, y_test_predicted_per_lable, num_of_chun
     print(f'max_chunks_num ={max_chunks_num} max_iterations ={max_iterations}, len of accumulated predictions {len(y_test_predicted_agg)}')
   return y_test_predicted_agg
 
-def eval_accumulated(config, model, x_test_per_category, num_of_chunks_to_aggregate = 25):
-  y_test_predicted = [model.predict(x_test) for x_test in x_test_per_category]
-  y_pred_reduced = [calc_accumulated_predictions(config, y_pred, 25) for y_pred in y_test_predicted]
+def eval_accumulated_inner(config, predicted, x_test_per_category, num_of_chunks_to_aggregate = 25):
+  y_pred_reduced = [calc_accumulated_predictions(config, y_pred, 25) for y_pred in predicted]
   y_pred_reduced, y_true = flatten_accumulated(np.array(y_pred_reduced), config.binary_lables)
   y_true = np.array(y_true).squeeze()
   auc = roc_auc_score(y_true, y_pred_reduced)
+  threshold = find_optimal_threshold(y_true, y_pred_reduced)
   if config.verbose:
       print(f' auc = {auc}, on {len(y_true)} values from 2 categories')
       print(np.shape(y_pred_reduced))
       print(np.shape(y_true))
-  threshold = find_optimal_threshold(y_true, y_pred_reduced)
-  if config.verbose:
       print(f'The chosen(using AUC-ROC curve) optimal threshold for aggregated chunks is {threshold}')
   results_df_a = evaluate_model(config, y_pred_reduced, y_true, threshold, filename = 'aggregated')
   y_pred_reduced = np.array(y_pred_reduced)
@@ -197,3 +243,32 @@ def eval_accumulated(config, model, x_test_per_category, num_of_chunks_to_aggreg
   print('Accumulated metrics:')
   print(results_df_a)
   return results_df_a
+
+def eval_accumulated(config, model, x_test_per_category, num_of_chunks_to_aggregate = 25):
+    y_test_predicted = [model.predict(x_test) for x_test in x_test_per_category]
+    eval_accumulated_inner(config, y_test_predicted, x_test_per_category, num_of_chunks_to_aggregate)
+
+def eval_accumulated_e(config, models, x_test_per_category, num_of_chunks_to_aggregate=25):
+    """
+    Evaluates models on test data categorized into chunks and computes accumulated metrics.
+
+    Parameters:
+    - config: Configuration object (may contain settings for evaluation).
+    - models: List of trained models to evaluate.
+    - x_test_per_category: List of test data categories, where each category is a subset of test data.
+    - num_of_chunks_to_aggregate: Number of chunks to aggregate for evaluation (default: 25).
+
+    Returns:
+    - results_df_a: DataFrame containing the evaluation results for accumulated metrics.
+    """
+    # Generate predictions for each model across all test categories
+    y_test_predicted_per_category = [[model.predict(x_test) for model in models] for x_test in x_test_per_category]
+
+    # Average predictions per category across models
+    averaged_predictions_per_category = [np.mean(predictions, axis=0) for predictions in y_test_predicted_per_category]
+
+    # Pass the averaged predictions to eval_accumulated_inner
+    results_df_a = eval_accumulated_inner(
+        config, averaged_predictions_per_category, x_test_per_category, num_of_chunks_to_aggregate
+    )
+    return results_df_a
