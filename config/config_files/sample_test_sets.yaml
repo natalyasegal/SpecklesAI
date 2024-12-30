@@ -1,0 +1,32 @@
+1:
+  test_mix:
+  - 1
+  model_name: AYYZDS_mix_1
+2:
+  test_mix:
+  - 2
+  model_name: AYYZDS_mix_2
+3:
+  test_mix:
+  - 3
+  model_name: AYYZDS_mix_3
+4:
+  test_mix:
+  - 4
+  model_name: AYYZDS_mix_4
+5:
+  test_mix:
+  - 5
+  model_name: AYYZDS_mix_5
+6:
+  test_mix:
+  - 6
+  model_name: AYYZDS_mix_6
+7:
+  test_mix:
+  - 7
+  model_name: AYYZDS_mix_7
+8:
+  test_mix:
+  - 8
+  model_name: AYYZDS_mix_8
