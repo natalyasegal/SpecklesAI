@@ -124,3 +124,29 @@ class Configuration_PerSubjExperiment(Configuration):
     print(f' train {train_dates} {train_subjects}\n val {val_dates} {val_subjects}\n test {test_dates} {test_subjects}')
     self.set_split(train_dates, train_subjects, val_dates , val_subjects, test_dates, test_subjects)
 
+# Configuration for creating test set separately
+class Configuration_Test(Configuration):
+  def __init__(self, split_num, verbose = True):
+    super().__init__(verbose)
+    self.sample_splits_file_name = 'SpecklesAI/config/config_files/sample_test_sets.yaml'
+    if len(config_file_name) > 0:
+          self.sample_splits_file_name = config_file_name
+    self.sample_splits = load_yaml(self.sample_splits_file_name)
+    self.number_of_splits = len(self.sample_splits)
+    if self.verbose:
+          print("Splits list:")
+          print(self.sample_splits)
+    assert(split_num <= self.number_of_splits)
+    self.split_num = split_num
+    test_mix, model_name = self.sample_splits[self.split_num].values()
+    if self.verbose:       
+          print(f'The chosen split number is {self.split_num}, test: {test_mix}, {model_name}')
+    self.model_name = model_name
+    
+    ls = Logical_Split(self.subjects_and_dates_config_file_name, verbose = self.verbose)
+    test_dates, test_subjects = ls.get_dates_and_subjects(test_mix, Logical_Split.Sample_time.ONLY_MID_DAY)
+    print(f' test {test_dates} {test_subjects}')
+    self.set_split([], [], [] , [], test_dates, test_subjects)
+ 
+ def get_number_of_splits(self):
+    return self.number_of_splits
