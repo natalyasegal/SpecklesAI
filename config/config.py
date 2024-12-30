@@ -129,8 +129,6 @@ class Configuration_Test(Configuration):
   def __init__(self, split_num, verbose = True):
     super().__init__(verbose)
     self.sample_splits_file_name = 'SpecklesAI/config/config_files/sample_test_sets.yaml'
-    if len(config_file_name) > 0:
-          self.sample_splits_file_name = config_file_name
     self.sample_splits = load_yaml(self.sample_splits_file_name)
     self.number_of_splits = len(self.sample_splits)
     if self.verbose:
@@ -144,9 +142,9 @@ class Configuration_Test(Configuration):
     self.model_name = model_name
     
     ls = Logical_Split(self.subjects_and_dates_config_file_name, verbose = self.verbose)
-    test_dates, test_subjects = ls.get_dates_and_subjects(test_mix, Logical_Split.Sample_time.ONLY_MID_DAY)
+    test_dates, test_subjects = ls.get_dates_and_subjects(test_mix, Logical_Split.Sample_time.ONLY_MORNING)
     print(f' test {test_dates} {test_subjects}')
     self.set_split([], [], [] , [], test_dates, test_subjects)
  
- def get_number_of_splits(self):
+  def get_number_of_splits(self):
     return self.number_of_splits
