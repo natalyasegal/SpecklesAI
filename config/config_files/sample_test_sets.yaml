@@ -30,3 +30,9 @@
   test_mix:
   - 8
   model_name: AYYZDS_mix_8
+9: #for the Forehead sanity check
+  test_mix:
+  - 7
+  - 8
+  model_name: AYYZDS_mix_9
+
