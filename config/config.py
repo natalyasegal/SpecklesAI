@@ -124,6 +124,7 @@ class Configuration_PerSubjExperiment(Configuration):
     print(f' train {train_dates} {train_subjects}\n val {val_dates} {val_subjects}\n test {test_dates} {test_subjects}')
     self.set_split(train_dates, train_subjects, val_dates , val_subjects, test_dates, test_subjects)
 
+
 # Configuration for creating test set separately
 class Configuration_Test(Configuration):
   def __init__(self, split_num, verbose = True):
@@ -142,7 +143,7 @@ class Configuration_Test(Configuration):
     self.model_name = model_name
     
     ls = Logical_Split(self.subjects_and_dates_config_file_name, verbose = self.verbose)
-    test_dates, test_subjects = ls.get_dates_and_subjects(test_mix, Logical_Split.Sample_time.ONLY_MORNING)
+    test_dates, test_subjects = ls.get_dates_and_subjects(test_mix, Logical_Split.Sample_time.ONLY_MID_DAY)
     print(f' test {test_dates} {test_subjects}')
     self.set_split([], [], [] , [], test_dates, test_subjects)
  
