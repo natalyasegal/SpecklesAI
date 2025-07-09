@@ -1,5 +1,6 @@
-Code for a scientific paper: "Remote Detection of Human Brain Reaction to Speech by AI Speckle Pattern Analysis"
-
+Code for a scientific paper: "AI-powered remote monitoring of brain responses to clear and incomprehensible speech via speckle pattern analysis"
+doi: 10.1117/1.JBO.30.6.067001
+https://pmc.ncbi.nlm.nih.gov/articles/PMC12148044/
 
 In order to recreate per subjects results:
 1. Clone the repository
