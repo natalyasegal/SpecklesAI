@@ -97,7 +97,7 @@ def save_loss_plot(config, history, save_path = 'loss.png', show = False):
     print(f'Results saved to {config.model_name}_loss.csv')
     plt.clf()
   
-def train_model(config, sz_conv, sz_dense, x_train, y_train, x_val, y_val, batch_sz, n_epochs):
+def train_model(config, sz_conv, sz_dense, x_train, y_train, x_val, y_val, batch_sz, n_epochs, metric_to_monitor = 'val_accuracy'):
     """Trains the model and saves the best model based on validation accuracy."""
     
     # Ensure the model save path exists
@@ -109,7 +109,7 @@ def train_model(config, sz_conv, sz_dense, x_train, y_train, x_val, y_val, batch
     model_checkpoint_callback = ModelCheckpoint(
         filepath=config.models_path,
         save_weights_only=False,
-        monitor='val_accuracy',
+        monitor=metric_to_monitor,
         mode='max',
         save_best_only=True
     )
