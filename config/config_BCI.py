@@ -37,7 +37,7 @@ class Configuration():
     self.MAX_CHUNKS_PER_CATEGORY = 100000
     self.chunk_size = 40 #64 #destination temporal chunk size
     self.frame_size_x = 128 #64 #128 # destination frames images size after resizing x
-    self.frame_size_y = 128 #64 # destination frames images size after resizing y
+    self.frame_size_y = 64 #64 # destination frames images size after resizing y
     #self.max_chunks_num = 2500 #calculated 10sec*10videos*1000fps / 40 frames in chunk, used for aggregted evaluation
     self.raw_data_path = 'exp3'
     self.data_path = 'data' #destination after preprocessing
