@@ -4,7 +4,7 @@ import os
 # Append the directory containing split.py to the path
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 from config.config import Configuration, Configuration_Gen, Configuration_PerSubjExperiment
-from dataset import get_or_create_dataset
+from dataset import get_or_create_dataset, get_or_create_dataset_train_and_val, get_or_create_dataset_test
 from evaluation.eval import evaluate_per_chunk, eval_accumulated
 from models.model_speech_convlstm_tf import train_model, load_model, set_seed
 
