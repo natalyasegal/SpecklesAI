@@ -33,7 +33,7 @@ def get_or_create_dataset(config, args, need_to_save):
   return x_train, y_train, x_val, y_val, x_test, y_test, x_test_per_category
   
   def get_or_create_dataset_train_and_val(config, args, need_to_save):
-  '''
+    '''
     Creates or loads train, validation datasets
     Datasets are created from videos files by creating arrays od 3d tensors (X x Y x Temporal chunk)
     '''
