@@ -26,8 +26,8 @@ def main(args):
     res_df = evaluate_per_chunk(config, model, x_test, y_test)
     ref_df_a = eval_accumulated(config, model, x_test_per_category, num_of_chunks_to_aggregate = args.num_of_chunks_to_aggregate)
   else:
-      x_train, y_train, x_val, y_val = get_or_create_dataset_train_and_val(config, args, need_to_save = True) 
-      model_ex3_10, model_history = train_model(config, args.sz_conv, args.sz_dense, 
+    x_train, y_train, x_val, y_val = get_or_create_dataset_train_and_val(config, args, need_to_save = True) 
+    model_ex3_10, model_history = train_model(config, args.sz_conv, args.sz_dense, 
                                                 x_train, y_train, 
                                                 x_val, y_val,                                        
                                                 batch_sz = args.batch_size, n_epochs = args.epochs, metric_to_monitor = args.metric_to_monitor)
