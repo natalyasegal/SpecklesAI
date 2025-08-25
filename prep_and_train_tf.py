@@ -16,15 +16,26 @@ def main(args):
     config = Configuration_Gen(args.split_num, args.config_file, verbose = True)
   if config.be_consistent:
     set_seed(seed_for_init = config.seed_for_init, random_seed = args.random_seed)
-  x_train, y_train, x_val, y_val, x_test, y_test, x_test_per_category = get_or_create_dataset(config, args, need_to_save = True) 
-  model_ex3_10, model_history = train_model(config, args.sz_conv, args.sz_dense, 
-                                            x_train, y_train, 
-                                            x_val, y_val,                                        
-                                            batch_sz = args.batch_size, n_epochs = args.epochs, metric_to_monitor = args.metric_to_monitor)
-  model = load_model(config) 
-  res_df = evaluate_per_chunk(config, model, x_test, y_test)
-  ref_df_a = eval_accumulated(config, model, x_test_per_category, num_of_chunks_to_aggregate = args.num_of_chunks_to_aggregate)
-
+  if not args.save_RAM
+    x_train, y_train, x_val, y_val, x_test, y_test, x_test_per_category = get_or_create_dataset(config, args, need_to_save = True) 
+    model_ex3_10, model_history = train_model(config, args.sz_conv, args.sz_dense, 
+                                              x_train, y_train, 
+                                              x_val, y_val,                                        
+                                              batch_sz = args.batch_size, n_epochs = args.epochs, metric_to_monitor = args.metric_to_monitor)
+    model = load_model(config) 
+    res_df = evaluate_per_chunk(config, model, x_test, y_test)
+    ref_df_a = eval_accumulated(config, model, x_test_per_category, num_of_chunks_to_aggregate = args.num_of_chunks_to_aggregate)
+  else:
+      x_train, y_train, x_val, y_val = get_or_create_dataset_train_and_val(config, args, need_to_save = True) 
+      model_ex3_10, model_history = train_model(config, args.sz_conv, args.sz_dense, 
+                                                x_train, y_train, 
+                                                x_val, y_val,                                        
+                                                batch_sz = args.batch_size, n_epochs = args.epochs, metric_to_monitor = args.metric_to_monitor)
+    del x_train, y_train, x_val, y_val
+    x_test, y_test, x_test_per_category = get_or_create_dataset_test(config, args, need_to_save = True)
+    model = load_model(config) 
+    res_df = evaluate_per_chunk(config, model, x_test, y_test)
+    ref_df_a = eval_accumulated(config, model, x_test_per_category, num_of_chunks_to_aggregate = args.num_of_chunks_to_aggregate)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser('')
@@ -64,7 +75,9 @@ if __name__ == '__main__':
     parser.add_argument('--use_per_subj_config', 
                         action='store_true',
                         help='If specified, uses per_subj experiment config option, this affects mostly printouts. Use pre-created datasets with this option.')
-
+    parser.add_argument('--save_RAM', 
+                        action='store_true',
+                        help='Save RAM memory.')
     parser.add_argument('--read_stored_dataset', 
                         action='store_true',
                         help='If specified, read parsed frame chunks for dataset; otherwise, create them.')
