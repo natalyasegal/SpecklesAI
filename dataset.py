@@ -31,8 +31,8 @@ def get_or_create_dataset(config, args, need_to_save):
   if config.create_images:
     visualize_speckles(x_train, save_path = 'speckles_sample.png', please_also_show = False)
   return x_train, y_train, x_val, y_val, x_test, y_test, x_test_per_category
-  
-  def get_or_create_dataset_train_and_val(config, args, need_to_save):
+
+def get_or_create_dataset_train_and_val(config, args, need_to_save):
     '''
     Creates or loads train, validation datasets
     Datasets are created from videos files by creating arrays od 3d tensors (X x Y x Temporal chunk)
