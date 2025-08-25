@@ -16,7 +16,7 @@ def main(args):
     config = Configuration_Gen(args.split_num, args.config_file, verbose = True)
   if config.be_consistent:
     set_seed(seed_for_init = config.seed_for_init, random_seed = args.random_seed)
-  if not args.save_RAM
+  if not args.save_RAM:
     x_train, y_train, x_val, y_val, x_test, y_test, x_test_per_category = get_or_create_dataset(config, args, need_to_save = True) 
     model_ex3_10, model_history = train_model(config, args.sz_conv, args.sz_dense, 
                                               x_train, y_train, 
