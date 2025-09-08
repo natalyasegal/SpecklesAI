@@ -36,8 +36,8 @@ class Configuration():
 
     self.MAX_CHUNKS_PER_CATEGORY = 100000
     self.chunk_size = 40 #64 #destination temporal chunk size
-    self.frame_size_x = 64 #128 # destination frames images size after resizing x
-    self.frame_size_y = 64 #128 # destination frames images size after resizing y
+    self.frame_size_x = 32 #64 #128 # destination frames images size after resizing x
+    self.frame_size_y = 32 #64 #128 # destination frames images size after resizing y
     #self.max_chunks_num = 2500 #calculated 10sec*10videos*1000fps / 40 frames in chunk, used for aggregted evaluation
     self.raw_data_path = 'exp3'
     self.data_path = 'data' #destination after preprocessing
@@ -149,3 +149,18 @@ class Configuration_Test(Configuration):
  
   def get_number_of_splits(self):
     return self.number_of_splits
+
+
+# Configuration for creating pause set
+class Configuration_Pause(Configuration_Test):
+  def __init__(self, split_num, verbose = True):
+    super().__init__(verbose)
+    self.sub_nothing = 'Broca/nothing'
+    self.frames_subdirs_dict = {self.sub_nothing:"pause"}
+    CLASSES = list(set(self.frames_subdirs_dict.values()))
+    self.number_of_classes = 1
+    self.lables_categories = [x for x in range(self.number_of_classes)]
+    self.binary_lables = binarize_lables(self.lables_categories)
+    if self.verbose:
+      print(f' number_of_classes = {self.number_of_classes}\n binary_lables={self.binary_lables}')
+  
