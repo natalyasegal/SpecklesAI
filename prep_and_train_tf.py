@@ -16,11 +16,12 @@ def main(args):
     config = Configuration_Gen(args.split_num, args.config_file, verbose = True)
   if config.be_consistent:
     set_seed(seed_for_init = config.seed_for_init, random_seed = args.random_seed)
-  
+
+  peint(f'args.overwrite_nclasses = {args.overwrite_nclasses}')
   if args.overwrite_nclasses:
     config.number_of_classes = args.nclasses
-    config.lables_categories = [x for x in range(self.number_of_classes)]
-    config.binary_lables = binarize_lables(self.lables_categories)
+    config.lables_categories = [x for x in range(config.number_of_classes)]
+    config.binary_lables = binarize_lables(config.lables_categories)
     print(f' number_of_classes = {config.number_of_classes}\n binary_lables={config.binary_lables}')
   
   if not args.save_RAM:
