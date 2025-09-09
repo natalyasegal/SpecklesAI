@@ -30,7 +30,7 @@ Videos -> np arrayss of chunks of frames
 This part does not require GPU, run it if you prefer to decouple preprocessing from the GPU intensive training
 '''
 def main(args):
-  config = Configuration_Test(1, verbose = True)  #just to parse the splits file
+  config = Configuration_Pause(1, verbose = True)  #just to parse the splits file
   number_of_splits = len(config.sample_splits)
   if args.split_num > -1: #set to something other then default
     if args.split_num <= number_of_splits:
