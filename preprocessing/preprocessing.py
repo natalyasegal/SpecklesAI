@@ -162,7 +162,9 @@ class Preprocessing():
       '''
       y = [[] for _ in range(self.config.number_of_classes)]
       self.log(f'max_chanks={self.config.MAX_CHUNKS_PER_CATEGORY}')
-      for i in range(self.config.number_of_classes): #short loop, as number of categories
+      actual_len = min(len(x), self.config.number_of_classes)
+      print(f'actual_len = {actual_len}')
+      for i in range(actual_len): #short loop, as number of categories
           if len(x[i]) == 0:
             print(f'no items in position {i}')
             continue
