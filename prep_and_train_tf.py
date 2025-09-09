@@ -17,7 +17,7 @@ def main(args):
   if config.be_consistent:
     set_seed(seed_for_init = config.seed_for_init, random_seed = args.random_seed)
 
-  peint(f'args.overwrite_nclasses = {args.overwrite_nclasses}')
+  print(f'args.overwrite_nclasses = {args.overwrite_nclasses}')
   if args.overwrite_nclasses:
     config.number_of_classes = args.nclasses
     config.lables_categories = [x for x in range(config.number_of_classes)]
