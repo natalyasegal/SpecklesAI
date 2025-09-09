@@ -16,6 +16,13 @@ def main(args):
     config = Configuration_Gen(args.split_num, args.config_file, verbose = True)
   if config.be_consistent:
     set_seed(seed_for_init = config.seed_for_init, random_seed = args.random_seed)
+  
+  if args.overwrite_nclasses:
+    config.number_of_classes = args.nclasses
+    config.lables_categories = [x for x in range(self.number_of_classes)]
+    config.binary_lables = binarize_lables(self.lables_categories)
+    print(f' number_of_classes = {config.number_of_classes}\n binary_lables={config.binary_lables}')
+  
   if not args.save_RAM:
     x_train, y_train, x_val, y_val, x_test, y_test, x_test_per_category = get_or_create_dataset(config, args, need_to_save = True) 
     model_ex3_10, model_history = train_model(config, args.sz_conv, args.sz_dense, 
@@ -81,6 +88,13 @@ if __name__ == '__main__':
     parser.add_argument('--read_stored_dataset', 
                         action='store_true',
                         help='If specified, read parsed frame chunks for dataset; otherwise, create them.')
+    parser.add_argument('--overwrite_nclasses', 
+                        action='store_false',
+                        help='If specified, overwrite the number of classes in config.')
+    parser.add_argument('--nclasses',
+                        help='If provided, overwrites the number of classes',
+                        type=int,
+                        default=2)
     parser.add_argument('--shuffle_train_val_within_categories', 
                         action='store_true',
                         help='If specified, suffles samples in train and validation sets within categories, it does not affect the train/val/test split here.')
