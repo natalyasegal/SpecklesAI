@@ -3,7 +3,7 @@ import sys
 import os
 # Append the directory containing split.py to the path
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
-from config.config import Configuration, Configuration_Gen, Configuration_PerSubjExperiment
+from config.config import Configuration, Configuration_Gen, Configuration_PerSubjExperiment, binarize_lables
 from dataset import get_or_create_dataset, get_or_create_dataset_train_and_val, get_or_create_dataset_test
 from evaluation.eval import evaluate_per_chunk, eval_accumulated
 from models.model_speech_convlstm_tf import train_model, load_model, set_seed
@@ -17,8 +17,7 @@ def main(args):
   if config.be_consistent:
     set_seed(seed_for_init = config.seed_for_init, random_seed = args.random_seed)
 
-  print(f'args.overwrite_nclasses = {args.overwrite_nclasses}')
-  if args.overwrite_nclasses:
+  if args.nclasses > 0:
     config.number_of_classes = args.nclasses
     config.lables_categories = [x for x in range(config.number_of_classes)]
     config.binary_lables = binarize_lables(config.lables_categories)
@@ -89,13 +88,10 @@ if __name__ == '__main__':
     parser.add_argument('--read_stored_dataset', 
                         action='store_true',
                         help='If specified, read parsed frame chunks for dataset; otherwise, create them.')
-    parser.add_argument('--overwrite_nclasses', 
-                        action='store_false',
-                        help='If specified, overwrite the number of classes in config.')
     parser.add_argument('--nclasses',
                         help='If provided, overwrites the number of classes',
                         type=int,
-                        default=2)
+                        default=0)
     parser.add_argument('--shuffle_train_val_within_categories', 
                         action='store_true',
                         help='If specified, suffles samples in train and validation sets within categories, it does not affect the train/val/test split here.')
