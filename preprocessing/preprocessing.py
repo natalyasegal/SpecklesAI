@@ -175,7 +175,7 @@ class Preprocessing():
           real_max = min(np.shape(x[i])[0], self.config.MAX_CHUNKS_PER_CATEGORY)
           x[i] = x[i][0:real_max, ::]
           y[i] = np.full((np.shape(x[i])[0], len(self.config.binary_lables[0])), self.config.binary_lables[i])
-      return x, np.array(y)
+      return x, y
   
   ''' 
   public functions:
