@@ -154,7 +154,7 @@ class Configuration_Test(Configuration):
 # Configuration for creating pause set
 class Configuration_Pause(Configuration_Test):
   def __init__(self, split_num, verbose = True):
-    super().__init__(verbose)
+    super().__init__(split_num, verbose)
     self.sub_nothing = 'Broca/nothing'
     self.frames_subdirs_dict = {self.sub_nothing:"pause"}
     CLASSES = list(set(self.frames_subdirs_dict.values()))
