@@ -50,6 +50,7 @@ def define_model(config, sz_conv, sz_dense):
         BatchNormalization(),
         Dropout(0.5)
     ])
+    print(f'number of classes is {config.number_of_classes}')
 
     # Add output layer and compile the model based on number of classes
     output_units = config.number_of_classes if config.number_of_classes > 2 else config.number_of_classes - 1
