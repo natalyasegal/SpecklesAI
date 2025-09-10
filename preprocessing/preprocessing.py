@@ -257,7 +257,7 @@ class Preprocessing():
       self.log(f'shape of the data {x.shape}')
       return x
 
-  def concat_first_axis_no_squeeze(arrs):
+  def __concat_first_axis_no_squeeze(arrs):
     """
     Concatenate label arrays along axis=0 even if their first dimension differs
     (e.g., (5000, ...), (5000, ...), (1000, ...)).
@@ -283,7 +283,7 @@ class Preprocessing():
     
     # Concatenate the rearranged data and labels along the first axis
     output_data = np.concatenate(rearranged_data, axis=0)
-    output_labels = concat_first_axis_no_squeeze(labels)
+    output_labels = self.__concat_first_axis_no_squeeze(labels)
     
     # Return the concatenated and rearranged data along with their labels
     return output_data, output_labels 
