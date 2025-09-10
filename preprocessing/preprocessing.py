@@ -256,14 +256,34 @@ class Preprocessing():
       x = np.array(truncated_lists)
       self.log(f'shape of the data {x.shape}')
       return x
-  
+
+  def concat_first_axis_no_squeeze(arrs):
+    """
+    Concatenate label arrays along axis=0 even if their first dimension differs
+    (e.g., (5000, ...), (5000, ...), (1000, ...)).
+    If an array is 1-D, it is reshaped to (N,1). No squeeze is performed.
+    """
+    norm = []
+    for a in arrs:
+        a = np.asarray(a)
+        if a.ndim == 1:           # normalize (N,) -> (N,1)
+            a = a[:, None]
+        norm.append(a)
+
+    # ensure trailing shapes (after axis 0) match exactly
+    trailing = norm[0].shape[1:]
+    if not all(x.shape[1:] == trailing for x in norm):
+        raise ValueError(f"Cannot concatenate: trailing shapes differ: {[x.shape for x in norm]}")
+
+    return np.concatenate(norm, axis=0)
+      
   def limit_rearrange_and_flatten(self, input_data, need_to_shuffle_within_category):
     # Rearrange the input data and get the corresponding labels
     rearranged_data, labels = self.__rearrange_input(input_data, need_to_shuffle_within_category)
     
     # Concatenate the rearranged data and labels along the first axis
     output_data = np.concatenate(rearranged_data, axis=0)
-    output_labels = np.concatenate(labels, axis=0)
+    output_labels = concat_first_axis_no_squeeze(labels)
     
     # Return the concatenated and rearranged data along with their labels
     return output_data, output_labels 
