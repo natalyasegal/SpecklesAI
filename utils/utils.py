@@ -22,11 +22,11 @@ def load_dataset(file_name):
     assert(False)
   return x, y
 
-def load_dataset_x(file_name):
+def load_dataset_x(file_name, allow_pickle=True):
   print(f'Loading {file_name}')
   try:
     with open(file_name, 'rb') as f:
-      x = np.load(f)
+      x = np.load(f, allow_pickle=allow_pickle)
   except EOFError:
     print(f"Failed to load data from {f}, file may be corrupted or empty.")
     assert(False)
