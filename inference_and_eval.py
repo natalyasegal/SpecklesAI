@@ -64,7 +64,7 @@ def main(args):
   if config.be_consistent:
     set_seed(seed_for_init = config.seed_for_init, random_seed = args.random_seed)
   x_test, y_test, x_test_per_category = get_or_create_test_dataset(config, args, need_to_save = True) 
-  config.number_of_classes  = len(x_test_per_category)
+  config.number_of_classes  = len(list(x_test_per_category))
   print("x_test shape:", x_test.shape)
   print("y_test shape:", y_test.shape)
   print("x_test_per_category shape:", x_test_per_category.shape)
