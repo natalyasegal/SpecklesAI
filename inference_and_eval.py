@@ -111,7 +111,7 @@ if __name__ == '__main__':
                         help='test parsed data arranges in chanks, given by category, chank size is designated in config.py',
                         type=str,
                         default='test_per_category.npy')    
-  parser.add_argument('--nclasses',
+    parser.add_argument('--nclasses',
                         help='If provided, overwrites the number of classes',
                         type=int,
                         default=0)
