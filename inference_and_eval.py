@@ -63,6 +63,13 @@ def main(args):
     
   if config.be_consistent:
     set_seed(seed_for_init = config.seed_for_init, random_seed = args.random_seed)
+  
+  if args.nclasses > 0:
+    config.number_of_classes = args.nclasses
+    config.lables_categories = [x for x in range(config.number_of_classes)]
+    config.binary_lables = binarize_lables(config.lables_categories)
+    print(f' number_of_classes = {config.number_of_classes}\n binary_lables={config.binary_lables}')
+  
   x_test, y_test, x_test_per_category = get_or_create_test_dataset(config, args, need_to_save = True) 
   config.number_of_classes  = len(list(x_test_per_category))
   print("x_test shape:", x_test.shape)
@@ -103,8 +110,11 @@ if __name__ == '__main__':
     parser.add_argument('--test_set_per_category_file',
                         help='test parsed data arranges in chanks, given by category, chank size is designated in config.py',
                         type=str,
-                        default='test_per_category.npy')
-
+                        default='test_per_category.npy')    
+  parser.add_argument('--nclasses',
+                        help='If provided, overwrites the number of classes',
+                        type=int,
+                        default=0)
     parser.add_argument('--use_per_subj_config', 
                         action='store_true',
                         help='If specified, uses per_subj experiment config option, this affects mostly printouts. Use pre-created datasets with this option.')
