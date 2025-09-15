@@ -3,7 +3,7 @@ import sys
 import os
 # Append the directory containing split.py to the path
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
-from config.config import Configuration, Configuration_Gen, Configuration_PerSubjExperiment     
+from config.config import Configuration, Configuration_Gen, Configuration_PerSubjExperiment, binarize_lables     
 from preprocessing.preprocessing import Preprocessing
 from evaluation.eval import evaluate_per_chunk, evaluate_per_chunk_e, eval_accumulated, eval_accumulated_e
 from models.model_speech_convlstm_tf import load_model, load_model_from_path, set_seed
