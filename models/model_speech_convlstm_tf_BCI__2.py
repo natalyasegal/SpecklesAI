@@ -4,7 +4,8 @@ from matplotlib import pyplot as plt
 import tensorflow as tf
 import pandas as pd
 import os
-from tensorflow.keras.models import Sequential, BatchNormalization, GroupNormalization, ConvLSTM2D, Dropout, Flatten, Dense
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import BatchNormalization, GroupNormalization, ConvLSTM2D, Dropout, Flatten, Dense
 from tensorflow.keras.constraints import max_norm
 from keras.layers import TFSMLayer, Input
 from keras.models import Model
