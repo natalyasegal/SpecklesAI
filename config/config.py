@@ -47,7 +47,8 @@ class Configuration():
     self.sub_swedish = 'Wernike/swedish'
     self.sub_no = 'Wernike/no_sound'
     self.frames_subdirs_dict = {self.sub_english:"english", self.sub_swedish:"swedish"}
-    CLASSES = list(set(self.frames_subdirs_dict.values()))
+    #CLASSES = list(set(self.frames_subdirs_dict.values()))
+    CLASSES = list(dict.fromkeys(self.frames_subdirs_dict.values()))
     self.number_of_classes = len(CLASSES)
     self.lables_categories = [x for x in range(self.number_of_classes)]
     self.binary_lables = binarize_lables(self.lables_categories)
