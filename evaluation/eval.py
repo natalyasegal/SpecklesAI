@@ -226,7 +226,7 @@ def calc_accumulated_predictions(config, y_test_predicted_per_lable, num_of_chun
   return y_test_predicted_agg
 
 def eval_accumulated_inner(config, predicted, x_test_per_category, num_of_chunks_to_aggregate = 25):
-  y_pred_reduced = [calc_accumulated_predictions(config, y_pred, 25) for y_pred in predicted]
+  y_pred_reduced = [calc_accumulated_predictions(config, y_pred, num_of_chunks_to_aggregate) for y_pred in predicted]
   y_pred_reduced, y_true = flatten_accumulated(np.array(y_pred_reduced), config.binary_lables)
   y_true = np.array(y_true).squeeze()
   auc = roc_auc_score(y_true, y_pred_reduced)
