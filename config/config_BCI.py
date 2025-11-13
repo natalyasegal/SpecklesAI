@@ -47,7 +47,7 @@ class Configuration():
     self.sub_swedish = 'Broca/no'
     #self.sub_no = 'Wernike/no_sound'
     self.frames_subdirs_dict = {self.sub_english:"yes", self.sub_swedish:"no"}
-    CLASSES = list(set(self.frames_subdirs_dict.values()))
+    CLASSES = list(dict.fromkeys(self.frames_subdirs_dict.values()))
     self.number_of_classes = len(CLASSES)
     self.lables_categories = [x for x in range(self.number_of_classes)]
     self.binary_lables = binarize_lables(self.lables_categories)
@@ -157,7 +157,7 @@ class Configuration_Pause(Configuration_Test):
     super().__init__(split_num, verbose)
     self.sub_nothing = 'Broca/nothing'
     self.frames_subdirs_dict = {self.sub_nothing:"pause"}
-    CLASSES = list(set(self.frames_subdirs_dict.values()))
+    CLASSES = list(dict.fromkeys(self.frames_subdirs_dict.values()))
     self.number_of_classes = 1
     self.lables_categories = [x for x in range(self.number_of_classes)]
     self.binary_lables = binarize_lables(self.lables_categories)
