@@ -313,3 +313,33 @@ class Preprocessing():
     x_test, y_test = self.limit_rearrange_and_flatten(x_test_per_category, need_to_shuffle_within_category = False)
     self.log(f'x_test shape is {np.shape(x_test)}, y_test shape is {np.shape(y_test)}')
     return x_test, y_test, x_test_per_category
+
+
+'''
+Tests
+'''
+
+def debug_class_order(config, dates, subjects, out_subdir="train"):
+    prep = Preprocessing(config, verbose=True)
+
+    # Call the private method directly (it returns only in_paths and out_paths in your version)
+    in_paths, out_paths = prep._Preprocessing__get_in_out_paths(dates[0], subjects[0], out_subdir)
+
+    # The subdir order is exactly the dict key order:
+    subdirs = list(config.frames_subdirs_dict.keys())
+
+    print("frames_subdirs_dict:", config.frames_subdirs_dict)
+    print("Expected class order (by dict insertion):")
+    for i, sd in enumerate(subdirs):
+        class_name = config.frames_subdirs_dict[sd]
+        print(f"  Index {i}: {sd} -> '{class_name}'")
+
+    print("\nSubdirs used by preprocessing:")
+    print(subdirs)
+    print("\nOutput paths (aligned with the same order):")
+    print(out_paths)
+    
+    print("\nVerification:")
+    for i, sd in enumerate(subdirs):
+        class_name = config.frames_subdirs_dict[sd]
+        print(f"  subdir '{sd}' maps to class '{class_name}' at index {i}")
