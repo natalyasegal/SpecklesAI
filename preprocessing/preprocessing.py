@@ -144,7 +144,7 @@ class Preprocessing():
           count += 1
 
   def __get_in_out_paths(self, date, subj, out_subdir):
-    in_video_subdirs = list(set(self.config.frames_subdirs_dict.keys()))
+    in_video_subdirs = list(self.config.frames_subdirs_dict.keys())
 
     base_raw_path = f"{self.config.raw_data_path}/{date}/{subj}"
     base_data_path = f"{self.config.data_path}/{out_subdir}/{subj}/{self.config.base_data_path_subdir}"
