@@ -41,12 +41,10 @@ class Configuration():
     #self.max_chunks_num = 2500 #calculated 10sec*10videos*1000fps / 40 frames in chunk, used for aggregted evaluation
     self.raw_data_path = 'exp3'
     self.data_path = 'data' #destination after preprocessing
-    self.base_data_path_subdir = 'w'
-    #self.sub_music = 'Wernike/music'
-    self.sub_english = 'Broca/yes'
-    self.sub_swedish = 'Broca/no'
-    #self.sub_no = 'Wernike/no_sound'
-    self.frames_subdirs_dict = {self.sub_english:"yes", self.sub_swedish:"no"}
+    self.base_data_path_subdir = 'b'
+    self.sub_w_yes = 'Broca/yes' #w stands here for word
+    self.sub_w_no = 'Broca/no'
+    self.frames_subdirs_dict = {self.sub_w_yes:"yes", self.sub_w_no:"no"}
     CLASSES = list(dict.fromkeys(self.frames_subdirs_dict.values()))
     self.number_of_classes = len(CLASSES)
     self.lables_categories = [x for x in range(self.number_of_classes)]
