@@ -42,5 +42,5 @@ def limit_rearrange_and_flatten_s(input_data, need_to_shuffle_within_category, M
     return output_data, output_labels
 
 def test2trainformat(input_data, need_to_shuffle_within_category = False, MAX_CHUNKS_PER_CATEGORY = 500000):
-    x, y = limit_rearrange_and_flatten_s(input_data, need_to_shuffle_within_category)
+    x, y = limit_rearrange_and_flatten_s(input_data, need_to_shuffle_within_category, MAX_CHUNKS_PER_CATEGORY)
     return x, y #subject_normalize_preserve_time(x), y
