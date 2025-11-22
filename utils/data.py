@@ -5,9 +5,8 @@
 '''
 
 import numpy as np
-import sys, os
-sys.path.append(os.getcwd())
-from formatstranslator import test2trainformat
+import sys
+from .formatstranslator import test2trainformat
 
 def print_stats(X: np.ndarray, name_str = ''):
   print(f"{name_str} mean = {round(X.mean(), 2)} std = {round(X.std(), 2)} min = {round(X.min(), 2)} max = {round(X.max(), 2)} X.shape={X.shape},")
