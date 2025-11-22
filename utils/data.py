@@ -5,6 +5,8 @@
 '''
 
 import numpy as np
+import sys, os
+sys.path.append(os.getcwd())
 from formatstranslator import test2trainformat
 
 def print_stats(X: np.ndarray, name_str = ''):
