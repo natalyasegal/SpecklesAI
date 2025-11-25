@@ -4,6 +4,8 @@ norm_mode = "minmax" #"standard"
 test_2_m_n_2 = normalize_per_fixedclip(test_2_m_2, n_chunks_per_clip=5000, mode=norm_mode, gain=10.0)
 '''
 
+import numpy as np
+
 def normalize_per_fixedclip(
     X: np.ndarray,
     n_chunks_per_clip: int = 5000,
