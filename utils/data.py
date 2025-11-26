@@ -8,8 +8,6 @@ import numpy as np
 import sys
 from .formatstranslator import test2trainformat
 
-def print_stats(X: np.ndarray, name_str = ''):
-  print(f"{name_str} mean = {round(X.mean(), 2)} std = {round(X.std(), 2)} min = {round(X.min(), 2)} max = {round(X.max(), 2)} X.shape={X.shape},")
   
 def split_by_chunks(arr: np.ndarray, train_n: int = 500, val_n: int = 250,
                     type_axis: int = 0, chunk_axis: int = 1):
