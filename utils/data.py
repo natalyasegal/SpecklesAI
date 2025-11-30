@@ -76,3 +76,53 @@ def split_from_start(test_m_n, train_n=500, val_n=250):
   assert test_m_n_train.shape == (2, train_n, 40, 32, 32, 1)
   assert test_m_n_val.shape   == (2, val_n, 40, 32, 32, 1)
   return X_train, X_val, X_test, y_train, y_val, y_test
+
+
+'''
+Loading datasets
+'''
+
+def normalize_spatial_exposure_only(x): # for BCI p1, run without this normalization
+    """
+    Normalize only spatial exposure (per sample and per view),
+    preserving temporal and channel dynamics.
+
+    Input:
+        x: ndarray of shape (N, 2, T, W, H, 1)
+    Output:
+        x_norm: same shape, normalized per (sample, view, time, channel)
+    """
+    if x.ndim != 6:
+        raise ValueError("Expected input shape (N, 2, T, W, H, 1)")
+
+    # Transpose to (N, 2, T, H, W, 1) for easier spatial axis access
+    x = np.transpose(x, (0, 1, 2, 4, 3, 5))  # shape: (N, 2, T, H, W, 1)
+
+    # Compute mean and std over H and W only (per sample, view, time, channel)
+    mean = np.mean(x, axis=(3, 4), keepdims=True)  # shape: (N, 2, T, 1, 1, 1)
+    std = np.std(x, axis=(3, 4), keepdims=True) + 1e-6
+
+    # Normalize spatial exposure
+    x_norm = (x - mean) / std
+
+    # Return to original shape (N, 2, T, W, H, 1)
+    x_norm = np.transpose(x_norm, (0, 1, 2, 4, 3, 5))
+    return x_norm
+
+def load_dataset_x(file_name, with_normalization = False):
+  print(f'Loading {file_name}')
+  try:
+    with open(file_name, 'rb') as f:
+      x = np.load(f)
+  except EOFError:
+    print(f"Failed to load data from {f}, file may be corrupted or empty.")
+    assert(False)
+  return normalize_spatial_exposure_only(x) if with_normalization else x  
+
+def load_dataset_test(file_name):
+  x_test_per_category = load_dataset_x(file_name = file_name)
+  x_test, y_test = limit_rearrange_and_flatten_s(x_test_per_category, need_to_shuffle_within_category = False)
+  return x_test, y_test
+
+def load_test2trainformat(file_name, need_to_shuffle_within_category = False):
+  return test2trainformat(load_dataset_x(file_name = file_name), need_to_shuffle_within_category)
