@@ -733,13 +733,13 @@ def run_end_to_end(X: np.ndarray, y: np.ndarray,
                    normalize=False,
                    mae_embed_dim=128,      # encoder width
                    proj_dim=128,           # final embedding size for downstream
-                   mae_epochs=10, #100, #change back to 100
-                   mae_batch=256,
+                   mae_epochs=30, #100
+                   mae_batch=64,
                    mask_ratio=0.9,
                    pool="cls",
                    #val_size=0.2,
                    #test_size=0.2,
-                   seed=42):
+                   seed=9):
     """
     X: (N, 40, 32, 32, 1) or (N, 40, 32, 32)
     y: (N,) or (N,1) with {0,1}
