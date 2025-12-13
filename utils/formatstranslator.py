@@ -44,3 +44,13 @@ def limit_rearrange_and_flatten_s(input_data, need_to_shuffle_within_category, M
 def test2trainformat(input_data, need_to_shuffle_within_category = False, MAX_CHUNKS_PER_CATEGORY = 500000):
     x, y = limit_rearrange_and_flatten_s(input_data, need_to_shuffle_within_category, MAX_CHUNKS_PER_CATEGORY)
     return x, y #subject_normalize_preserve_time(x), y
+
+def make_x_per_category(X, y, class_order=(0, 1)):
+    X = np.asarray(X)
+    y = np.asarray(y)
+    # if one-hot, reduce to argmax
+    if y.ndim > 1 and y.shape[1] > 1:
+        y = np.argmax(y, axis=1)
+    else:
+        y = y.ravel().astype(int)
+    return [X[y == c] for c in class_order]
