@@ -161,4 +161,18 @@ class Configuration_Pause(Configuration_Test):
     self.binary_lables = binarize_lables(self.lables_categories)
     if self.verbose:
       print(f' number_of_classes = {self.number_of_classes}\n binary_lables={self.binary_lables}')
+
+''' Minimal dummy config to make the agg eval work '''
+# Configuration for creating test set separately
+class Configuration_Minimal(Configuration):
+  def __init__(self, split_num, total_number_of_splits = 10, 
+               model_name = "lv_mae_agg25", verbose = True):
+    super().__init__(verbose)
+    self.number_of_splits = total_number_of_splits
+    assert(split_num <= self.number_of_splits)
+    self.split_num = split_num
+    self.model_name = model_name
+
+  def get_number_of_splits(self):
+    return self.number_of_splits
   
