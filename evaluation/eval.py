@@ -216,7 +216,26 @@ def flatten_accumulated(x, binary_labels):
     y_out = np.concatenate(y, axis=0)
     return x_out, y_out
 
-def calc_accumulated_predictions(config, y_test_predicted_per_lable, num_of_chunks_to_aggregate):
+def calc_accumulated_predictions_n(config, probs_1d, K):
+    assert K > 0
+    probs_1d = np.asarray(probs_1d).ravel()
+    N = len(probs_1d)
+
+    # Use FLOOR to avoid creating a partial last block
+    T = N // K                       # number of full non-overlapping blocks
+    if T == 0:
+        if config.verbose:
+            print(f"[WARN] Not enough chunks (N={N}) for K={K}; returning empty.")
+        return np.array([], dtype=float)
+
+    out = np.empty(T, dtype=float)
+    for i in range(T):
+        s = probs_1d[i*K:(i+1)*K]    # exact length K
+        out[i] = float(s.mean())     # or s.sum()/K
+    if config.verbose:
+        print(f"max_chunks_num={N}  blocks(T)={T} (K={K})  len(out)={len(out)}")
+    return out
+def calc_accumulated_predictions_old(config, y_test_predicted_per_lable, num_of_chunks_to_aggregate):
   assert(num_of_chunks_to_aggregate > 0)
   max_chunks_num = len(y_test_predicted_per_lable)
   max_iterations = int(round(max_chunks_num/num_of_chunks_to_aggregate))
