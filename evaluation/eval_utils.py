@@ -5,31 +5,12 @@ import sys
 # Append the parent directory of the current file to sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 from utils.formatstranslator import make_x_per_category
-from evaluation.eval import plot_nice_roc_curve, generate_confusion_matrix_image,  evaluate_model, find_optimal_threshold, flatten_accumulated
+from evaluation.eval import calc_accumulated_predictions, plot_nice_roc_curve, generate_confusion_matrix_image,  evaluate_model, find_optimal_threshold, flatten_accumulated
 
 
 '''
 Helpers:
 '''
-def calc_accumulated_predictions_n(config, probs_1d, K):
-    assert K > 0
-    probs_1d = np.asarray(probs_1d).ravel()
-    N = len(probs_1d)
-
-    # Use FLOOR to avoid creating a partial last block
-    T = N // K                       # number of full non-overlapping blocks
-    if T == 0:
-        if config.verbose:
-            print(f"[WARN] Not enough chunks (N={N}) for K={K}; returning empty.")
-        return np.array([], dtype=float)
-
-    out = np.empty(T, dtype=float)
-    for i in range(T):
-        s = probs_1d[i*K:(i+1)*K]    # exact length K
-        out[i] = float(s.mean())     # or s.sum()/K
-    if config.verbose:
-        print(f"max_chunks_num={N}  blocks(T)={T} (K={K})  len(out)={len(out)}")
-    return out
   
 def aggregate_per_category(config, predicted_per_category, K=25):
     """Aggregate per-chunk probs into K-chunk means per category, then flatten."""
