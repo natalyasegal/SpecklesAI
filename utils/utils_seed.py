@@ -3,7 +3,7 @@ import random
 import numpy as np
 import torch
 
-def set_seed(seed_for_init=1, random_seed=9, use_tf = False):
+def set_seed_all(seed_for_init=1, random_seed=9, use_tf = False):
     """
     Sets all relevant seeds for reproducibility across:
     - Python random
