@@ -216,7 +216,7 @@ def flatten_accumulated(x, binary_labels):
     y_out = np.concatenate(y, axis=0)
     return x_out, y_out
 
-def calc_accumulated_predictions_n(config, probs_1d, K):
+def calc_accumulated_predictions(config, probs_1d, K):
     assert K > 0
     probs_1d = np.asarray(probs_1d).ravel()
     N = len(probs_1d)
