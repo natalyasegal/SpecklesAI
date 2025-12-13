@@ -126,3 +126,9 @@ def load_dataset_test(file_name):
 
 def load_test2trainformat(file_name, need_to_shuffle_within_category = False):
   return test2trainformat(load_dataset_x(file_name = file_name), need_to_shuffle_within_category)
+
+
+def concatenate_train_or_val(x_list, y_list):
+  x = np.concatenate(x_list, axis=0)
+  y = np.concatenate(y_list, axis=0)
+  return x, y
