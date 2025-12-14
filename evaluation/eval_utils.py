@@ -1,6 +1,7 @@
 import numpy as np
 import os
 import sys
+from sklearn.metrics import roc_auc_score
 
 # Append the parent directory of the current file to sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
