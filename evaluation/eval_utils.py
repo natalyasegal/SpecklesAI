@@ -14,7 +14,7 @@ Helpers:
   
 def aggregate_per_category(config, predicted_per_category, K=25):
     """Aggregate per-chunk probs into K-chunk means per category, then flatten."""
-    y_pred_reduced = [calc_accumulated_predictions_n(config, y_pred, K)
+    y_pred_reduced = [calc_accumulated_predictions(config, y_pred, K)
                       for y_pred in predicted_per_category]
     y_pred_reduced, y_true = flatten_accumulated(np.array(y_pred_reduced), config.binary_lables)
     return np.asarray(y_pred_reduced).squeeze(), np.asarray(y_true).squeeze()
