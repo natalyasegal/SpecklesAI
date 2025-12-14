@@ -6,7 +6,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 from utils.formatstranslator import make_x_per_category
 from evaluation.eval import calc_accumulated_predictions, plot_nice_roc_curve, generate_confusion_matrix_image,  evaluate_model, find_optimal_threshold, flatten_accumulated
-from config.config import Configuration_Minimal
+from config.config import Configuration, Configuration_Minimal
 
 '''
 Helpers:
