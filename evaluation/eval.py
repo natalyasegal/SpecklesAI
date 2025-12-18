@@ -128,7 +128,41 @@ def evaluate_model(config, predictions, true_labels, th, filename = 'per_chunk')
   print(f'Results saved to {config.model_name}_{filename}.csv')
   return results_df
 
-def evaluate_per_chunk(config, model, x_test, y_test, show = True):
+
+def evaluate_per_chunk(config, model, x_test, y_test, show = True, thr_frac=0.2):
+  y_test_predicted = model.predict(x_test)
+  print("y_test shape:", y_test.shape)
+  
+  y_test_predicted = np.array(y_test_predicted)
+  print("y_test_predicted shape:", y_test_predicted.shape) 
+
+  # initial chunks to  to learn threshold from:
+  # Decide how many chunks to use for threshold learning
+  n = len(y_test)
+  k = int(np.ceil(n * thr_frac))
+  k = max(1, min(k, n))  # clamp to [1, n]
+  y_thr = y_test[:k]
+  p_thr = y_test_predicted[:k]
+  if k == n:
+    print("Just for exploration: evaluating th on test!")
+    y_test_eval = y_test
+    p_test_eval = y_test_predicted
+  else:
+    # Valid case
+    print("Threshold decided on first chunks; evaluating on held-out remainder")
+    y_test_eval = y_test[k:]
+    p_test_eval = y_test_predicted[k:]
+  
+  # Find optimal probability threshold
+  threshold = find_optimal_threshold(y_thr, p_thr)
+  print(f"ROC optimized threshold learned on first {k}/{n} chunks ({thr_frac:.0%}): {threshold}")
+  results_df = evaluate_model(config, p_test_eval, y_test_eval, threshold)
+  generate_confusion_matrix_image(p_test_eval, y_test_eval, threshold, show, save_path = 'confusion_matrix.png')
+  plot_nice_roc_curve(y_test_eval, p_test_eval, show, save_path = 'roc_curve.png')
+  print(results_df)
+  return results_df
+
+def evaluate_per_chunk_explore(config, model, x_test, y_test, show = True):
   y_test_predicted = model.predict(x_test)
   print("y_test shape:", y_test.shape)
   
