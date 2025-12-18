@@ -278,28 +278,46 @@ def calc_accumulated_predictions_old(config, y_test_predicted_per_lable, num_of_
     print(f'max_chunks_num ={max_chunks_num} max_iterations ={max_iterations}, len of accumulated predictions {len(y_test_predicted_agg)}')
   return y_test_predicted_agg
 
-def eval_accumulated_inner(config, predicted, x_test_per_category, num_of_chunks_to_aggregate = 25):
+def eval_accumulated_inner(config, predicted, x_test_per_category, num_of_chunks_to_aggregate = 25, thr_frac = 0.2):
   y_pred_reduced = [calc_accumulated_predictions(config, y_pred, num_of_chunks_to_aggregate) for y_pred in predicted]
   y_pred_reduced, y_true = flatten_accumulated(np.array(y_pred_reduced), config.binary_lables)
   y_true = np.array(y_true).squeeze()
-  auc = roc_auc_score(y_true, y_pred_reduced)
-  threshold = find_optimal_threshold(y_true, y_pred_reduced)
+  y_pred_reducedauc = roc_auc_score(y_true, y_pred_reduced)
+
+  # initial chunks to  to learn threshold from:
+  # Decide how many chunks to use for threshold learning
+  n = len(y_true)
+  k = int(np.ceil(n * thr_frac))
+  k = max(1, min(k, n))  # clamp to [1, n]
+  y_thr = y_true[:k]
+  p_thr = y_pred_reduced[:k]
+  if k == n:
+    print("Just for exploration: evaluating th on test!")
+    y_test_eval = y_true
+    p_test_eval = y_pred_reduced
+  else:
+    # Valid case
+    print("Threshold decided on first chunks; evaluating on held-out remainder")
+    y_test_eval = y_true[k:]
+    p_test_eval = y_pred_reduced[k:]
+  
+  threshold = find_optimal_threshold(y_thr, p_thr) 
   if config.verbose:
-      print(f' auc = {auc}, on {len(y_true)} values from 2 categories')
+      print(f' on {len(y_test_eval)} values from 2 categories')
       print(np.shape(y_pred_reduced))
       print(np.shape(y_true))
       print(f'The chosen(using AUC-ROC curve) optimal threshold for aggregated chunks is {threshold}')
-  results_df_a = evaluate_model(config, y_pred_reduced, y_true, threshold, filename = 'aggregated')
-  y_pred_reduced = np.array(y_pred_reduced)
-  generate_confusion_matrix_image(y_pred_reduced, y_true, threshold, show=False, save_path = 'confusion_matrix_agg.png')
-  plot_nice_roc_curve(y_true, y_pred_reduced, show=True, save_path = 'roc_curve_agg.png')
+  results_df_a = evaluate_model(config, p_test_eval, y_test_eval, threshold, filename = 'aggregated')
+  p_test_eval = np.array(p_test_eval)
+  generate_confusion_matrix_image(p_test_eval, y_test_eval, threshold, show=False, save_path = 'confusion_matrix_agg.png')
+  plot_nice_roc_curve(y_test_eval, p_test_eval, show=True, save_path = 'roc_curve_agg.png')
   print('Accumulated metrics:')
   print(results_df_a)
   return results_df_a
 
-def eval_accumulated(config, model, x_test_per_category, num_of_chunks_to_aggregate = 25):
+def eval_accumulated(config, model, x_test_per_category, num_of_chunks_to_aggregate = 25, thr_frac = 0.2):
     y_test_predicted = [model.predict(x_test) for x_test in x_test_per_category]
-    eval_accumulated_inner(config, y_test_predicted, x_test_per_category, num_of_chunks_to_aggregate)
+    eval_accumulated_inner(config, y_test_predicted, x_test_per_category, num_of_chunks_to_aggregate, thr_frac)
 
 def eval_accumulated_e(config, models, x_test_per_category, num_of_chunks_to_aggregate=25):
     """
@@ -322,6 +340,6 @@ def eval_accumulated_e(config, models, x_test_per_category, num_of_chunks_to_agg
 
     # Pass the averaged predictions to eval_accumulated_inner
     results_df_a = eval_accumulated_inner(
-        config, averaged_predictions_per_category, x_test_per_category, num_of_chunks_to_aggregate
+        config, averaged_predictions_per_category, x_test_per_category, num_of_chunks_to_aggregate, thr_frac=1
     )
     return results_df_a
