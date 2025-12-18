@@ -79,7 +79,7 @@ def main(args):
   if not args.need_ensemble:
     model = load_model(config)
     res_df = evaluate_per_chunk(config, model, x_test, y_test, thr_frac=args.thr_frac)
-    ref_df_a = eval_accumulated(config, model, x_test_per_category, num_of_chunks_to_aggregate = args.num_of_chunks_to_aggregate)
+    ref_df_a = eval_accumulated(config, model, x_test_per_category, num_of_chunks_to_aggregate = args.num_of_chunks_to_aggregate, thr_frac=args.thr_frac)
   else:
     directory_path = "all_models"
     subdirs = list_subdirectories(directory_path)
