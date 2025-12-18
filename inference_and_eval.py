@@ -78,7 +78,7 @@ def main(args):
   
   if not args.need_ensemble:
     model = load_model(config)
-    res_df = evaluate_per_chunk(config, model, x_test, y_test)
+    res_df = evaluate_per_chunk(config, model, x_test, y_test, thr_frac=args.thr_frac)
     ref_df_a = eval_accumulated(config, model, x_test_per_category, num_of_chunks_to_aggregate = args.num_of_chunks_to_aggregate)
   else:
     directory_path = "all_models"
@@ -104,6 +104,10 @@ if __name__ == '__main__':
                         help='If provided, overwrites the parameter in config.py with the same name, given the split number, the actual split will be read from a configuation file, you provide',
                         type=int,
                         default=6)
+    parser.add_argument('--thr_frac',
+                        help='fraction of data to use for th optimization',
+                        type=float,
+                        default=0.2)
     parser.add_argument('--read_stored_dataset', 
                         action='store_true',
                         help='If specified, read parsed frame chunks for dataset; otherwise, create them.')
