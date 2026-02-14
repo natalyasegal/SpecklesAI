@@ -42,9 +42,11 @@ class Configuration():
     self.raw_data_path = 'exp3'
     self.data_path = 'data' #destination after preprocessing
     self.base_data_path_subdir = 'b'
-    self.sub_w_yes = 'Broca/yes' #w stands here for word
-    self.sub_w_no = 'Broca/no'
-    self.frames_subdirs_dict = {self.sub_w_yes:"yes", self.sub_w_no:"no"}
+    self.sub_w_1 = 'Broca/1help' #w stands here for word
+    self.sub_w_2 = 'Broca/2tea'
+    self.sub_w_3 = 'Broca/3stop'
+    self.sub_w_4 = 'Broca/4home'       
+    self.frames_subdirs_dict = {self.sub_w_1:"1help", self.sub_w_2:"2tea", self.sub_w_3:"3stop", self.sub_w_4:"4home"}
     CLASSES = list(dict.fromkeys(self.frames_subdirs_dict.values()))
     self.number_of_classes = len(CLASSES)
     self.lables_categories = [x for x in range(self.number_of_classes)]
