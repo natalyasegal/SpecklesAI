@@ -61,7 +61,7 @@ def split_by_chunks(arr: np.ndarray, train_n: int = 500, val_n: int = 250,
 
 
 # test_10_m_n.shape == (2, number_of_chunks, 40, 32, 32, 1)
-def split_from_start(test_m_n, train_n=500, val_n=250, n_classes = 2):
+def split_from_start(test_m_n, train_n=500, val_n=250):
   test_m_n_train, test_m_n_val, test_m_n_test = split_by_chunks(
       test_m_n, train_n=train_n, val_n=val_n, type_axis=0, chunk_axis=1
   )
@@ -72,9 +72,9 @@ def split_from_start(test_m_n, train_n=500, val_n=250, n_classes = 2):
   print((test_m_n_train.shape,test_m_n_val.shape, test_m_n_test.shape))
   print((X_train.shape, X_val.shape, X_test.shape))
   print((y_train.shape, y_val.shape, y_test.shape))
-  # Optional sanity checks for your specific case:
-  assert test_m_n_train.shape == (n_classes, train_n, 40, 32, 32, 1)
-  assert test_m_n_val.shape   == (n_classes, val_n, 40, 32, 32, 1)
+  # sanity checks:
+  assert test_m_n_train.shape[1:] == (train_n, 40, 32, 32, 1)
+  assert test_m_n_val.shape[1:]   == (val_n,   40, 32, 32, 1)
   return X_train, X_val, X_test, y_train, y_val, y_test
 
 
