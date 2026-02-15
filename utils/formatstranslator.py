@@ -30,9 +30,9 @@ def rearrange_input_s(x, need_to_shuffle_within_category,
           y[i] = np.full((np.shape(x[i])[0], len(binary_lables[0])), binary_lables[i])
       return x, np.array(y)
 
-def limit_rearrange_and_flatten_s(input_data, need_to_shuffle_within_category, MAX_CHUNKS_PER_CATEGORY):
+def limit_rearrange_and_flatten_s(input_data, need_to_shuffle_within_category, MAX_CHUNKS_PER_CATEGORY, number_of_classes = 2):
     # Rearrange the input data and get the corresponding labels
-    rearranged_data, labels = rearrange_input_s(input_data, need_to_shuffle_within_category, MAX_CHUNKS_PER_CATEGORY)
+    rearranged_data, labels = rearrange_input_s(input_data, need_to_shuffle_within_category, MAX_CHUNKS_PER_CATEGORY, number_of_classes=number_of_classes)
 
     # Concatenate the rearranged data and labels along the first axis
     output_data = np.concatenate(rearranged_data, axis=0)
@@ -42,7 +42,11 @@ def limit_rearrange_and_flatten_s(input_data, need_to_shuffle_within_category, M
     return output_data, output_labels
 
 def test2trainformat(input_data, need_to_shuffle_within_category = False, MAX_CHUNKS_PER_CATEGORY = 500000):
-    x, y = limit_rearrange_and_flatten_s(input_data, need_to_shuffle_within_category, MAX_CHUNKS_PER_CATEGORY)
+    if input_data is None:
+        return None, None
+
+    number_of_classes = len(input_data)
+    x, y = limit_rearrange_and_flatten_s(input_data, need_to_shuffle_within_category, MAX_CHUNKS_PER_CATEGORY, number_of_classes=number_of_classes)
     return x, y #subject_normalize_preserve_time(x), y
 
 def make_x_per_category(X, y, class_order=(0, 1)):
