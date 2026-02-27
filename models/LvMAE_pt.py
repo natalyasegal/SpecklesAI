@@ -263,6 +263,7 @@ def concat_temporal_embeddings(Z: np.ndarray, y: np.ndarray, K: int = 1):
     assert Z.ndim == 2 and y.ndim == 1 and len(Z) == len(y), "Bad shapes"
     N, D = Z.shape
     if K <= 1 or N <= K:
+        print("------------ cannot concatenate, returning a copy ------------")
         return (Z.copy(), y.copy()) if K <= 1 else (Z[-1:].repeat(1, axis=0), y[-1:])
     # simple, robust loop (fast enough for typical N)
     Zk = np.empty((N - K + 1, K * D), dtype=Z.dtype)
