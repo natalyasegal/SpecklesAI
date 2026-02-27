@@ -99,3 +99,18 @@ def train_eval_xgboost_classifier(Z_train, y_train, Z_val, y_val, Z_test,
 
     plot_AUC(proba_val, y_val_c, val_auc, best_thr, proba_test, y_test_c, test_auc)
   return clf, best_thr, val_auc, test_auc, proba_val, proba_test, y_test_c
+
+def train_and_eval_classifier_on_embeddings(test_inp, train_n=250, val_n=250, 
+                                            K = 1, class_names_list = ["MI", "CC"]):
+
+  model, opt2, scaler2, start_ep = load_for_resume_and_infer(VideoMAE, "artifacts_lvmae_1/checkpoint.pt")
+  X_train, X_val, X_test, y_train, y_val, y_test = split_from_start(test_inp, 
+                                                                    train_n=train_n, val_n=val_n)
+  # train_n and val_n are numbers of 40 ms chunks used for train/val, 250 chunks -> 10 s per class
+
+  Z_train, y_train = extract_embeddings_wrapper_one(model, X_train, y_train)
+  Z_val, y_val  = extract_embeddings_wrapper_one(model, X_val, y_val)
+  Z_test, y_test = extract_embeddings_wrapper_one(model, X_test, y_test)
+
+  return train_eval_xgboost_classifier(Z_train,y_train,Z_val,y_val,Z_test,y_test,
+                                       K = K, class_names_list = class_names_list)
