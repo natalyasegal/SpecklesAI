@@ -7,6 +7,7 @@ from sklearn.metrics import (classification_report, confusion_matrix, ConfusionM
 from xgboost.callback import EarlyStopping
 
 import sys
+import os
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 from utils.embeddings_utils import concat_temporal_embeddings
 
