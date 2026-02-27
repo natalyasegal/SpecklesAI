@@ -6,6 +6,9 @@ from sklearn.metrics import (classification_report, confusion_matrix, ConfusionM
     roc_auc_score, accuracy_score, roc_curve)
 from xgboost.callback import EarlyStopping
 
+sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+from utils.embeddings_utils import concat_temporal_embeddings
+
 ''' AUC-ROC curve Presentation '''
 def _closest_idx(thr, target):
       # choose index with minimal |thr - target|
