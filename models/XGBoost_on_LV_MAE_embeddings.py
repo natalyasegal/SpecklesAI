@@ -12,6 +12,7 @@ sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 from models.LvMAE_pt import load_for_resume_and_infer, extract_embeddings_wrapper_one
 from models.LvMAE_pt import *
 from models.binary_XGBoost import train_eval_xgboost_classifier
+from models.multiclass_XGBoost train_eval_xgboost_classifier_multiclass
 from utils.data import split_from_start
 
 
