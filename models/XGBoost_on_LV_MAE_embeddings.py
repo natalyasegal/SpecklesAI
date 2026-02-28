@@ -11,7 +11,7 @@ import os
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 from models.binary_XGBoost import train_eval_xgboost_classifier
 from utils.data import split_from_start
-from models.LvMAE_pt import extract_embeddings_wrapper_one
+from models.LvMAE_pt import extract_embeddings_wrapper_one, load_for_resume_and_infer
 
 
 def train_and_eval_classifier_on_embeddings(test_inp, train_n=250, val_n=250, 
