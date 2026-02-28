@@ -42,9 +42,10 @@ class Configuration():
     self.raw_data_path = 'exp3'
     self.data_path = 'data' #destination after preprocessing
     self.base_data_path_subdir = 'b'
-    self.sub_w_yes = 'motor/MI' #w stands here for word
-    self.sub_w_no = 'motor/CC'
-    self.frames_subdirs_dict = {self.sub_w_yes:"MI", self.sub_w_no:"CC"}
+    self.sub_w_mi = 'motor/MI' #1
+    self.sub_w_em = 'motor/EM' #2
+    self.sub_w_cc = 'motor/CC' #3
+    self.frames_subdirs_dict = {self.sub_w_mi:"MI", self.sub_w_em:"EM", self.sub_w_cc:"CC"}
     CLASSES = list(dict.fromkeys(self.frames_subdirs_dict.values()))
     self.number_of_classes = len(CLASSES)
     self.lables_categories = [x for x in range(self.number_of_classes)]
