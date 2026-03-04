@@ -41,7 +41,7 @@ class Configuration():
     #self.max_chunks_num = 2500 #calculated 10sec*10videos*1000fps / 40 frames in chunk, used for aggregted evaluation
     self.raw_data_path = 'exp3'
     self.data_path = 'data' #destination after preprocessing
-    self.base_data_path_subdir = 'b'
+    self.base_data_path_subdir = 'w'
     self.sub_native = 'Wernike/mother_tonque'
     self.sub_english = 'Wernike/english'
     self.sub_swedish = 'Wernike/swedish'
