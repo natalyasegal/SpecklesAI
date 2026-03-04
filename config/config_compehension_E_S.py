@@ -25,6 +25,53 @@ def load_yaml(file_path):
         data = yaml.safe_load(file)
     return data
 
+
+class Configuration():
+  def __init__(self, verbose = True):
+    self.verbose = verbose  
+    self.subjects_and_dates_config_file_name = 'SpecklesAI/config/config_files/subjects_and_dates.yaml'
+    self.models_path='models'
+    self.create_images = True
+    self.be_consistent = True # initializze seeds for consistent results
+    self.seed_for_init = 1 #seed for initialization
+
+    self.MAX_CHUNKS_PER_CATEGORY = 100000
+    self.chunk_size = 40 #64 #destination temporal chunk size
+    self.frame_size_x = 32 #64 #128 # destination frames images size after resizing x
+    self.frame_size_y = 32 #64 #128 # destination frames images size after resizing y
+    #self.max_chunks_num = 2500 #calculated 10sec*10videos*1000fps / 40 frames in chunk, used for aggregted evaluation
+    self.raw_data_path = 'exp3'
+    self.data_path = 'data' #destination after preprocessing
+    self.base_data_path_subdir = 'w'
+    self.sub_native = 'Wernike/mother_tonque'
+    self.sub_english = 'Wernike/english'
+    self.sub_swedish = 'Wernike/swedish'
+    self.sub_music = 'Wernike/music'
+    self.sub_no = 'Wernike/no_sound'
+    self.frames_subdirs_dict = {self.sub_english:"english", self.sub_swedish:"swedish"}
+    CLASSES = list(dict.fromkeys(self.frames_subdirs_dict.values()))
+    self.number_of_classes = len(CLASSES)
+    self.lables_categories = [x for x in range(self.number_of_classes)]
+    self.binary_lables = binarize_lables(self.lables_categories)
+    if self.verbose:
+      print(f' number_of_classes = {self.number_of_classes}\n binary_lables={self.binary_lables}')
+  
+  def get_number_of_subjects(self):
+    with open(self.subjects_and_dates_config_file_name, 'r') as file:
+        data = yaml.safe_load(file)
+        subject_config = data.get('subjects', {})
+    
+    # Return the number of subjects
+    return len(subject_config)
+      
+  def set_split(self, train_dates, train_subjects, val_dates, val_subjects, test_dates, test_subjects):
+    self.train_dates = train_dates
+    self.train_subjects = train_subjects
+    self.val_dates = val_dates
+    self.val_subjects = val_subjects
+    self.test_dates = test_dates
+    self.test_subjects = test_subjects
+        
 class Configuration_Gen(Configuration):
   def __init__(self, split_num, config_file_name = 'SpecklesAI/config/config_files/sample_gen_split.yaml', verbose = True):
     super().__init__(verbose)
