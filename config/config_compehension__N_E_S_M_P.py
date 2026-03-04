@@ -42,12 +42,12 @@ class Configuration():
     self.raw_data_path = 'exp3'
     self.data_path = 'data' #destination after preprocessing
     self.base_data_path_subdir = 'b'
-    self.sub_native = 'Wernike/native'
+    self.sub_native = 'Wernike/mother_tonque'
     self.sub_english = 'Wernike/english'
     self.sub_swedish = 'Wernike/swedish'
     self.sub_music = 'Wernike/music'
     self.sub_no = 'Wernike/no_sound'
-    self.frames_subdirs_dict = {self.sub_native:"native", self.sub_english:"english", self.sub_swedish:"swedish", self.sub_music:"music", self.sub_no:"no_sound"}
+    self.frames_subdirs_dict = {self.sub_native:"mother_tonque", self.sub_english:"english", self.sub_swedish:"swedish", self.sub_music:"music", self.sub_no:"no_sound"}
     CLASSES = list(dict.fromkeys(self.frames_subdirs_dict.values()))
     self.number_of_classes = len(CLASSES)
     self.lables_categories = [x for x in range(self.number_of_classes)]
