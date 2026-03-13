@@ -44,7 +44,7 @@ class Configuration():
     self.base_data_path_subdir = 'b'
     self.sub_w_yes = 'visual/circle_im' #w stands here for word
     self.sub_w_no = 'visual/triangle_im'
-    self.frames_subdirs_dict = {self.sub_w_yes:"MI", self.sub_w_no:"CC"}
+    self.frames_subdirs_dict = {self.sub_w_yes:"circle_im", self.sub_w_no:"triangle_im"}
     CLASSES = list(dict.fromkeys(self.frames_subdirs_dict.values()))
     self.number_of_classes = len(CLASSES)
     self.lables_categories = [x for x in range(self.number_of_classes)]
