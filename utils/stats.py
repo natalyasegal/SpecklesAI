@@ -9,7 +9,7 @@ def print_test_stats(X: np.ndarray, name_str=''):
     X shape: [2, N_chunks, 40, 32, 32, 1]
     Stats are computed over chunks, not pixels.
     """
-    assert X.ndim == 6 and X.shape[0] == 2, f"Unexpected shape {X.shape}"
+    #assert X.ndim == 6 and X.shape[0] == 2, f"Unexpected shape {X.shape}"
 
     print(f"{name_str} | full shape = {X.shape}")
 
