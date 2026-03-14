@@ -164,7 +164,7 @@ def train_eval_xgboost_classifier_multiclass( Z_train,y_train,Z_val,y_val,
     if class_names is None:
         class_names = [f"class_{i}" for i in range(n_classes)]
     print(classification_report(y_test_c, ypt, target_names=class_names))
-    cm = get_multiclass_cm_with_percents(proba_test, y_test_c, ypt, cmap=cmap)
+    cm = get_multiclass_cm_with_percents(proba_test, y_test_c, ypt)
     display_multiclass_cm_with_percents(cm, class_names, cmap=cmap)
     plot_multiclass_roc_ovr(proba_val, y_val_c, proba_test, y_test_c, class_names=class_names)
     return booster,val_auc,test_auc,val_acc,test_acc,proba_val,proba_test,y_test_c,ypt,cm
