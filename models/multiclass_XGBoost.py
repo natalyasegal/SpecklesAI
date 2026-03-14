@@ -110,8 +110,68 @@ def train_eval_xgb_train_api_multiclass(
 
     return booster, val_auc, test_auc, val_acc, test_acc, proba_val, proba_test, y_pred_val, y_pred_test
 
+''' Helper function from DR repository'''
+def display_multiclass_cm_with_percents(cm, class_names, cmap='viridis'):
+  '''
+  cmap="Blues" is a good alternative
+  '''
+  n_classes = cm.shape[0]
+  if class_names is None:
+      class_names = [f"class_{i}" for i in range(n_classes)]
 
-def train_eval_xgboost_classifier_multiclass(
+  cm_pct = cm / cm.sum(axis=1, keepdims=True)
+
+  disp = ConfusionMatrixDisplay(confusion_matrix=cm_pct, display_labels=class_names)
+  disp.plot(xticks_rotation=45, include_values=False, cmap=cmap)
+
+  high_color = "black"
+  low_color = "white"
+  if "Blues" in cmap:
+      high_color = "white"
+      low_color = "black"
+  elif "viridis_r" in cmap:
+      high_color = "purple"
+      low_color = "yellow"
+
+  for i in range(n_classes):
+      for j in range(n_classes):
+          pct = cm_pct[i, j] * 100
+          color = low_color if cm_pct[i, j] < 0.5 else high_color
+          disp.ax_.text(j, i, f"{cm[i, j]}\n{pct:.1f}%", ha="center", va="center",
+                        color=color, fontsize=11)
+
+def get_multiclass_cm_with_percents(proba_test, y_test_c, ypt):
+  n_classes = proba_test.shape[1]
+  cm = confusion_matrix(y_test_c, ypt, labels=list(range(n_classes)))
+  return cm
+
+def train_eval_xgboost_classifier_multiclass( Z_train,y_train,Z_val,y_val,
+    Z_test,y_test,seed=9, K=1, show=True, class_names=None, cmap='viridis'):
+  
+    # Temporal concat
+    Z_train_c, y_train_c = concat_temporal_embeddings(Z_train, y_train, K)
+    Z_val_c,   y_val_c   = concat_temporal_embeddings(Z_val,   y_val,   K)
+    Z_test_c,  y_test_c  = concat_temporal_embeddings(Z_test,  y_test,  K)
+    print(f"After temporal concat (K={K}): train {Z_train_c.shape}, val {Z_val_c.shape}, test {Z_test_c.shape}")
+
+    booster, val_auc, test_auc, val_acc, test_acc, proba_val, proba_test, ypv, ypt = \
+        train_eval_xgb_train_api_multiclass(Z_train_c, y_train_c, Z_val_c, y_val_c, Z_test_c, y_test_c, seed=seed)
+
+    print(f"[XGB-MC] VAL : AUC(ovr,macro)={val_auc:.4f} | ACC={val_acc:.4f}")
+    print(f"[XGB-MC] TEST: AUC(ovr,macro)={test_auc:.4f} | ACC={test_acc:.4f}")
+
+    n_classes = proba_test.shape[1]
+    if class_names is None:
+        class_names = [f"class_{i}" for i in range(n_classes)]
+    print(classification_report(y_test_c, ypt, target_names=class_names))
+    cm = get_multiclass_cm_with_percents(proba_test, y_test_c, ypt, cmap=cmap)
+    display_multiclass_cm_with_percents(cm, class_names, cmap=cmap)
+    plot_multiclass_roc_ovr(proba_val, y_val_c, proba_test, y_test_c, class_names=class_names)
+    return booster,val_auc,test_auc,val_acc,test_acc,proba_val,proba_test,y_test_c,ypt,cm
+        
+
+
+def train_eval_xgboost_classifier_multiclass_old(
     Z_train, y_train, Z_val, y_val, Z_test, y_test,
     seed=9, K=1, show=True, class_names=None
 ):
@@ -144,3 +204,4 @@ def train_eval_xgboost_classifier_multiclass(
 
         plot_multiclass_roc_ovr(proba_val, y_val_c, proba_test, y_test_c, class_names=class_names)
     return booster, val_auc, test_auc, val_acc, test_acc, proba_val, proba_test, y_test_c
+    
