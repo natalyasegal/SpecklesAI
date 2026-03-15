@@ -146,7 +146,7 @@ def get_multiclass_cm_with_percents(proba_test, y_test_c, ypt):
   return cm
 
 def train_eval_xgboost_classifier_multiclass( Z_train,y_train,Z_val,y_val,
-    Z_test,y_test,seed=9, K=1, show=True, class_names=None, cmap='viridis'):
+    Z_test,y_test,seed=9, K=1, show=True, class_names=None, cmap='viridis', show=True):
   
     # Temporal concat
     Z_train_c, y_train_c = concat_temporal_embeddings(Z_train, y_train, K)
@@ -165,10 +165,10 @@ def train_eval_xgboost_classifier_multiclass( Z_train,y_train,Z_val,y_val,
         class_names = [f"class_{i}" for i in range(n_classes)]
     print(classification_report(y_test_c, ypt, target_names=class_names))
     cm = get_multiclass_cm_with_percents(proba_test, y_test_c, ypt)
-    display_multiclass_cm_with_percents(cm, class_names, cmap=cmap)
-    plot_multiclass_roc_ovr(proba_val, y_val_c, proba_test, y_test_c, class_names=class_names)
+    if show:
+        display_multiclass_cm_with_percents(cm, class_names, cmap=cmap)
+        plot_multiclass_roc_ovr(proba_val, y_val_c, proba_test, y_test_c, class_names=class_names)
     return booster,val_auc,test_auc,val_acc,test_acc,proba_val,proba_test,y_test_c,ypt,cm
-        
 
 
 def train_eval_xgboost_classifier_multiclass_old(
