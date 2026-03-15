@@ -32,10 +32,9 @@ def train_and_eval_classifier_on_embeddings(test_inp, train_n=250, val_n=250,
 
 
 def train_and_eval_multiclass_classifier_on_embeddings(inp_data, train_n=250, val_n=250,
-                                        K = 1, class_names_list = None, cmap='viridis'):
+                                        K = 1, class_names_list = None, cmap='viridis', show=True):
   model, opt2, scaler2, start_ep = load_for_resume_and_infer(VideoMAE, "artifacts_lvmae_1/checkpoint.pt")
-  X_train, X_val, X_test, y_train, y_val, y_test = split_from_start(inp_data,
-                                                                    train_n=train_n, val_n=val_n)
+  X_train, X_val, X_test, y_train, y_val, y_test = split_from_start(inp_data,train_n=train_n, val_n=val_n)
   y_train = np.argmax(y_train, axis=1)
   y_val   = np.argmax(y_val,   axis=1)
   y_test  = np.argmax(y_test,  axis=1)
@@ -52,5 +51,5 @@ def train_and_eval_multiclass_classifier_on_embeddings(inp_data, train_n=250, va
   Z_val, y_val  = extract_embeddings_wrapper_one(model, X_val, y_val)
   Z_test, y_test = extract_embeddings_wrapper_one(model, X_test, y_test)
 
-  return train_eval_xgboost_classifier_multiclass(Z_train,y_train,Z_val,y_val,Z_test,y_test,K=K, class_names=class_names_list,cmap=cmap)
+  return train_eval_xgboost_classifier_multiclass(Z_train,y_train,Z_val,y_val,Z_test,y_test,K=K, class_names=class_names_list,cmap=cmap,show=show)
                                             
