@@ -146,7 +146,7 @@ def get_multiclass_cm_with_percents(proba_test, y_test_c, ypt):
   return cm
 
 def train_eval_xgboost_classifier_multiclass( Z_train,y_train,Z_val,y_val,
-    Z_test,y_test,seed=9, K=1, show=True, class_names=None, cmap='viridis', show=True):
+    Z_test,y_test,seed=9, K=1, show=True, class_names=None, cmap='viridis'):
   
     # Temporal concat
     Z_train_c, y_train_c = concat_temporal_embeddings(Z_train, y_train, K)
