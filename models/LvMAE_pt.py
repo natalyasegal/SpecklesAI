@@ -597,7 +597,7 @@ def data_sanity(X, y):
     assert y.ndim == 1 and len(y) == X.shape[0]
     return X, y
 
-def extract_embeddings_wrapper_one(model, X, y, pool="cls", normalize=False, seed = 9,
+def extract_embeddings_wrapper_one(model, X, y, pool="cls", normalize=False, seed = 9, batch_size=512, shuffle=False, num_workers=0,
                        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")):
     X, y = data_sanity(X, y)
 
@@ -606,7 +606,7 @@ def extract_embeddings_wrapper_one(model, X, y, pool="cls", normalize=False, see
     dset_cls = NumpyVideoDataset(X, y, normalize=normalize)
 
     print("==> Extracting embeddings (proj_dim) ...")
-    loader_emb_set = DataLoader(dset_cls, batch_size=512, shuffle=False, num_workers=0, pin_memory=True)
+    loader_emb_set = DataLoader(dset_cls, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers, pin_memory=True)
     Z_set = extract_embeddings(model, loader_emb_set, device, pool=pool)
     print(f"Emb dims: set {Z_set.shape}")
     return Z_set, y
