@@ -3,7 +3,7 @@ from sklearn.metrics import roc_curve, roc_auc_score
 import matplotlib.pyplot as plt
 import xgboost as xgb 
 import numpy as np
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, ConfusionMatrixDisplay, roc_auc_score
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, ConfusionMatrixDisplay, roc_auc_score, f1_score
 
 import sys
 import os
@@ -156,15 +156,18 @@ def train_eval_xgboost_classifier_multiclass( Z_train,y_train,Z_val,y_val,
 
     booster, val_auc, test_auc, val_acc, test_acc, proba_val, proba_test, ypv, ypt = \
         train_eval_xgb_train_api_multiclass(Z_train_c, y_train_c, Z_val_c, y_val_c, Z_test_c, y_test_c, seed=seed)
-
+    test_macro_f1 = f1_score(y_test_c, ypt, average='macro')
+        
     print(f"[XGB-MC] VAL : AUC(ovr,macro)={val_auc:.4f} | ACC={val_acc:.4f}")
-    print(f"[XGB-MC] TEST: AUC(ovr,macro)={test_auc:.4f} | ACC={test_acc:.4f}")
+    #print(f"[XGB-MC] TEST: AUC(ovr,macro)={test_auc:.4f} | ACC={test_acc:.4f}")
+    print(f"[XGB-MC] TEST: AUC(ovr,macro)={test_auc:.4f} | ACC={test_acc:.4f} | Macro-F1={test_macro_f1:.4f}")
 
     n_classes = proba_test.shape[1]
     if class_names is None:
         class_names = [f"class_{i}" for i in range(n_classes)]
     print(classification_report(y_test_c, ypt, target_names=class_names))
     cm = get_multiclass_cm_with_percents(proba_test, y_test_c, ypt)
+
     if show:
         display_multiclass_cm_with_percents(cm, class_names, cmap=cmap)
         plot_multiclass_roc_ovr(proba_val, y_val_c, proba_test, y_test_c, class_names=class_names)
