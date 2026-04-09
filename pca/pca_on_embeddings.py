@@ -1,7 +1,7 @@
 import sys
 sys.path.append('/content/SpecklesAI')   # add package root to Python path
 
-from models.LvMAE_pt import extract_embeddings_wrapper_one
+from models.LvMAE_pt import extract_embeddings_wrapper_one, load_for_resume_and_infer
 from utils.embeddings_utils import concat_temporal_embeddings # sliding window -> target size: N-k+1
 from pca.pca import visualize_embeddings_pca_3d
 
