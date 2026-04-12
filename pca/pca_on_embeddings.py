@@ -1,3 +1,4 @@
+import numpy as np
 import sys
 sys.path.append('/content/SpecklesAI')   # add package root to Python path
 
