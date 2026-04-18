@@ -53,6 +53,24 @@ def test2trainformat(input_data, need_to_shuffle_within_category = False, MAX_CH
                                          number_of_classes=number_of_classes, Verbose = Verbose)
     return x, y #subject_normalize_preserve_time(x), y
 
+def test2trainformat_binary_safe(input_data, need_to_shuffle_within_category=False,
+                                 MAX_CHUNKS_PER_CATEGORY=500000, Verbose=False):
+    x, y = test2trainformat(
+        input_data,
+        need_to_shuffle_within_category=need_to_shuffle_within_category,
+        MAX_CHUNKS_PER_CATEGORY=MAX_CHUNKS_PER_CATEGORY,
+        Verbose=Verbose
+    )
+
+    if y is None:
+        return x, y
+
+    # Binary case from LabelBinarizer usually comes as (N, 1)
+    if hasattr(y, "ndim") and y.ndim == 2 and y.shape[1] == 1:
+        y = y.ravel().astype(int)
+
+    return x, y
+
 def make_x_per_category(X, y, class_order=(0, 1)):
     X = np.asarray(X)
     y = np.asarray(y)
