@@ -106,3 +106,101 @@ def visualize_embeddings_pca_3d(
     )
 
     return X_pca_3d, pca
+
+
+
+def reduce_embeddings_pca_2d(X, scale=True, random_state=42):
+    """
+    Fast linear 2D reduction using PCA.
+    Useful for visualization or as a simple baseline reduction.
+    """
+    X = np.asarray(X)
+
+    if scale:
+        X_proc = StandardScaler().fit_transform(X)
+    else:
+        X_proc = X.copy()
+
+    if min(X_proc.shape[0], X_proc.shape[1]) < 2:
+        raise ValueError(
+            f"Need at least 2 samples/features for 2D PCA, got shape {X_proc.shape}"
+        )
+
+    pca = PCA(n_components=2, random_state=random_state)
+    X_2d = pca.fit_transform(X_proc)
+    return X_2d, pca
+
+
+def plot_2d_embeddings_by_true_labels(
+    X_2d,
+    y,
+    title="2D embedding visualization by true labels",
+    class_names=None,
+    alpha=0.75,
+    s=20,
+):
+    """
+    2D scatter where colors correspond to true labels.
+    """
+    X_2d, y = _check_xy_shapes(X_2d, y)
+
+    if X_2d.shape[1] != 2:
+        raise ValueError(f"X_2d must have shape (N, 2), got {X_2d.shape}")
+
+    unique_labels = np.unique(y)
+    cmap = plt.colormaps.get_cmap("tab10")
+
+    fig, ax = plt.subplots(figsize=(8, 6))
+
+    for i, label in enumerate(unique_labels):
+        mask = y == label
+
+        if class_names is not None and i < len(class_names):
+            name = class_names[i]
+        else:
+            name = f"class_{label}"
+
+        ax.scatter(
+            X_2d[mask, 0],
+            X_2d[mask, 1],
+            s=s,
+            alpha=alpha,
+            color=cmap(i % 10),
+            label=name,
+        )
+
+    ax.set_title(title, fontsize=14)
+    ax.set_xlabel("PC 1")
+    ax.set_ylabel("PC 2")
+    ax.legend()
+    plt.tight_layout()
+    plt.show()
+
+
+def visualize_embeddings_pca_2d(
+    X,
+    y,
+    class_names=None,
+    scale=True,
+    random_state=42,
+):
+    """
+    Fast 2D PCA visualization colored by true labels.
+    """
+    X, y = _check_xy_shapes(X, y)
+    X_pca_2d, pca = reduce_embeddings_pca_2d(X, scale=scale, random_state=random_state)
+
+    explained = pca.explained_variance_ratio_
+    title = (
+        "2D PCA of embeddings by true labels\n"
+        f"Explained variance: {explained[0]:.3f}, {explained[1]:.3f}"
+    )
+
+    plot_2d_embeddings_by_true_labels(
+        X_pca_2d,
+        y,
+        title=title,
+        class_names=class_names,
+    )
+
+    return X_pca_2d, pca
