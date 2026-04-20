@@ -91,12 +91,39 @@ def train_eval_xgboost_classifier(Z_train, y_train, Z_val, y_val, Z_test,
 
     # Confusion matrix
     cm = confusion_matrix(y_test_c, y_pred, labels=[0, 1])
+
+    # Confusion matrix with counts and percentages
+    fig, ax = plt.subplots(1, 1, figsize=(5, 5))
+    total = cm.sum()
+    annot = np.empty_like(cm, dtype=object)
+    for i in range(cm.shape[0]):
+        row_sum = cm[i].sum()
+        for j in range(cm.shape[1]):
+            count = cm[i, j]
+            pct = 100 * count / row_sum
+            annot[i, j] = f"{count}\n({pct:.1f}%)"
+    ax.imshow(cm, cmap='Blues', aspect='equal')
+    for i in range(cm.shape[0]):
+        for j in range(cm.shape[1]):
+            color = 'white' if cm[i, j] > cm.max() / 2 else 'black'
+            ax.text(j, i, annot[i, j], ha='center', va='center', color=color, fontsize=12)
+    ax.set_xticks(range(len(class_names_list)))
+    ax.set_yticks(range(len(class_names_list)))
+    ax.set_xticklabels(class_names_list)
+    ax.set_yticklabels(class_names_list)
+    ax.set_xlabel('Predicted')
+    ax.set_ylabel('True')
+    ax.set_title(f'Test  Acc={test_acc:.3f}  AUC={test_auc:.3f}')
+    plt.tight_layout()
+    plt.show()  
+    '''
     disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=class_names_list)
     disp.plot(cmap='Blues', xticks_rotation=45)
     plt.title("Confusion Matrix on Test Set")
     plt.tight_layout()
     plt.show()
+    '''
 
     plot_AUC(proba_val, y_val_c, val_auc, best_thr, proba_test, y_test_c, test_auc)
-  return clf, best_thr, val_auc, test_auc, proba_val, proba_test, y_test_c
+  return clf, best_thr, val_auc, test_auc, proba_val, proba_test, y_test_c, cm
 
