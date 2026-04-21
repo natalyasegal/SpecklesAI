@@ -2,10 +2,57 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import roc_auc_score, accuracy_score, f1_score, cohen_kappa_score, roc_curve, confusion_matrix, ConfusionMatrixDisplay
 #from plot_metric.functions import BinaryClassification
-from matplotlib import pyplot as plt
+import matplotlib.pyplot as plt
   
 ''' images and plots'''
-def generate_confusion_matrix_image(y_test_predicted, y_test, threshold, show, save_path = 'confusion_matrix.png'):
+def generate_confusion_matrix_image(y_test_predicted, y_test, threshold, show=True, save_path='confusion_matrix.png'):
+    y_true = np.asarray(y_test).flatten().astype(int)
+    y_pred = (np.asarray(y_test_predicted).flatten() > threshold).astype(int)
+
+    cm = confusion_matrix(y_true, y_pred)
+
+    # Row-wise percentages
+    cm_percent = cm.astype(float) / cm.sum(axis=1, keepdims=True) * 100
+
+    fig, ax = plt.subplots(figsize=(6, 6))
+    im = ax.imshow(cm_percent, interpolation='nearest', cmap=plt.cm.Blues)
+
+    ax.set(
+        xticks=[0, 1],
+        yticks=[0, 1],
+        xticklabels=['Pred 0', 'Pred 1'],
+        yticklabels=['True 0', 'True 1'],
+        xlabel='Predicted label',
+        ylabel='True label',
+        title='Confusion Matrix'
+    )
+
+    plt.setp(ax.get_xticklabels(), fontsize=16)
+    plt.setp(ax.get_yticklabels(), fontsize=16)
+    ax.xaxis.label.set_size(16)
+    ax.yaxis.label.set_size(16)
+    ax.title.set_size(16)
+
+    for i in range(cm.shape[0]):
+        for j in range(cm.shape[1]):
+            text = f"{cm[i, j]}\n{cm_percent[i, j]:.1f}%"
+            ax.text(
+                j, i, text,
+                ha="center", va="center",
+                color="white" if cm_percent[i, j] > 50 else "black",
+                fontsize=16
+            )
+
+    fig.colorbar(im, ax=ax)
+    fig.tight_layout()
+    plt.savefig(save_path, bbox_inches='tight', dpi=300)
+
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
+      
+def generate_confusion_matrix_image__old(y_test_predicted, y_test, threshold, show, save_path = 'confusion_matrix.png'):
   np.set_printoptions(precision=2)
   titles_options = [("Confusion matrix, without normalization", None), ("Normalized confusion matrix", "true"),]
   for title, normalize in titles_options:
