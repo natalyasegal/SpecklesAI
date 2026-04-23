@@ -13,6 +13,7 @@ from models.LvMAE_pt import load_for_resume_and_infer, extract_embeddings_wrappe
 from models.LvMAE_pt import *
 from models.binary_XGBoost import train_eval_xgboost_classifier
 from models.multiclass_XGBoost import train_eval_xgboost_classifier_multiclass
+from utils.concat import concatenate_train_or_val
 from utils.data import split_from_start, split_by_chunks_v
 
 def train_and_eval_classifier_on_embeddings(test_inp, train_n=250, val_n=250, 
