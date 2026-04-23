@@ -77,6 +77,54 @@ def split_from_start(test_m_n, train_n=500, val_n=250):
   assert test_m_n_val.shape[1:]   == (val_n,   40, 32, 32, 1)
   return X_train, X_val, X_test, y_train, y_val, y_test
 
+'''
+for gen, used for BCI yes/no paper
+'''
+def split_by_chunks_v(arr: np.ndarray, val_n: int = 250, type_axis: int = 0, chunk_axis: int = 1):
+    """
+    Split an array shaped like (types, chunks, ...) into train/val/test by slicing
+    the chunks axis: first train_n, next val_n, rest.
+
+    Parameters
+    ----------
+    arr : np.ndarray
+        Input array; typically shape (T, N, ...), e.g., (2, 5000, 40, 32, 32, 1).
+    train_n : int
+        Number of chunks per type for the train split.
+    val_n : int
+        Number of chunks per type for the validation split.
+    type_axis : int
+        Axis index for 'types' (default 0).
+    chunk_axis : int
+        Axis index for 'chunks' (default 1).
+
+    Returns
+    -------
+    train, val, test : np.ndarray
+    Slices along the chunks axis with shapes:(T, train_n, ...), (T, val_n, ...), (T, N - train_n - val_n, ...)
+    """
+    arr = np.asarray(arr)
+    ndim = arr.ndim
+    type_axis %= ndim
+    chunk_axis %= ndim
+
+    n_types = arr.shape[type_axis]
+    n_chunks = arr.shape[chunk_axis]
+
+    if n_chunks < val_n:
+        raise ValueError(
+            f"Not enough chunks ({n_chunks}) for val_n={val_n}."
+        )
+
+    # Build slice helpers for the chunks axis
+    def sl(start, stop):
+        s = [slice(None)] * ndim
+        s[chunk_axis] = slice(start, stop)
+        return tuple(s)
+
+    val = arr[sl(0, val_n)]
+    test  = arr[sl(val_n, None)]
+    return val, test
 
 '''
 Loading datasets
