@@ -15,7 +15,8 @@ from models.binary_XGBoost import train_eval_xgboost_classifier
 from models.multiclass_XGBoost import train_eval_xgboost_classifier_multiclass
 from utils.concat import concatenate_train_or_val
 from utils.data import split_from_start, split_by_chunks_v
-from  utils.formatstranslator import test2trainformat
+from utils.formatstranslator import test2trainformat
+from evaluation.eval_on_embeddings import eval_aggregated_test_set_th_on_val
 
 def train_and_eval_classifier_on_embeddings(test_inp, train_n=250, val_n=250, 
                                             K = 1, class_names_list = None):
