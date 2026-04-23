@@ -58,8 +58,7 @@ def train_and_eval_multiclass_classifier_on_embeddings(inp_data, train_n=250, va
 '''
 Used for Gen table, paper BCI yes vs. no, green
 '''
-def TestGen_ValHeldoutFromUnseen(train_x_list, train_y_list, unseen,
-          K_thr = 500, num_of_chunks_to_aggregate = 25, k = 1):
+def TestGen_ValHeldoutFromUnseen(train_x_list, train_y_list, unseen, K_thr = 500, num_of_chunks_to_aggregate = 25, k = 1):
   model, opt2, scaler2, start_ep = load_for_resume_and_infer(VideoMAE, "artifacts_lvmae_1/checkpoint.pt")
   X_train, y_train =  concatenate_train_or_val(train_x_list, train_y_list)
   val, test = split_by_chunks_v(unseen, val_n = K_thr)
