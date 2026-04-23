@@ -13,8 +13,7 @@ from models.LvMAE_pt import load_for_resume_and_infer, extract_embeddings_wrappe
 from models.LvMAE_pt import *
 from models.binary_XGBoost import train_eval_xgboost_classifier
 from models.multiclass_XGBoost import train_eval_xgboost_classifier_multiclass
-from utils.data import split_from_start
-
+from utils.data import split_from_start, split_by_chunks_v
 
 def train_and_eval_classifier_on_embeddings(test_inp, train_n=250, val_n=250, 
                                             K = 1, class_names_list = None):
@@ -53,3 +52,26 @@ def train_and_eval_multiclass_classifier_on_embeddings(inp_data, train_n=250, va
 
   return train_eval_xgboost_classifier_multiclass(Z_train,y_train,Z_val,y_val,Z_test,y_test,K=K, class_names=class_names_list,cmap=cmap,show=show)
                                             
+'''
+Used for Gen table, paper BCI yes vs. no, green
+'''
+def TestGen_ValHeldoutFromUnseen(train_x_list, train_y_list, unseen,
+          K_thr = 500, num_of_chunks_to_aggregate = 25, k = 1):
+  model, opt2, scaler2, start_ep = load_for_resume_and_infer(VideoMAE, "artifacts_lvmae_1/checkpoint.pt")
+  X_train, y_train =  concatenate_train_or_val(train_x_list, train_y_list)
+  val, test = split_by_chunks_v(unseen, val_n = K_thr)
+  X_val, y_val = test2trainformat(val, need_to_shuffle_within_category = False)
+  X_test, y_test = test2trainformat(test, need_to_shuffle_within_category = False)
+
+  Z_train, y_train = extract_embeddings_wrapper_one(model, X_train, y_train)
+  Z_val, y_val,  = extract_embeddings_wrapper_one(model, X_val, y_val)
+  Z_test, y_test = extract_embeddings_wrapper_one(model, X_test, y_test)
+
+  clf,_,_, _,prob_val,prob_test,y_c,cm=train_eval_xgboost_classifier(Z_train,y_train,
+                                              Z_val,y_val, Z_test,y_test,
+                                              K = k, show=True) # 128w and 128
+  #print(f'Aggregated k={num_of_chunks_to_aggregate}: =================================')
+  eval_aggregated_test_set_th_on_val(Z_test, prob_test, y_test, prob_val, y_val,
+                                       num_of_chunks_to_aggregate= num_of_chunks_to_aggregate)
+
+;'''
