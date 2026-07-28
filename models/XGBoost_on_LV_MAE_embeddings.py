@@ -99,7 +99,7 @@ def TestGen_ValHeldoutFromUnseen_multiclass(train_x_list, train_y_list, unseen, 
   Z_val, y_val,  = extract_embeddings_wrapper_one(model, X_val, y_val)
   Z_test, y_test = extract_embeddings_wrapper_one(model, X_test, y_test)
 
-  clf,_,_, _,prob_val,prob_test,y_c,cm=train_eval_xgboost_classifier_multiclass(Z_train,y_train,
+  clf,val_auc,test_auc,val_acc,test_acc,prob_val,prob_test,y_c,ypt,cm=train_eval_xgboost_classifier_multiclass(Z_train,y_train,
                                               Z_val,y_val, Z_test,y_test,
                                               K = k, show=True) # 128w and 128
   #print(f'Aggregated k={num_of_chunks_to_aggregate}: =================================')
