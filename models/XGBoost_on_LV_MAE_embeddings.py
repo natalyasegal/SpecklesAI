@@ -83,6 +83,18 @@ def TestGen_ValHeldoutFromUnseen_multiclass(train_x_list, train_y_list, unseen, 
   X_val, y_val = test2trainformat(val, need_to_shuffle_within_category = False)
   X_test, y_test = test2trainformat(test, need_to_shuffle_within_category = False)
 
+  y_train = np.argmax(y_train, axis=1)
+  y_val   = np.argmax(y_val,   axis=1)
+  y_test  = np.argmax(y_test,  axis=1)
+
+  print("Train:", X_train.shape, y_train.shape)
+  print("Val:",   X_val.shape,   y_val.shape)
+  print("Test:",  X_test.shape,  y_test.shape)
+
+  print("Train labels:", np.unique(y_train, return_counts=True))
+  print("Val labels:  ", np.unique(y_val,   return_counts=True))
+  print("Test labels: ", np.unique(y_test,  return_counts=True))
+
   Z_train, y_train = extract_embeddings_wrapper_one(model, X_train, y_train)
   Z_val, y_val,  = extract_embeddings_wrapper_one(model, X_val, y_val)
   Z_test, y_test = extract_embeddings_wrapper_one(model, X_test, y_test)
