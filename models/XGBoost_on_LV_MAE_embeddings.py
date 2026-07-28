@@ -76,7 +76,7 @@ def TestGen_ValHeldoutFromUnseen(train_x_list, train_y_list, unseen, K_thr = 500
   eval_aggregated_test_set_th_on_val(Z_test, prob_test, y_test, prob_val, y_val,
                                        num_of_chunks_to_aggregate= num_of_chunks_to_aggregate)
 
-def TestGen_ValHeldoutFromUnseen_multiclass(train_x_list, train_y_list, unseen, K_thr = 500, num_of_chunks_to_aggregate = 25, k = 1):
+def TestGen_ValHeldoutFromUnseen_multiclass(train_x_list, train_y_list, unseen, K_thr = 500, num_of_chunks_to_aggregate = 25, k = 1, class_names=["1", "2", "3", "4", "5"]):
   model, opt2, scaler2, start_ep = load_for_resume_and_infer(VideoMAE, "artifacts_lvmae_1/checkpoint.pt")
   X_train, y_train =  concatenate_train_or_val(train_x_list, train_y_list)
   val, test = split_by_chunks_v(unseen, val_n = K_thr)
@@ -101,7 +101,7 @@ def TestGen_ValHeldoutFromUnseen_multiclass(train_x_list, train_y_list, unseen, 
 
   clf,val_auc,test_auc,val_acc,test_acc,prob_val,prob_test,y_c,ypt,cm=train_eval_xgboost_classifier_multiclass(Z_train,y_train,
                                               Z_val,y_val, Z_test,y_test,
-                                              K = k, show=True) # 128w and 128
+                                              K = k, show=True, class_names=class_names) # 128w and 128
   #print(f'Aggregated k={num_of_chunks_to_aggregate}: =================================')
   eval_aggregated_test_set_th_on_val(Z_test, prob_test, y_test, prob_val, y_val,
                                        num_of_chunks_to_aggregate= num_of_chunks_to_aggregate)
