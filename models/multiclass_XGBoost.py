@@ -306,6 +306,7 @@ def train_eval_xgb_train_api_multiclass_opt_th(
     Z_test_c,
     y_test_c,
     seed=9,
+    class_names = None,
     num_boost_round=5000,
     early_stopping_rounds=200,
     offset_metric="accuracy",
@@ -480,7 +481,7 @@ def train_eval_xgboost_classifier_multiclass_opt_th( Z_train,y_train,Z_val,y_val
     print(f"After temporal concat (K={K}): train {Z_train_c.shape}, val {Z_val_c.shape}, test {Z_test_c.shape}")
 
     booster,val_auc,test_auc,val_acc,test_acc,proba_val,proba_test,y_test_c,ypt,cm = \
-        train_eval_xgb_train_api_multiclass_opt_th(Z_train_c, y_train_c, Z_val_c, y_val_c, Z_test_c, y_test_c, seed=seed)
+        train_eval_xgb_train_api_multiclass_opt_th(Z_train_c, y_train_c, Z_val_c, y_val_c, Z_test_c, y_test_c, seed=seed, class_names=class_names)
     test_macro_f1 = f1_score(y_test_c, ypt, average='macro')
     return booster, val_auc, test_auc, val_acc, test_acc, proba_val, proba_test, ypv, ypt, test_macro_f1, cm
 
