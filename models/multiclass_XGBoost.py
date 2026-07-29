@@ -311,7 +311,7 @@ def train_eval_xgb_train_api_multiclass_opt_th(
     cmap = 'viridis',
     num_boost_round=5000,
     early_stopping_rounds=200,
-    offset_metric="accuracy",
+    offset_metric="macro_f1",#"accuracy",
     offset_bound=3.0,
 ):
     """
