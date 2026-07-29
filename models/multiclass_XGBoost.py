@@ -157,6 +157,313 @@ def train_eval_xgboost_classifier_multiclass( Z_train,y_train,Z_val,y_val,
     booster, val_auc, test_auc, val_acc, test_acc, proba_val, proba_test, ypv, ypt = \
         train_eval_xgb_train_api_multiclass(Z_train_c, y_train_c, Z_val_c, y_val_c, Z_test_c, y_test_c, seed=seed)
     test_macro_f1 = f1_score(y_test_c, ypt, average='macro')
+
+def optimize_multiclass_offsets(
+    proba_val,
+    y_val,
+    metric="accuracy",
+    seed=9,
+    bound=3.0,
+):
+    """
+    Optimize class-specific decision offsets on the validation set.
+
+    Final prediction:
+        argmax(log(P(class | x)) + class_offset)
+
+    The final class offset is fixed at zero because only the relative
+    differences between offsets affect the argmax decision.
+
+    Parameters
+    ----------
+    proba_val : np.ndarray, shape (N, C)
+        Validation probabilities returned by XGBoost.
+
+    y_val : np.ndarray, shape (N,)
+        Validation labels encoded as 0, ..., C-1.
+
+    metric : str
+        "accuracy" optimizes overall validation accuracy.
+        "macro_f1" optimizes validation macro-F1.
+
+    seed : int
+        Random seed used by differential evolution.
+
+    bound : float
+        Each free offset is searched within [-bound, bound].
+
+    Returns
+    -------
+    offsets : np.ndarray, shape (C,)
+        Optimized class-specific offsets.
+
+    y_pred_val : np.ndarray, shape (N,)
+        Validation predictions after applying the offsets.
+    """
+    from scipy.optimize import differential_evolution
+
+    proba_val = np.asarray(proba_val, dtype=np.float64)
+    y_val = np.asarray(y_val).reshape(-1).astype(int)
+
+    if proba_val.ndim != 2:
+        raise ValueError(
+            f"proba_val must have shape (N, C), got {proba_val.shape}"
+        )
+
+    if proba_val.shape[0] != y_val.shape[0]:
+        raise ValueError(
+            "proba_val and y_val contain different numbers of samples: "
+            f"{proba_val.shape[0]} and {y_val.shape[0]}"
+        )
+
+    n_classes = proba_val.shape[1]
+
+    if n_classes < 2:
+        raise ValueError("At least two classes are required.")
+
+    expected_classes = np.arange(n_classes)
+    found_classes = np.unique(y_val)
+
+    if not np.array_equal(found_classes, expected_classes):
+        raise ValueError(
+            "Validation labels must contain every class and be encoded as "
+            f"0, ..., {n_classes - 1}; found {found_classes}"
+        )
+
+    log_proba_val = np.log(
+        np.clip(proba_val, 1e-12, 1.0)
+    )
+
+    def make_offsets(free_offsets):
+        """
+        Fix the last class offset at zero to remove the redundant
+        common shift shared by all offsets.
+        """
+        return np.concatenate(
+            [
+                np.asarray(free_offsets, dtype=np.float64),
+                np.array([0.0], dtype=np.float64),
+            ]
+        )
+
+    def objective(free_offsets):
+        offsets = make_offsets(free_offsets)
+
+        y_pred_val = np.argmax(
+            log_proba_val + offsets[None, :],
+            axis=1,
+        )
+
+        if metric == "accuracy":
+            score = accuracy_score(
+                y_val,
+                y_pred_val,
+            )
+
+        elif metric == "macro_f1":
+            score = f1_score(
+                y_val,
+                y_pred_val,
+                average="macro",
+                zero_division=0,
+            )
+
+        else:
+            raise ValueError(
+                "metric must be either 'accuracy' or 'macro_f1'"
+            )
+
+        # scipy minimizes, so return the negative score.
+        return -score
+
+    result = differential_evolution(
+        objective,
+        bounds=[(-bound, bound)] * (n_classes - 1),
+        seed=seed,
+        maxiter=200,
+        popsize=15,
+        polish=True,
+        workers=1,
+    )
+
+    offsets = make_offsets(result.x)
+
+    y_pred_val = np.argmax(
+        log_proba_val + offsets[None, :],
+        axis=1,
+    )
+
+    return offsets, y_pred_val
+
+
+def train_eval_xgb_train_api_multiclass_opt_th(
+    Z_train_c,
+    y_train_c,
+    Z_val_c,
+    y_val_c,
+    Z_test_c,
+    y_test_c,
+    seed=9,
+    num_boost_round=5000,
+    early_stopping_rounds=200,
+    offset_metric="accuracy",
+    offset_bound=3.0,
+):
+    """
+    Train the multiclass XGBoost model and optimize class-specific
+    decision offsets using validation data.
+
+    offset_metric="accuracy" optimizes overall validation accuracy.
+    offset_metric="macro_f1" optimizes validation macro-F1.
+    """
+    y_train_c = np.asarray(
+        y_train_c
+    ).reshape(-1).astype(int)
+
+    y_val_c = np.asarray(
+        y_val_c
+    ).reshape(-1).astype(int)
+
+    y_test_c = np.asarray(
+        y_test_c
+    ).reshape(-1).astype(int)
+
+    n_classes = int(np.max(y_train_c)) + 1
+
+    dtrain = xgb.DMatrix(
+        Z_train_c,
+        label=y_train_c,
+    )
+
+    dval = xgb.DMatrix(
+        Z_val_c,
+        label=y_val_c,
+    )
+
+    dtest = xgb.DMatrix(
+        Z_test_c,
+        label=y_test_c,
+    )
+
+    params = {
+        "objective": "multi:softprob",
+        "num_class": n_classes,
+        "eval_metric": ["mlogloss", "merror"],
+        "seed": seed,
+        "eta": 0.03,
+        "max_depth": 4,
+        "min_child_weight": 5,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "lambda": 2.0,
+        "alpha": 0.0,
+        "gamma": 0.0,
+        "tree_method": "hist",  # or "gpu_hist"
+    }
+
+    booster = xgb.train(
+        params=params,
+        dtrain=dtrain,
+        num_boost_round=num_boost_round,
+        evals=[(dval, "val")],
+        early_stopping_rounds=early_stopping_rounds,
+        verbose_eval=50,
+    )
+
+    proba_val = booster.predict(
+        dval,
+        iteration_range=(
+            0,
+            booster.best_iteration + 1,
+        ),
+    )  # (N_val, C)
+
+    proba_test = booster.predict(
+        dtest,
+        iteration_range=(
+            0,
+            booster.best_iteration + 1,
+        ),
+    )  # (N_test, C)
+
+    # Optimize class-specific decision offsets using validation data only.
+    offsets, y_pred_val = optimize_multiclass_offsets(
+        proba_val=proba_val,
+        y_val=y_val_c,
+        metric=offset_metric,
+        seed=seed,
+        bound=offset_bound,
+    )
+
+    # Apply exactly the same validation-derived offsets to the test set.
+    y_pred_test = np.argmax(
+        np.log(
+            np.clip(
+                proba_test,
+                1e-12,
+                1.0,
+            )
+        ) + offsets[None, :],
+        axis=1,
+    )
+
+    val_acc = accuracy_score(
+        y_val_c,
+        y_pred_val,
+    )
+
+    test_acc = accuracy_score(
+        y_test_c,
+        y_pred_test,
+    )
+
+    # AUC is probability-ranking based and therefore remains calculated
+    # from the original XGBoost probability matrices.
+    val_auc = roc_auc_score(
+        y_val_c,
+        proba_val,
+        multi_class="ovr",
+        average="macro",
+    )
+
+    test_auc = roc_auc_score(
+        y_test_c,
+        proba_test,
+        multi_class="ovr",
+        average="macro",
+    )
+
+    # Store the offsets in the returned booster while preserving the
+    # original nine-value return signature.
+    booster.set_attr(
+        multiclass_offsets=",".join(
+            f"{offset:.17g}" for offset in offsets
+        ),
+        multiclass_offset_metric=offset_metric,
+    )
+
+    print(
+        f"Optimized multiclass offsets "
+        f"({offset_metric}):",
+        np.round(offsets, 4),
+    )
+
+    print(
+        "Equivalent probability multipliers:",
+        np.round(np.exp(offsets), 4),
+    )
+
+    return (
+        booster,
+        val_auc,
+        test_auc,
+        val_acc,
+        test_acc,
+        proba_val,
+        proba_test,
+        y_pred_val,
+        y_pred_test,
+    )
         
     print(f"[XGB-MC] VAL : AUC(ovr,macro)={val_auc:.4f} | ACC={val_acc:.4f}")
     #print(f"[XGB-MC] TEST: AUC(ovr,macro)={test_auc:.4f} | ACC={test_acc:.4f}")
