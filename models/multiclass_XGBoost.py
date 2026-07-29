@@ -457,7 +457,7 @@ def train_eval_xgb_train_api_multiclass_opt_th(
        
     print(f"[XGB-MC] VAL : AUC(ovr,macro)={val_auc:.4f} | ACC={val_acc:.4f}")
     #print(f"[XGB-MC] TEST: AUC(ovr,macro)={test_auc:.4f} | ACC={test_acc:.4f}")
-    print(f"[XGB-MC] TEST: AUC(ovr,macro)={test_auc:.4f} | ACC={test_acc:.4f} | Macro-F1={test_macro_f1:.4f}")
+    #print(f"[XGB-MC] TEST: AUC(ovr,macro)={test_auc:.4f} | ACC={test_acc:.4f} | Macro-F1={test_macro_f1:.4f}")
 
     n_classes = proba_test.shape[1]
     if class_names is None:
