@@ -464,8 +464,8 @@ def train_eval_xgb_train_api_multiclass_opt_th(
     n_classes = proba_test.shape[1]
     if class_names is None:
         class_names = [f"class_{i}" for i in range(n_classes)]
-    print(classification_report(y_test_c, ypt, target_names=class_names))
-    cm = get_multiclass_cm_with_percents(proba_test, y_test_c, ypt)
+    print(classification_report(y_test_c, y_pred_test, target_names=class_names))
+    cm = get_multiclass_cm_with_percents(proba_test, y_test_c, y_pred_test)
 
     if show:
         display_multiclass_cm_with_percents(cm, class_names, cmap=cmap)
