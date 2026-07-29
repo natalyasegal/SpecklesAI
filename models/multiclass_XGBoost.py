@@ -308,6 +308,7 @@ def train_eval_xgb_train_api_multiclass_opt_th(
     seed=9,
     class_names = None,
     show = True,
+    cmap = 'viridis',
     num_boost_round=5000,
     early_stopping_rounds=200,
     offset_metric="accuracy",
