@@ -158,6 +158,8 @@ def train_eval_xgboost_classifier_multiclass( Z_train,y_train,Z_val,y_val,
         train_eval_xgb_train_api_multiclass(Z_train_c, y_train_c, Z_val_c, y_val_c, Z_test_c, y_test_c, seed=seed)
     test_macro_f1 = f1_score(y_test_c, ypt, average='macro')
 
+
+
 def optimize_multiclass_offsets(
     proba_val,
     y_val,
@@ -479,6 +481,21 @@ def train_eval_xgb_train_api_multiclass_opt_th(
         display_multiclass_cm_with_percents(cm, class_names, cmap=cmap)
         plot_multiclass_roc_ovr(proba_val, y_val_c, proba_test, y_test_c, class_names=class_names)
     return booster,val_auc,test_auc,val_acc,test_acc,proba_val,proba_test,y_test_c,ypt,cm
+
+
+def train_eval_xgboost_classifier_multiclass_opt_th( Z_train,y_train,Z_val,y_val,
+    Z_test,y_test,seed=9, K=1, show=True, class_names=None, cmap='viridis'):
+  
+    # Temporal concat
+    Z_train_c, y_train_c = concat_temporal_embeddings(Z_train, y_train, K)
+    Z_val_c,   y_val_c   = concat_temporal_embeddings(Z_val,   y_val,   K)
+    Z_test_c,  y_test_c  = concat_temporal_embeddings(Z_test,  y_test,  K)
+    print(f"After temporal concat (K={K}): train {Z_train_c.shape}, val {Z_val_c.shape}, test {Z_test_c.shape}")
+
+    booster, val_auc, test_auc, val_acc, test_acc, proba_val, proba_test, ypv, ypt = \
+        train_eval_xgb_train_api_multiclass_opt_th(Z_train_c, y_train_c, Z_val_c, y_val_c, Z_test_c, y_test_c, seed=seed)
+    test_macro_f1 = f1_score(y_test_c, ypt, average='macro')
+
 
 
 def train_eval_xgboost_classifier_multiclass_old(
