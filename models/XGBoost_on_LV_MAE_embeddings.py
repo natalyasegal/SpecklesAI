@@ -12,7 +12,7 @@ sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 from models.LvMAE_pt import load_for_resume_and_infer, extract_embeddings_wrapper_one
 from models.LvMAE_pt import *
 from models.binary_XGBoost import train_eval_xgboost_classifier
-from models.multiclass_XGBoost import train_eval_xgboost_classifier_multiclass
+from models.multiclass_XGBoost import train_eval_xgboost_classifier_multiclass, train_eval_xgboost_classifier_multiclass_opt_th
 from utils.concat import concatenate_train_or_val
 from utils.data import split_from_start, split_by_chunks_v
 from utils.formatstranslator import test2trainformat
@@ -99,7 +99,7 @@ def TestGen_ValHeldoutFromUnseen_multiclass(train_x_list, train_y_list, unseen, 
   Z_val, y_val,  = extract_embeddings_wrapper_one(model, X_val, y_val)
   Z_test, y_test = extract_embeddings_wrapper_one(model, X_test, y_test)
 
-  clf,val_auc,test_auc,val_acc,test_acc,prob_val,prob_test,y_c,ypt,cm=train_eval_xgboost_classifier_multiclass(Z_train,y_train,
+  clf,val_auc,test_auc,val_acc,test_acc,prob_val,prob_test,y_c,ypt,cm=train_eval_xgboost_classifier_multiclass_opt_th(Z_train,y_train,
                                               Z_val,y_val, Z_test,y_test,
                                               K = k, show=True, class_names=class_names) # 128w and 128
   #print(f'Aggregated k={num_of_chunks_to_aggregate}: =================================')
