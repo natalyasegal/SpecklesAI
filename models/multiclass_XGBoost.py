@@ -353,7 +353,7 @@ def train_eval_xgb_train_api_multiclass_opt_th(
     params = {
         "objective": "multi:softprob",
         "num_class": n_classes,
-        "eval_metric": ["mlogloss", "merror"],
+        "eval_metric": ["merror", "mlogloss"],
         "seed": seed,
         "eta": 0.03,
         "max_depth": 4,
