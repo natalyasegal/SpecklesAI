@@ -454,19 +454,7 @@ def train_eval_xgb_train_api_multiclass_opt_th(
         "Equivalent probability multipliers:",
         np.round(np.exp(offsets), 4),
     )
-
-    return (
-        booster,
-        val_auc,
-        test_auc,
-        val_acc,
-        test_acc,
-        proba_val,
-        proba_test,
-        y_pred_val,
-        y_pred_test,
-    )
-        
+       
     print(f"[XGB-MC] VAL : AUC(ovr,macro)={val_auc:.4f} | ACC={val_acc:.4f}")
     #print(f"[XGB-MC] TEST: AUC(ovr,macro)={test_auc:.4f} | ACC={test_acc:.4f}")
     print(f"[XGB-MC] TEST: AUC(ovr,macro)={test_auc:.4f} | ACC={test_acc:.4f} | Macro-F1={test_macro_f1:.4f}")
@@ -480,8 +468,7 @@ def train_eval_xgb_train_api_multiclass_opt_th(
     if show:
         display_multiclass_cm_with_percents(cm, class_names, cmap=cmap)
         plot_multiclass_roc_ovr(proba_val, y_val_c, proba_test, y_test_c, class_names=class_names)
-    return booster,val_auc,test_auc,val_acc,test_acc,proba_val,proba_test,y_test_c,ypt,cm
-
+    return booster,val_auc,test_auc,val_acc,test_acc, proba_val,proba_test, y_test_c,ypt, cm # y_pred_val, y_pred_test,
 
 def train_eval_xgboost_classifier_multiclass_opt_th( Z_train,y_train,Z_val,y_val,
     Z_test,y_test,seed=9, K=1, show=True, class_names=None, cmap='viridis'):
