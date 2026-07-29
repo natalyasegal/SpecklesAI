@@ -165,7 +165,7 @@ def optimize_multiclass_offsets(
     y_val,
     metric="accuracy",
     seed=9,
-    bound=3.0,
+    bound=1.0 #3.0,
 ):
     """
     Optimize class-specific decision offsets on the validation set.
