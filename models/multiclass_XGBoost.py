@@ -237,6 +237,10 @@ def optimize_multiclass_offsets(
     )
 
     def make_offsets(free_offsets):
+        offsets = np.asarray(free_offsets, dtype=np.float64)
+        return offsets - np.mean(offsets)
+    
+    def make_offsets_old(free_offsets):
         """
         Fix the last class offset at zero to remove the redundant
         common shift shared by all offsets.
@@ -280,7 +284,7 @@ def optimize_multiclass_offsets(
 
     result = differential_evolution(
         objective,
-        bounds=[(-bound, bound)] * (n_classes - 1),
+        bounds=[(-bound, bound)] * (n_classes),
         seed=seed,
         maxiter=200,
         popsize=15,
