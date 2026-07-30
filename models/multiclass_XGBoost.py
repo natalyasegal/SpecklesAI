@@ -480,7 +480,7 @@ def train_eval_xgb_train_api_multiclass_opt_th(
     print("Validation predicted counts:", np.bincount(y_pred_val, minlength=n_classes),)
     print("Test predicted counts:", np.bincount(y_pred_test, minlength=n_classes),)
     
-    return booster,val_auc,test_auc,val_acc,test_acc, proba_val,proba_test, y_test_c,y_pred_test, y_pred_val, cm
+    return booster,val_auc,test_auc,val_acc,test_acc,proba_val,proba_test,y_pred_test,y_pred_val,cm
 
 def train_eval_xgboost_classifier_multiclass_opt_th( Z_train,y_train,Z_val,y_val,
     Z_test,y_test,seed=9, K=1, show=True, class_names=None, cmap='viridis'):
