@@ -252,50 +252,50 @@ def optimize_multiclass_offsets(
             ]
         )
 
-def objective(free_offsets, w=2, recall_floor=0.10):
+    def objective(free_offsets, w=2, recall_floor=0.10):
 
-    offsets = make_offsets(free_offsets)
-
-    y_pred_val = np.argmax(
-        log_proba_val + offsets[None, :],
-        axis=1
-    )
-
-    recalls = recall_score(
-        y_val,
-        y_pred_val,
-        labels=np.arange(n_classes),
-        average=None,
-        zero_division=0
-    )
-
-    macro_f1 = f1_score(
-        y_val,
-        y_pred_val,
-        average="macro",
-        zero_division=0
-    )
-
-    # Base cost: maximize macro-F1
-    cost = 1.0 - macro_f1
-
-    # Penalize only classes whose recall falls below the desired floor
-    recall_deficit = np.maximum(
-        0.0,
-        recall_floor - recalls
-    )
-
-    cost += w * np.sum(recall_deficit ** 2)
-
-    # Strong additional penalty if a class disappears completely
-    n_zero_classes = np.sum(recalls == 0)
-
-    cost += 1.0 * n_zero_classes
-
-    return cost
+        offsets = make_offsets(free_offsets)
     
-    '''
-    def objective(free_offsets, w = 2):
+        y_pred_val = np.argmax(
+            log_proba_val + offsets[None, :],
+            axis=1
+        )
+    
+        recalls = recall_score(
+            y_val,
+            y_pred_val,
+            labels=np.arange(n_classes),
+            average=None,
+            zero_division=0
+        )
+    
+        macro_f1 = f1_score(
+            y_val,
+            y_pred_val,
+            average="macro",
+            zero_division=0
+        )
+    
+        # Base cost: maximize macro-F1
+        cost = 1.0 - macro_f1
+    
+        # Penalize only classes whose recall falls below the desired floor
+        recall_deficit = np.maximum(
+            0.0,
+            recall_floor - recalls
+        )
+    
+        cost += w * np.sum(recall_deficit ** 2)
+    
+        # Strong additional penalty if a class disappears completely
+        n_zero_classes = np.sum(recalls == 0)
+    
+        cost += 1.0 * n_zero_classes
+    
+        return cost
+    
+    
+    def objective_1(free_offsets, w = 2):
 
         offsets = make_offsets(free_offsets)
     
@@ -335,7 +335,7 @@ def objective(free_offsets, w=2, recall_floor=0.10):
     
         # differential_evolution minimizes
         return -score
-    '''
+    
     def objective_old(free_offsets):
         offsets = make_offsets(free_offsets)
 
