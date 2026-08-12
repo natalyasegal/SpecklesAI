@@ -186,9 +186,9 @@ def run_resume(
     y: (N,) or (N,1)    (labels unused for MAE, but kept for consistency with your dataset)
     """
     set_seed(seed)
-    assert X.ndim in (4, 5), f"Bad X.ndim={X.ndim}"
+    #assert X.ndim in (4, 5), f"Bad X.ndim={X.ndim}"
     y = y.squeeze()
-    assert y.ndim == 1 and len(y) == X.shape[0], f"Bad y shape {y.shape}"
+    #assert y.ndim == 1 and len(y) == X.shape[0], f"Bad y shape {y.shape}" #leave comented out for multiclass
 
     # Device & model
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
