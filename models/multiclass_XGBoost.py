@@ -289,7 +289,7 @@ def optimize_multiclass_offsets(
         # Example:
         #   improving minimum recall by 0.10 contributes +1.0
         #   improving macro-F1 by 0.10 contributes only +0.10
-        score = 2 * min_recall + macro_f1
+        score = 6 * min_recall + macro_f1
     
         # differential_evolution minimizes
         return -score
