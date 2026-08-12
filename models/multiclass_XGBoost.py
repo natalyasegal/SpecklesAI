@@ -253,7 +253,7 @@ def optimize_multiclass_offsets(
         )
 
 
-    def objective(free_offsets, w = 4):
+    def objective(free_offsets, w = 3):
 
         offsets = make_offsets(free_offsets)
     
