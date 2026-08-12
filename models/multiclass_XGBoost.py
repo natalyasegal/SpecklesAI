@@ -252,7 +252,49 @@ def optimize_multiclass_offsets(
             ]
         )
 
+
     def objective(free_offsets):
+
+        offsets = make_offsets(free_offsets)
+    
+        y_pred_val = np.argmax(
+            log_proba_val + offsets[None, :],
+            axis=1
+        )
+    
+        # Recall for each class separately
+        recalls = recall_score(
+            y_val,
+            y_pred_val,
+            labels=np.arange(n_classes),
+            average=None,
+            zero_division=0
+        )
+    
+        # Overall multiclass quality
+        macro_f1 = f1_score(
+            y_val,
+            y_pred_val,
+            average="macro",
+            zero_division=0
+        )
+    
+        # Protect the weakest class
+        min_recall = np.min(recalls)
+    
+        # Weighted objective:
+        #   primary   = performance of the weakest class
+        #   secondary = overall macro-F1
+        #
+        # Example:
+        #   improving minimum recall by 0.10 contributes +1.0
+        #   improving macro-F1 by 0.10 contributes only +0.10
+        score = 10.0 * min_recall + macro_f1
+    
+        # differential_evolution minimizes
+        return -score
+    
+    def objective_old(free_offsets):
         offsets = make_offsets(free_offsets)
 
         y_pred_val = np.argmax(
