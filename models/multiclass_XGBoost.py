@@ -252,7 +252,7 @@ def optimize_multiclass_offsets(
             ]
         )
 
-    def objective(free_offsets, w=2, recall_floor=0.10):
+    def objective_2(free_offsets, w=2, recall_floor=0.10):
 
         offsets = make_offsets(free_offsets)
     
@@ -336,7 +336,7 @@ def optimize_multiclass_offsets(
         # differential_evolution minimizes
         return -score
     
-    def objective_old(free_offsets):
+    def objective(free_offsets): #objective_old
         offsets = make_offsets(free_offsets)
 
         y_pred_val = np.argmax(
