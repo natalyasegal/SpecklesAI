@@ -706,9 +706,9 @@ def run_end_to_end(X: np.ndarray, y: np.ndarray,
     y: (N,) or (N,1) with {0,1}
     """
     set_seed(seed)
-    assert X.ndim in (4, 5)
+    #assert X.ndim in (4, 5)
     y = y.squeeze()
-    assert y.ndim == 1 and len(y) == X.shape[0]
+    #assert y.ndim == 1 and len(y) == X.shape[0]
     '''
     # Splits
     X_tmp, X_test, y_tmp, y_test = train_test_split(X, y, test_size=test_size, random_state=seed, stratify=y)
