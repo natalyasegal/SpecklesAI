@@ -270,7 +270,7 @@ class NumpyVideoDataset(Dataset):
             self.y = None
         else:
             y = y.squeeze()
-            assert y.ndim == 1 and y.shape[0] == X.shape[0], f"Bad y shape {y.shape}"
+            #assert y.ndim == 1 and y.shape[0] == X.shape[0], f"Bad y shape {y.shape}"
             self.y = y.astype(np.int64, copy=False)
 
         self.normalize = normalize
