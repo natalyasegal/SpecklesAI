@@ -41,15 +41,9 @@ def plot_AUC(proba_val, y_val, val_auc, best_thr, proba_test, y_test, test_auc):
   plt.tight_layout()
   plt.show()
 
-def train_eval_xgboost_classifier(Z_train, y_train, Z_val, y_val, Z_test,
+def train_eval_xgboost_classifier_acter_concatenation(Z_train, y_train, Z_val, y_val, Z_test,
                                   y_test, seed=9, K = 1, show = True,
                                   class_names_list = ["class_0", "class_1"]):
-  # ---- Temporal aggregation (set K as you like) ----
-  # e.g., concatenate k consecutive embeddings; K=1 keeps original behavior
-  Z_train_c, y_train_c = concat_temporal_embeddings(Z_train, y_train, K)
-  Z_val_c,   y_val_c   = concat_temporal_embeddings(Z_val,   y_val,   K)
-  Z_test_c,  y_test_c  = concat_temporal_embeddings(Z_test,  y_test,  K)
-
   print(f"After temporal concat (K={K}): "
         f"train {Z_train_c.shape}, val {Z_val_c.shape}, test {Z_test_c.shape}")
 
@@ -83,14 +77,13 @@ def train_eval_xgboost_classifier(Z_train, y_train, Z_val, y_val, Z_test,
 
   test_auc = roc_auc_score(y_test_c, proba_test)
   test_acc = accuracy_score(y_test_c, y_pred)
+  cm = confusion_matrix(y_test_c, y_pred, labels=[0, 1])
+                                      
   if show:
     print(f"[XGB] TEST: AUC={test_auc:.4f} | ACC={test_acc:.4f}")
 
     # Binary report
     print(classification_report(y_test_c, y_pred, target_names=class_names_list))
-
-    # Confusion matrix
-    cm = confusion_matrix(y_test_c, y_pred, labels=[0, 1])
 
     # Confusion matrix with counts and percentages
     fig, ax = plt.subplots(1, 1, figsize=(5, 5))
@@ -116,14 +109,16 @@ def train_eval_xgboost_classifier(Z_train, y_train, Z_val, y_val, Z_test,
     ax.set_title(f'Test  Acc={test_acc:.3f}  AUC={test_auc:.3f}')
     plt.tight_layout()
     plt.show()  
-    '''
-    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=class_names_list)
-    disp.plot(cmap='Blues', xticks_rotation=45)
-    plt.title("Confusion Matrix on Test Set")
-    plt.tight_layout()
-    plt.show()
-    '''
-
     plot_AUC(proba_val, y_val_c, val_auc, best_thr, proba_test, y_test_c, test_auc)
   return clf, best_thr, val_auc, test_auc, proba_val, proba_test, y_test_c, cm
+
+def train_eval_xgboost_classifier(Z_train, y_train, Z_val, y_val, Z_test,
+                                  y_test, seed=9, K = 1, show = True, class_names_list = ["class_0", "class_1"]):
+  # ---- Temporal aggregation:
+  # e.g., concatenate k consecutive embeddings; K=1 keeps original behavior
+  Z_train_c, y_train_c = concat_temporal_embeddings(Z_train, y_train, K)
+  Z_val_c,   y_val_c   = concat_temporal_embeddings(Z_val,   y_val,   K)
+  Z_test_c,  y_test_c  = concat_temporal_embeddings(Z_test,  y_test,  K)
+  return train_eval_xgboost_classifier_acter_concatenation(Z_train_c, y_train_c, Z_val_c, y_val_c, Z_test_c, y_test_c,
+                                                           seed=seed, K = K, show = show, class_names_list = class_names_list)
 
