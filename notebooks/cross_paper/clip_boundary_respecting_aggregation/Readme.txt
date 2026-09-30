@@ -1,0 +1,6 @@
+Results are reported for Wernicke's area using normalized inputs, 1 s windows, and 30 s calibration, respecting clip boundaries. 
+Stride = 1 denotes sliding-window aggregation, producing overlapping 1 s windows, whereas stride = K denotes independent, non-overlapping 1 s inputs. 
+FPS denotes the acquisition frame rate. 1s inputs correspond to aggregation of 25 consecutive 40-ms chunks, K = 25. Results obtained with stride = 1 were nearly 
+identical whether clip boundaries were respected within the training, validation, and test sets (Supplementary Table 4) or not (Supplementary Table 1); in both cases, 
+there was no leakage between these sets. In contrast, stride = K = 25 produced lower performance (AUC = 0.942 vs. 0.999; F1 = 0.923 vs. 0.994) 
+and greater variability.
