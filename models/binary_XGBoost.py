@@ -41,8 +41,8 @@ def plot_AUC(proba_val, y_val, val_auc, best_thr, proba_test, y_test, test_auc):
   plt.tight_layout()
   plt.show()
 
-def train_eval_xgboost_classifier_after_concatenation(Z_train, y_train, Z_val, y_val, Z_test,
-                                  y_test, seed=9, K = 1, show = True,
+def train_eval_xgboost_classifier_after_concatenation(Z_train_c, y_train_c, Z_val_c, y_val_c, Z_test_c,
+                                  y_test, seed = 9, K = 1, show = True,
                                   class_names_list = ["class_0", "class_1"]):
   print(f"After temporal concat (K={K}): "
         f"train {Z_train_c.shape}, val {Z_val_c.shape}, test {Z_test_c.shape}")
