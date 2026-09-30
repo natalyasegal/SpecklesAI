@@ -1,9 +1,69 @@
 import numpy as np
 
-# ---- Helper: concatenate K consecutive embeddings (temporal aggregation) ----
+# ---- Helper: to concatenate K consecutive embeddings (temporal aggregation) ----
 
+def make_clip_ids_from_fps(chunk_counts, fps=1000, chunk_ms=40, clip_seconds=10):
+    """
+    chunk_counts: dict {subject_id: total chunks}. Returns (N,) globally-unique clip_ids.
+    """
+    if not chunk_counts:
+        return np.empty((0,), dtype=np.int64)
+    frames_per_chunk = fps * chunk_ms / 1000.0          # /1000: ms -> s
+    cpc = fps * clip_seconds / frames_per_chunk         # chunks per clip
+    assert cpc == int(cpc), "clip length not divisible into chunks"
+    cpc = int(cpc)
+    ids, next_id = [], 0
+    for sid, n in chunk_counts.items():
+        assert n % cpc == 0, f"Subject {sid}: {n} chunks not a multiple of {cpc}"
+        n_clips = n // cpc
+        ids.append(np.repeat(np.arange(next_id, next_id + n_clips), cpc))
+        next_id += n_clips
+    return np.concatenate(ids)
+
+def concat_temporal_embeddings_c(Z, y, clip_ids, K=1):
+    """
+    clip boundaries aware concatentation of embeddings
+    """
+    assert Z.ndim == 2 and y.ndim == 1 and len(Z) == len(y) == len(clip_ids)
+    if K <= 1:
+        return Z.copy(), y.copy()
+    N, D = Z.shape
+    # candidate windows, then keep only those whose first and last chunk
+    # belong to the same clip (contiguous equal ids => whole window in-clip)
+    windows = np.lib.stride_tricks.sliding_window_view(Z, K, axis=0)  # (N-K+1, D, K)
+    starts = clip_ids[:N - K + 1]
+    ends   = clip_ids[K - 1:]
+    keep = starts == ends
+
+    Zk = windows[keep].transpose(0, 2, 1).reshape(keep.sum(), K * D)  # temporal order
+    yk = y[K - 1:][keep]
+    return Zk, yk
+
+def concat_temporal_embeddings_c_stride(Z, y, clip_ids, K=1, stride=1):
+    """
+    clip boundaries aware concatentation of embeddings and supporting stride,
+    stride = K will make segments independant
+    """
+    assert Z.ndim == 2 and y.ndim == 1 and len(Z) == len(y) == len(clip_ids), "misaligned inputs"
+    assert isinstance(K, (int, np.integer)) and K >= 1, f"K must be int >= 1, got {K!r}"
+    if K <= 1:
+        return Z.copy(), y.copy()
+    assert isinstance(stride, (int, np.integer)) and 1 <= stride <= K, \
+        f"stride must be int in [1, {K}], got {stride!r}"
+    N, D = Z.shape
+    Zk, yk = [], []
+    for s in range(0, N - K + 1, stride):
+        if clip_ids[s] == clip_ids[s + K - 1]:      # boundary guard
+            Zk.append(Z[s:s+K].reshape(-1)); yk.append(y[s + K - 1])
+    if not Zk:
+        return np.empty((0, K*D), dtype=Z.dtype), np.empty((0,), dtype=y.dtype)
+    return np.stack(Zk), np.asarray(yk, dtype=y.dtype)
+    
 def concat_temporal_embeddings(Z: np.ndarray, y: np.ndarray, K: int = 1):
     """
+    Ignorant to clip boundaries!
+    Uses stride = 1
+    
     Z: (N, D) embeddings in temporal order
     y: (N,) labels aligned with Z
     K: window length. If K==1, returns inputs unchanged.
