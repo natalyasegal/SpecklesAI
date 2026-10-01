@@ -12,6 +12,7 @@ from utils.concat import concatenate_train_or_val
 from utils.data import split_from_start, split_by_chunks_v
 from utils.formatstranslator import test2trainformat
 from utils.embeddings_utils import concat_temporal_embeddings_c_stride, concat_temporal_embeddings_c, make_clip_ids_from_fps, concat_temporal_embeddings
+from pca.pca import visualize_embeddings_pca_3d, reduce_embeddings_pca_3d
 
 #lables used only for metrics: ARI and NMI
 def calc_ARI_NMI_of_GMMcluster_c(X, y, K=1, stride=1, clip_seconds=10, chunk_ms=40, fps=1000,
