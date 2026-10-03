@@ -14,11 +14,14 @@ def make_clip_ids_from_fps(chunk_counts, fps=1000, chunk_ms=40, clip_seconds=10)
     cpc = int(cpc)
     ids, next_id = [], 0
     for sid, n in chunk_counts.items():
-        if n >= cpc:
+        if n < cpc:
+            ids.append(np.full(n, next_id, dtype=np.int64))
+            next_id += 1
+        else:
             assert n % cpc == 0, f"Subject {sid}: {n} chunks not a multiple of {cpc}"
-        n_clips = n // cpc
-        ids.append(np.repeat(np.arange(next_id, next_id + n_clips), cpc))
-        next_id += n_clips
+            n_clips = n // cpc
+            ids.append(np.repeat(np.arange(next_id, next_id + n_clips), cpc))
+            next_id += n_clips
     return np.concatenate(ids)
 
 def concat_temporal_embeddings_c(Z, y, clip_ids, K=1):
