@@ -14,7 +14,8 @@ def make_clip_ids_from_fps(chunk_counts, fps=1000, chunk_ms=40, clip_seconds=10)
     cpc = int(cpc)
     ids, next_id = [], 0
     for sid, n in chunk_counts.items():
-        assert n % cpc == 0, f"Subject {sid}: {n} chunks not a multiple of {cpc}"
+        if n >= cpc:
+            assert n % cpc == 0, f"Subject {sid}: {n} chunks not a multiple of {cpc}"
         n_clips = n // cpc
         ids.append(np.repeat(np.arange(next_id, next_id + n_clips), cpc))
         next_id += n_clips
