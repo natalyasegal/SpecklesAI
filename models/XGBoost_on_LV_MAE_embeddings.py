@@ -69,6 +69,39 @@ def train_and_eval_classifier_on_embeddings(test_inp, train_n=250, val_n=250,
   return train_eval_xgboost_classifier(Z_train,y_train,Z_val,y_val,Z_test,y_test,
                                        K = K, class_names_list = class_names_list)
 
+def train_and_eval_multiclass_classifier_on_embeddings_agg(inp_data, train_n=250, val_n=250,
+                                          fps=1000, K=1, stride=1, clip_seconds=10, chunk_ms=40,
+                                          class_names_list=None, seed=9, cmap='viridis', show=True):
+  model, opt2, scaler2, start_ep = load_for_resume_and_infer(VideoMAE, "artifacts_lvmae_1/checkpoint.pt")
+  X_train, X_val, X_test, y_train, y_val, y_test = split_from_start(inp_data,train_n=train_n, val_n=val_n)
+  y_train = np.argmax(y_train, axis=1)
+  y_val   = np.argmax(y_val,   axis=1)
+  y_test  = np.argmax(y_test,  axis=1)
+
+  print("Train:", X_train.shape, y_train.shape)
+  print("Val:",   X_val.shape,   y_val.shape)
+  print("Test:",  X_test.shape,  y_test.shape)
+
+  print("Train labels:", np.unique(y_train, return_counts=True))
+  print("Val labels:  ", np.unique(y_val,   return_counts=True))
+  print("Test labels: ", np.unique(y_test,  return_counts=True))
+
+  Z_train, y_train = extract_embeddings_wrapper_one(model, X_train, y_train)
+  Z_val, y_val  = extract_embeddings_wrapper_one(model, X_val, y_val)
+  Z_test, y_test = extract_embeddings_wrapper_one(model, X_test, y_test)
+
+  mk = lambda Z: make_clip_ids_from_fps({0: len(Z)},fps=fps, chunk_ms=chunk_ms, clip_seconds=clip_seconds)
+
+  # Temporal concat
+  Z_train_c,y_train_c=concat_temporal_embeddings_c_stride(Z_train,y_train,mk(Z_train),K,stride=stride)
+  Z_val_c,  y_val_c  =concat_temporal_embeddings_c_stride(Z_val,  y_val,  mk(Z_val),K,stride=stride)
+  Z_test_c, y_test_c =concat_temporal_embeddings_c_stride(Z_test, y_test, mk(Z_test),K,stride=stride)
+  print(f"After temporal concat (K={K}): train {Z_train_c.shape}, val {Z_val_c.shape}, test {Z_test_c.shape}")
+
+  booster,val_auc,test_auc,val_acc,test_acc,proba_val,proba_test,ypt,ypv,cm = \
+        train_eval_xgb_train_api_multiclass_opt_th(Z_train_c, y_train_c, Z_val_c, y_val_c, Z_test_c, y_test_c, seed=seed, class_names=class_names, show=show, cmap=cmap)
+  test_macro_f1 = f1_score(y_test_c, ypt, average='macro')
+  return booster, val_auc, test_auc, val_acc, test_acc, proba_val, proba_test, ypt, ypv, Z_test_c, y_test_c, Z_val_c, y_val_c, test_macro_f1, cm
 
 def train_and_eval_multiclass_classifier_on_embeddings(inp_data, train_n=250, val_n=250,
                                         K = 1, class_names_list = None, cmap='viridis', show=True):
