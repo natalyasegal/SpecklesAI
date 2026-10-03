@@ -3,7 +3,7 @@ import xgboost as xgb
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import (classification_report, confusion_matrix, ConfusionMatrixDisplay,
-    roc_auc_score, accuracy_score, roc_curve)
+    roc_auc_score, accuracy_score, roc_curve, f1_score)
 from xgboost.callback import EarlyStopping
 
 import sys
@@ -12,7 +12,7 @@ sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 from models.LvMAE_pt import load_for_resume_and_infer, extract_embeddings_wrapper_one
 from models.LvMAE_pt import *
 from models.binary_XGBoost import train_eval_xgboost_classifier, train_eval_xgboost_classifier_after_concatenation
-from models.multiclass_XGBoost import train_eval_xgboost_classifier_multiclass, train_eval_xgboost_classifier_multiclass_opt_th
+from models.multiclass_XGBoost import train_eval_xgboost_classifier_multiclass, train_eval_xgb_train_api_multiclass_opt_th, train_eval_xgboost_classifier_multiclass_opt_th
 from utils.concat import concatenate_train_or_val
 from utils.data import split_from_start, split_by_chunks_v
 from utils.formatstranslator import test2trainformat
