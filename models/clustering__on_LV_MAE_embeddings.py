@@ -18,6 +18,8 @@ from pca.pca import visualize_embeddings_pca_3d, reduce_embeddings_pca_3d
 def calc_ARI_NMI_of_GMMcluster_c(X, y, K=1, stride=1, clip_seconds=10, chunk_ms=40, fps=1000,
                                  random_state=42, n_components_GMM=2):
   model, opt2, scaler2, start_ep = load_for_resume_and_infer(VideoMAE, "artifacts_lvmae_1/checkpoint.pt")
+  if n_components_GMM > 2:
+      y = np.argmax(y, axis=1)
   x, y = extract_embeddings_wrapper_one(model, X, y)
 
   mk = lambda Z: make_clip_ids_from_fps({0: len(Z)},fps=fps,chunk_ms=chunk_ms,clip_seconds=clip_seconds)
