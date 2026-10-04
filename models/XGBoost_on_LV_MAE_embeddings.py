@@ -3,7 +3,7 @@ import xgboost as xgb
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import (classification_report, confusion_matrix, ConfusionMatrixDisplay,
-    roc_auc_score, accuracy_score, roc_curve, f1_score)
+    roc_auc_score, accuracy_score, roc_curve, f1_score, balanced_accuracy_score)
 from xgboost.callback import EarlyStopping
 
 import sys
@@ -101,6 +101,9 @@ def train_and_eval_multiclass_classifier_on_embeddings_agg(inp_data, train_n=250
   booster,val_auc,test_auc,val_acc,test_acc,proba_val,proba_test,ypt,ypv,cm = \
         train_eval_xgb_train_api_multiclass_opt_th(Z_train_c, y_train_c, Z_val_c, y_val_c, Z_test_c, y_test_c, seed=seed, class_names=class_names_list, show=show, cmap=cmap)
   test_macro_f1 = f1_score(y_test_c, ypt, average='macro')
+  macro_acc = balanced_accuracy_score(y_test_c, ypt)
+  print("Macro accuracy:", macro_acc)
+  print("Macro F1:", test_macro_f1)                                           
   return booster, val_auc, test_auc, val_acc, test_acc, proba_val, proba_test, ypt, ypv, Z_test_c, y_test_c, Z_val_c, y_val_c, test_macro_f1, cm
 
 def train_and_eval_multiclass_classifier_on_embeddings(inp_data, train_n=250, val_n=250,
