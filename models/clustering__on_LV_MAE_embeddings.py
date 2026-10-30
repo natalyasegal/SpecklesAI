@@ -15,9 +15,8 @@ from utils.embeddings_utils import concat_temporal_embeddings_c_stride, concat_t
 from pca.pca import visualize_embeddings_pca_3d, reduce_embeddings_pca_3d
 
 #lables used only for metrics: ARI and NMI
-def calc_ARI_NMI_of_GMMcluster_c(X, y, K=1, stride=1, clip_seconds=10, chunk_ms=40, fps=1000,
+def calc_ARI_NMI_of_GMMcluster__model(model, X, y, K=1, stride=1, clip_seconds=10, chunk_ms=40, fps=1000,
                                  random_state=42, n_components_GMM=2):
-  model, opt2, scaler2, start_ep = load_for_resume_and_infer(VideoMAE, "artifacts_lvmae_1/checkpoint.pt")
   if n_components_GMM > 2:
       y = np.argmax(y, axis=1)
   x, y = extract_embeddings_wrapper_one(model, X, y)
@@ -33,3 +32,8 @@ def calc_ARI_NMI_of_GMMcluster_c(X, y, K=1, stride=1, clip_seconds=10, chunk_ms=
   print("ARI:", ari)
   print("NMI:", nmi)
   return ari, nmi
+
+def calc_ARI_NMI_of_GMMcluster_c(X, y, K=1, stride=1, clip_seconds=10, chunk_ms=40, fps=1000, random_state=42, n_components_GMM=2):
+  model, opt2, scaler2, start_ep = load_for_resume_and_infer(VideoMAE, "artifacts_lvmae_1/checkpoint.pt")
+  return calc_ARI_NMI_of_GMMcluster_model(model, X, y, K=K, stride=stride, clip_seconds=clip_seconds, chunk_ms=chunk_ms, fps=fps,
+                                 random_state=random_state, n_components_GMM=n_components_GMM)
