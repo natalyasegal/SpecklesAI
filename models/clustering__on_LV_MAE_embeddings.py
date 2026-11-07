@@ -15,6 +15,7 @@ from utils.embeddings_utils import concat_temporal_embeddings_c_stride, concat_t
 from pca.pca import visualize_embeddings_pca_3d, reduce_embeddings_pca_3d
 
 def calc_mean_ARI_NMI_of_GMMcluster_c(K, stride, clip_seconds, chunk_ms, fps, n_components_GMM, 
+          data_globals = globals(),
           data_suffix="n_40ms",
           subject_to_model = {1:6, 2:2, 3:3, 4:4, 5:5, 6:6, 7:7, 8:8, 9:9, 10:10, 11:3, 12:6, 13:1, 14:6, 15:3},
           models_root = "gdrive/MyDrive/__PHd_2025/code_and_data/code/BCI_LvMAE_models_9_1"):
@@ -33,8 +34,8 @@ def calc_mean_ARI_NMI_of_GMMcluster_c(K, stride, clip_seconds, chunk_ms, fps, n_
       shutil.copytree(src, dst)
 
       # Get the correct subject data
-      X = globals()[f"x{subject}_{data_suffix}"]
-      y = globals()[f"y{subject}_{data_suffix}"]
+      X = data_globals[f"x{subject}_{data_suffix}"]
+      y = data_globals)[f"y{subject}_{data_suffix}"]
 
       # Calculate ARI and NMI
       ari, nmi = calc_ARI_NMI_of_GMMcluster_c(X=X, y=y, K=K, stride=stride, clip_seconds=clip_seconds,
