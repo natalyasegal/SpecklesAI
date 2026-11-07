@@ -35,7 +35,7 @@ def calc_mean_ARI_NMI_of_GMMcluster_c(K, stride, clip_seconds, chunk_ms, fps, n_
 
       # Get the correct subject data
       X = data_globals[f"x{subject}_{data_suffix}"]
-      y = data_globals)[f"y{subject}_{data_suffix}"]
+      y = data_globals[f"y{subject}_{data_suffix}"]
 
       # Calculate ARI and NMI
       ari, nmi = calc_ARI_NMI_of_GMMcluster_c(X=X, y=y, K=K, stride=stride, clip_seconds=clip_seconds,
