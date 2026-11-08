@@ -1,11 +1,11 @@
 import numpy as np
+import shutil
 import xgboost as xgb
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import (classification_report, confusion_matrix, ConfusionMatrixDisplay,
     roc_auc_score, accuracy_score, roc_curve, f1_score, balanced_accuracy_score)
 from xgboost.callback import EarlyStopping
-
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
@@ -20,6 +20,47 @@ from utils.embeddings_utils import concat_temporal_embeddings_c_stride, concat_t
 from evaluation.eval_utils import eval_aggregated_test_set_th_on_val
 
 
+def train_and_run_classifier_mean(K, train_n=1000, val_n=500, clip_seconds=20, class_names_list=None,
+          fps=1000, stride=1, chunk_ms=40, seed=9, cmap='Blues', show=True, data_suffix="n_40ms",
+          data_globals = globals(), 
+          subject_to_model = {1:6, 2:2, 3:3, 4:4, 5:5, 6:6, 7:7, 8:8, 9:9, 10:10, 11:3, 12:6, 13:1, 14:6, 15:3},
+          models_root = "gdrive/MyDrive/__PHd_2025/code_and_data/code/BCI_LvMAE_models_9_1"):
+  # Subject -> LV-MAE model mapping from the notebook clustering section
+  dst = "artifacts_lvmae_1"
+  test_aucs=[]
+  test_accs=[]
+  test_macro_f1s=[]
+  cms=[]
+  for subject in subject_to_model:
+      model_num = subject_to_model[subject]
+      src = f"{models_root}/model{model_num}_30epochs/artifacts_lvmae_1"
+
+      # Replace currently loaded LV-MAE model
+      if os.path.exists(dst):
+          shutil.rmtree(dst)
+      shutil.copytree(src, dst)
+
+      # Get the correct subject data
+      test = data_globals[f"test_{subject}_m_{data_suffix}"] # example test_1_m_n_40ms
+     
+      # Classification
+      clf,val_auc,test_auc,val_acc,test_acc,prob_val,proba_test,ypt,ypv,Z_test_c,y_test_c,Z_val_c,y_val_c,test_macro_f1,cm = \
+          train_and_eval_multiclass_classifier_on_embeddings_agg(test, train_n=train_n, val_n=val_n,
+                                  fps=fps, K=K, stride=stride, clip_seconds=clip_seconds, chunk_ms=chunk_ms,
+                                  class_names_list=class_names_list, seed=seed, cmap=cmap, show=show)
+      test_accs.append(float(test_acc))      
+      test_macro_f1s.append(float(test_macro_f1))
+      test_aucs.append(float(test_auc))
+      cms.append(cm)
+      print(f"Subject {subject:2d} | LV-MAE model {model_num:2d} | "
+          f"Acc = {float(test_acc):.4f} | F1 = {float(test_macro_f1):.4f} | AUC = {float(test_auc):.4f}")
+  print("\n--------------------")
+  print(f"Mean Accuracy = {np.mean(test_accs):.4f}")
+  print(f"Mean F1 = {np.mean(test_macro_f1s):.4f}")
+  print(f"Mean AUC = {np.mean(test_aucs):.4f}")
+  print("--------------------")
+  return np.mean(test_accs), np.mean(test_macro_f1s), np.mean(test_aucs), cms
+              
 '''
 Concatenatation (is relevant, so for K > 1) respects clip boundaries and supports stride
 stride = K => independent segments
